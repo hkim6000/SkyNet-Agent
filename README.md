@@ -238,6 +238,21 @@ Every command shows a plan first and waits for **go**.
 
 ![Aldermoor Gallery, one of the SkyNet templates](docs/showcase-artgallery.png)
 
+## Showcase
+
+Live demo and full source of websites built with SkyNet.
+
+| Website | Live demo | Full source |
+|---|---|---|
+| Lumé Beauty | [theskylite.com/beauty](https://www.theskylite.com/beauty) | [GitHub](https://github.com/hkim6000/SkyNet-BeautyWebsite-Asp.net.Core-Full-Source) |
+| Calvera Therapeutics | [theskylite.com/pharma](https://www.theskylite.com/pharma) | [GitHub](https://github.com/hkim6000/SkyNet-PharmaWebsite-Asp.net.Core-Full-Source) |
+| Northbound Notes | [theskylite.com/travel](https://www.theskylite.com/travel) | [GitHub](https://github.com/hkim6000/SkyNet-TravelWebsite-Asp.net.Core-Full-Source) |
+| Flamejack Burgers | [theskylite.com/fastfood](https://www.theskylite.com/fastfood) | [GitHub](https://github.com/hkim6000/SkyNet-FastFoodWebsite-Asp.net.Core-Full-Source) |
+| Aurelle | [theskylite.com/FineDining](https://www.theskylite.com/FineDining) | [GitHub](https://github.com/hkim6000/SkyNet-FineDiningWebsite-Asp.net.Core-Full-Source) |
+| Crestline Motors | [theskylite.com/CarDealer](https://www.theskylite.com/CarDealer) | [GitHub](https://github.com/hkim6000/SkyNet-CarDealerWebsite-Asp.net.Core-Full-Source) |
+| Panelmoon | [theskylite.com/WebComic](https://www.theskylite.com/WebComic) | [GitHub](https://github.com/hkim6000/SkyNet-WebComicWebsite-Asp.net.Core-Full-Source) |
+| Aldermoor Gallery | [theskylite.com/ArtGallery](https://www.theskylite.com/ArtGallery) | [GitHub](https://github.com/hkim6000/SkyNet-ArtGalleryWebsite-Asp.net.Core-Full-Source) |
+
 ## License
 
 The files in this repository are under **Part A (MIT)** of the [SkyLite & SkyNet Framework License](LICENSE). The SkyNet Framework itself (`SkyNet.dll` in the TheSkyLite.SkyNet package) is covered by **Part B**: proprietary, free to use, not open source.
