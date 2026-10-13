@@ -1,0 +1,118 @@
+{
+  "brand": "Paperhouse Prints",
+  "tagline": "Small-batch art prints, printed by hand.",
+  "categories": [
+    {
+      "key": "landscape",
+      "label": "Landscape"
+    },
+    {
+      "key": "abstract",
+      "label": "Abstract"
+    },
+    {
+      "key": "botanical",
+      "label": "Botanical"
+    },
+    {
+      "key": "stilllife",
+      "label": "Still life"
+    }
+  ],
+  "items": [
+    {
+      "key": "six-ridges",
+      "title": "Six Ridges",
+      "category": "landscape",
+      "price": 48,
+      "size": "30 × 40 cm",
+      "image": "six-ridges-november",
+      "isNew": true,
+      "text": "Six misty hills, each paler than the last."
+    },
+    {
+      "key": "last-light",
+      "title": "Last Light",
+      "category": "landscape",
+      "price": 52,
+      "size": "30 × 40 cm",
+      "image": "last-light-carrow-fell",
+      "isNew": false,
+      "text": "A violet sky as the sun drops behind the fell."
+    },
+    {
+      "key": "swell",
+      "title": "Swell",
+      "category": "abstract",
+      "price": 44,
+      "size": "40 × 40 cm",
+      "image": "swell",
+      "isNew": true,
+      "text": "One big wave cut as long curling lines."
+    },
+    {
+      "key": "low-sun",
+      "title": "Field with Low Sun",
+      "category": "abstract",
+      "price": 56,
+      "size": "30 × 40 cm",
+      "image": "field-with-low-sun",
+      "isNew": false,
+      "text": "Three soft bands of ochre, rose and deep red."
+    },
+    {
+      "key": "half-moons",
+      "title": "Half Moons",
+      "category": "abstract",
+      "price": 40,
+      "size": "40 × 40 cm",
+      "image": "half-moons",
+      "isNew": true,
+      "text": "Half circles turning in four bright colours."
+    },
+    {
+      "key": "fern",
+      "title": "Fern Unfurling",
+      "category": "botanical",
+      "price": 38,
+      "size": "30 × 40 cm",
+      "image": "fern-unfurling",
+      "isNew": false,
+      "text": "Fern fronds from tight curl to open leaf."
+    },
+    {
+      "key": "seed-heads",
+      "title": "Seed Heads",
+      "category": "botanical",
+      "price": 42,
+      "size": "40 × 40 cm",
+      "image": "seed-heads",
+      "isNew": true,
+      "text": "Dried seed heads drawn life size."
+    },
+    {
+      "key": "blue-jug",
+      "title": "Blue Jug with Lemons",
+      "category": "stilllife",
+      "price": 50,
+      "size": "30 × 40 cm",
+      "image": "blue-jug-with-lemons",
+      "isNew": false,
+      "text": "A blue jug and three lemons on a white cloth."
+    }
+  ],
+  "faqs": [
+    {
+      "q": "How are the prints made?",
+      "a": "Each print is made on archival paper in an edition of 50 and signed on the back."
+    },
+    {
+      "q": "How long does delivery take?",
+      "a": "Prints ship rolled in a tube within three working days."
+    },
+    {
+      "q": "Can I return a print?",
+      "a": "Yes, within 30 days, in its original tube."
+    }
+  ]
+}

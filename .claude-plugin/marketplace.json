@@ -1,0 +1,15 @@
+{
+  "name": "skynet-agent",
+  "description": "SkyNet Agent: build SkyNet Framework (ASP.NET Core) websites with Claude Code, review-first and verified.",
+  "owner": {
+    "name": "HC Kim",
+    "url": "https://www.theskylite.com"
+  },
+  "plugins": [
+    {
+      "name": "skynet",
+      "source": "./plugins/skynet",
+      "description": "Agent, skills and commands to plan, build and verify SkyNet websites and database pages."
+    }
+  ]
+}

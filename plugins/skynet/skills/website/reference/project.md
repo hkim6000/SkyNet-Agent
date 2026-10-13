@@ -1,0 +1,127 @@
+# SkyNet project files
+
+## Folder layout
+
+```
+MySite/
+├── appConfig/application.cfg      settings (startup page, folders, placeholder secrets)
+├── codes/                         page classes (C#); subfolders allowed
+│   └── Models/MySiteModel.cs      DTOs shared by pages
+├── htmls/                         page markup
+├── scripts/                       page JavaScript
+├── styles/                        page CSS
+├── data/site.json                 content for sites without a database
+├── images/                        WebP images, logo.svg
+├── logs/  temp/  bin/             empty folders used at run time
+├── Properties/launchSettings.json
+├── Program.cs
+└── MySite.csproj
+```
+
+The [starter](../starter/) folder contains all of these, ready to copy.
+
+## MySite.csproj
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>MySite</RootNamespace>
+    <SatelliteResourceLanguages>es</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TheSkyLite.SkyNet" Version="1.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appConfig\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
+    <Content Include="htmls\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
+    <Content Include="images\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
+    <Content Include="logs\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
+    <Content Include="scripts\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
+    <Content Include="styles\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
+    <Content Include="temp\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
+    <Content Include="data\**" Exclude="data\**\*.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
+    <Content Update="data\**\*.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
+  </ItemGroup>
+
+</Project>
+```
+
+Use the latest `TheSkyLite.SkyNet` version from NuGet (`dotnet add package TheSkyLite.SkyNet` updates it). The `data` rule is split on purpose: the Web SDK already includes `*.json` as content, and including it twice fails with NETSDK1022.
+
+## Program.cs
+
+```csharp
+using SkyNet;
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddHttpContextAccessor();
+
+var app = builder.Build();
+app.UseMiddleware<IHandler>();
+
+app.UseStaticHttpCurrent();
+
+app.Run();
+```
+
+## appConfig/application.cfg
+
+```
+app.app.name | MySite
+app.app.version | 1.0
+app.app.releasedate | 1/1/2026
+app.app.runmode | 0
+app.app.startup | Home
+app.Settings.encryptkey | your-encrypt-key
+app.folders.code | codes
+app.folders.html | htmls
+app.folders.script | scripts
+app.folders.style | styles
+app.folders.image | images
+app.folders.temp | temp
+app.folders.data | data
+app.folders.log | logs
+app.folders.bin | bin
+app.sqldb.source | (local)
+app.sqldb.catalog | MySite
+app.sqldb.id | sa
+app.sqldb.password | your-password
+```
+
+The full file in the starter has every key SkyNet reads. `app.app.startup` is the page that opens at `/`. Secrets stay as placeholders in anything you publish.
+
+## Properties/launchSettings.json
+
+Give each project its own ports and turn hot reload off:
+
+```json
+{
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5180",
+      "environmentVariables": { "ASPNETCORE_ENVIRONMENT": "Development" },
+      "hotReloadEnabled": false
+    }
+  }
+}
+```
+
+## data/site.json pattern (sites without a database)
+
+- One JSON file holds all content: brand facts, lists of items, people, FAQs, plans.
+- One model file (`codes/Models/MySiteModel.cs`) mirrors it with plain classes; property names match the JSON keys (case-insensitive deserialization).
+- Every page has its own `LoadSite()` that reads and deserializes the file.
+- Things that should always look current (dates, "new" badges, schedules) are stored as day offsets and computed from `DateTime.Today`.
+- Demo actions (sign-in, cart, booking, publishing) are validated on the server and confirmed, but nothing is stored server-side. Keep a display name in a cookie and per-visitor data (cart, favourites, bookings) in `localStorage`.
+
+## When the site needs a database
+
+Use the `sql` skill: `codes/Helper.cs` (generic Get and Put), parameterized SQL only, and the `app.sqldb.*` keys above.

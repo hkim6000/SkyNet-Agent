@@ -1,0 +1,40 @@
+<div class="it-site">
+<main class="it-main">
+    <section class="it-wrap">
+        <div class="it-head">
+            <div>
+                <h1>Items</h1>
+                <p class="it-count" id="it-count">{plhd_count}</p>
+            </div>
+            <div class="it-tools">
+                <input type="search" id="it-find" class="it-find" placeholder="Filter by name or category" oninput="ItemJs.find(this.value)" aria-label="Filter items">
+                <button type="button" class="it-btn" onclick="ItemJs.openNew()">Add item</button>
+            </div>
+        </div>
+        <div class="it-tablewrap">
+            <table class="it-table">
+                <thead><tr><th>Name</th><th>Category</th><th class="it-num">Price</th><th class="it-num">Stock</th><th>Status</th></tr></thead>
+                <tbody id="it-rows">{plhd_rows}</tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<div class="it-panel" id="it-panel" role="dialog" aria-modal="true" aria-labelledby="it-ptitle">
+    <form class="it-form" onsubmit="return ItemJs.save()" novalidate>
+        <div class="it-form-h"><h2 id="it-ptitle">Add item</h2><button type="button" class="it-x" onclick="ItemJs.close()" aria-label="Close">&times;</button></div>
+        <input type="hidden" id="it-id" value="">
+        <label class="it-field" for="it-name"><span>Name</span><input type="text" id="it-name" maxlength="100"><em class="it-err" id="it-e-name"></em></label>
+        <label class="it-field" for="it-category"><span>Category</span><input type="text" id="it-category" maxlength="50"><em class="it-err" id="it-e-category"></em></label>
+        <div class="it-row2">
+            <label class="it-field" for="it-price"><span>Price</span><input type="number" id="it-price" min="0" step="0.01" value="0"><em class="it-err" id="it-e-price"></em></label>
+            <label class="it-field" for="it-stock"><span>Stock</span><input type="number" id="it-stock" min="0" step="1" value="0"><em class="it-err" id="it-e-stock"></em></label>
+        </div>
+        <label class="it-check"><input type="checkbox" id="it-active" checked><span>Active</span></label>
+        <div class="it-actions">
+            <button type="button" class="it-btn it-btn-del" id="it-del" onclick="ItemJs.remove()">Delete</button>
+            <button type="button" class="it-btn it-btn-o" onclick="ItemJs.close()">Cancel</button>
+            <button type="submit" class="it-btn">Save</button>
+        </div>
+    </form>
+</div>
+</div>

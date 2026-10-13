@@ -1,0 +1,14 @@
+{
+  "name": "skynet",
+  "displayName": "SkyNet Agent",
+  "version": "1.0.0",
+  "description": "Plan, build and verify SkyNet Framework (ASP.NET Core .NET 10) websites: page model, generic SQL data layer, art painted in code, compile and browser checks.",
+  "author": {
+    "name": "HC Kim",
+    "url": "https://www.theskylite.com"
+  },
+  "homepage": "https://www.theskylite.com",
+  "repository": "https://github.com/hkim6000/SkyNet-Agent",
+  "license": "MIT",
+  "keywords": ["skynet", "aspnetcore", "dotnet", "csharp", "website", "template", "server-driven-ui"]
+}
