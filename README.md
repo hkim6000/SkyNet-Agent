@@ -8,97 +8,120 @@ This guide is for Windows. You need **Visual Studio** and a paid **Claude plan (
 
 ---
 
-## Part 1 - Prerequisites (one time only)
+## Part 1 - Prerequisites for using Claude Code (one time only)
 
 Open **PowerShell** (Start menu, type `PowerShell`). Run only the lines for the tools you don't have yet.
 
 ### 1. Install the tools
 
+- .NET 10 SDK - builds and runs the websites
+
 ```powershell
 winget install Microsoft.DotNet.SDK.10
 ```
-.NET 10 SDK - builds and runs the websites.
+
+- Git - Claude Code uses it to run commands
 
 ```powershell
 winget install Git.Git
 ```
-Git - Claude Code uses it to run commands.
+
+- Python - the agent paints the website images with it
 
 ```powershell
 winget install Python.Python.3.12
 ```
-Python - the agent paints the website images with it.
+
+- Node.js - the agent uses it to screenshot and test your pages
 
 ```powershell
 winget install OpenJS.NodeJS.LTS
 ```
-Node.js - the agent uses it to screenshot and test your pages.
+
+- Claude Code - the AI that runs the agent
 
 ```powershell
 irm https://claude.ai/install.ps1 | iex
 ```
-Claude Code - the AI that runs the agent.
 
 **Now close PowerShell and open a new one**, so it can find the new tools.
+
+- Image libraries for Python
 
 ```powershell
 py -m pip install pillow numpy scipy
 ```
-Image libraries for Python.
 
 ### 2. Create a folder for your website projects
+
+- Creates the folder
 
 ```powershell
 mkdir C:\WebSites
 ```
-Creates the folder.
+
+- Moves into it
 
 ```powershell
 cd C:\WebSites
 ```
-Moves into it.
+
+- Installs the page-testing tool into this folder
 
 ```powershell
 npm i playwright
 ```
-Installs the page-testing tool into this folder.
+
+- Downloads the hidden browser the tests use (about 150 MB)
 
 ```powershell
 npx playwright install chromium
 ```
-Downloads the hidden browser the tests use (about 150 MB).
 
 ### 3. Sign in to Claude Code
+
+- Starts Claude Code
 
 ```powershell
 claude
 ```
-Starts Claude Code.
+
+- Signs in: choose **Claude account with subscription** and sign in in the browser
 
 ```
 /login
 ```
-Choose **Claude account with subscription** and sign in in the browser. Then type `/exit` to return to PowerShell.
+
+- Returns to PowerShell
+
+```
+/exit
+```
 
 ### 4. Install the SkyNet Agent
+
+- Adds this repository as a source of plugins
 
 ```powershell
 claude plugin marketplace add hkim6000/SkyNet-Agent
 ```
-Adds this repository as a source of plugins.
 
 > Downloaded the ZIP instead? Unzip it to `C:\SkyNet-Agent` and run `claude plugin marketplace add C:\SkyNet-Agent`. Use the folder that contains `.claude-plugin` and `plugins`.
+
+- Installs the agent
 
 ```powershell
 claude plugin install skynet@skynet-agent
 ```
-Installs the agent.
 
 ### 5. Checkpoint
+
+- Checks the agent is installed
 
 ```powershell
 claude plugin list
 ```
+
 You should see:
 
 ```
@@ -131,17 +154,21 @@ Prerequisites are done. You never need to repeat Part 1.
 
 ### 3. Start Claude Code in the project folder
 
+- Moves into your project
+
 ```powershell
 cd C:\WebSites\Bakery
 ```
-Moves into your project.
+
+- Starts Claude Code
 
 ```powershell
 claude
 ```
-Starts Claude Code.
 
 ### 4. Describe your website
+
+- Tells the agent what to build
 
 ```
 /skynet:site a bakery website with online orders. Build it in this existing project in the current folder; do not create a new folder.
@@ -151,7 +178,9 @@ Tip: type `/skynet` and pick **skynet:site** from the list that pops up, then ty
 
 ### 5. Review the plan and say go
 
-The agent replies with a plan: brand name, colours, pages, features and images. Ask for changes in plain words ("add a catering page", "use dark green"), then type:
+The agent replies with a plan: brand name, colours, pages, features and images. Ask for changes in plain words ("add a catering page", "use dark green"), then:
+
+- Starts the build
 
 ```
 go
