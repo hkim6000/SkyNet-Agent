@@ -1,214 +1,214 @@
 # SkyNet Agent
 
-A Claude Code plugin that builds websites on the **SkyNet Framework** (ASP.NET Core, .NET 10). Describe a site in one sentence; the agent plans it, waits for your "go", then writes the pages, paints original images, compiles, screenshots every page at three widths, tests every server method and hands you a project that runs with `dotnet run`.
+Build complete websites on the **SkyNet Framework** (ASP.NET Core, .NET 10) by describing them in one sentence. The agent plans the site, waits for your "go", then writes every page, paints original images, checks the layout on desktop, tablet and phone, and hands you a project that runs in Visual Studio.
 
-It knows everything the SkyNet website templates were built with: the four-file page model, server-driven updates through `ApiResponse`, responsive layouts, original art in code, generic SQL Server pages and a full verification routine.
+![A site built by the agent](docs/screenshot-starter.png)
 
-![Starter site built by the agent](docs/screenshot-starter.png)
+This guide is for Windows. You need **Visual Studio** and a paid **Claude plan (Pro or Max)**; the free plan does not include Claude Code.
 
-## Contents
+---
 
-1. [What you get](#what-you-get)
-2. [Prerequisites](#prerequisites)
-3. [Install SkyNet](#install-skynet)
-4. [Install the agent](#install-the-agent)
-5. [Quick start](#quick-start)
-6. [Commands and skills](#commands-and-skills)
-7. [Database pages](#database-pages)
-8. [Troubleshooting](#troubleshooting)
-9. [Links](#links)
-10. [License](#license)
+## Part 1 - Prerequisites (one time only)
 
-## What you get
+Open **PowerShell** (Start menu, type `PowerShell`). Run only the lines for the tools you don't have yet.
 
-| Part | What it does |
-|---|---|
-| `skynet:builder` agent | Plans, waits for "go", builds, verifies, reports |
-| `/skynet:site` | A new website from a short brief |
-| `/skynet:page` | A new page in an existing SkyNet project |
-| `/skynet:sql-page` | A list / add / edit / delete page over a SQL Server table |
-| `/skynet:verify` | Source checks, compile, screenshots and interaction tests |
-| Starter project | Three working pages (Home, Shop, Contact) with search, filters and a validated form |
-| SQL helper | `Helper.cs` with `PutData`, `GetDataTable`, `GetListT<T>`, `GetOneT<T>` and a complete sample page |
-| Art scripts | Python painters for ten styles, gallery banners and portraits, so every image is original |
+### 1. Install the tools
 
-## Prerequisites
-
-| Tool | Needed for | Check |
-|---|---|---|
-| [.NET 10 SDK](https://dotnet.microsoft.com/download) | Building and running sites | `dotnet --version` (10.x) |
-| [Claude Code](https://code.claude.com/docs) | Running the agent | `claude --version` |
-| [Python 3.10+](https://www.python.org/downloads/) with Pillow, NumPy, SciPy | Painting images | `python3 --version` then `pip install pillow numpy scipy` |
-| [Node.js 18+](https://nodejs.org/) with Playwright | Screenshots and interaction tests | `node --version` then `npm i playwright` and `npx playwright install chromium` |
-| SQL Server or SQL Server Express | Database pages only | `sqlcmd -?` |
-| Visual Studio or VS Code | Optional, for editing and debugging | |
-
-On Windows use `py` instead of `python3` if that is how Python is installed.
-
-## Install SkyNet
-
-SkyNet is a NuGet package: [TheSkyLite.SkyNet](https://www.nuget.org/packages/TheSkyLite.SkyNet). The agent's starter project already references it, so `/skynet:site` needs nothing more. To add SkyNet to a project yourself, pick one of these.
-
-**A. Start from the empty template**
-
-```bash
-git clone https://github.com/hkim6000/ASPNETCoreEmpty.SkyNet MySite
-cd MySite
-dotnet run
+```powershell
+winget install Microsoft.DotNet.SDK.10
 ```
+.NET 10 SDK - builds and runs the websites.
 
-**B. Add it to a new ASP.NET Core project**
-
-```bash
-dotnet new web -n MySite
-cd MySite
-dotnet add package TheSkyLite.SkyNet
+```powershell
+winget install Git.Git
 ```
+Git - Claude Code uses it to run commands.
 
-Replace `Program.cs`:
-
-```csharp
-using SkyNet;
-
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddHttpContextAccessor();
-
-var app = builder.Build();
-app.UseMiddleware<IHandler>();
-
-app.UseStaticHttpCurrent();
-
-app.Run();
+```powershell
+winget install Python.Python.3.12
 ```
+Python - the agent paints the website images with it.
 
-Add the content folders to `MySite.csproj` so they are copied to the output:
-
-```xml
-<ItemGroup>
-  <Content Include="appConfig\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
-  <Content Include="htmls\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
-  <Content Include="images\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
-  <Content Include="logs\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
-  <Content Include="scripts\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
-  <Content Include="styles\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
-  <Content Include="temp\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
-  <Content Include="data\**" Exclude="data\**\*.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
-  <Content Update="data\**\*.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
-</ItemGroup>
+```powershell
+winget install OpenJS.NodeJS.LTS
 ```
+Node.js - the agent uses it to screenshot and test your pages.
 
-Then create `appConfig/application.cfg` and the folders `codes`, `htmls`, `scripts`, `styles`, `images`, `data`, `logs`, `temp`. The simplest way is to copy them from [the starter](plugins/skynet/skills/website/starter/). The [SkyNet Developer Guide](https://www.theskylite.com/documents/SkyNet_Developer_Guide.html) explains every setting.
-
-## Install the agent
-
-Inside Claude Code:
-
+```powershell
+irm https://claude.ai/install.ps1 | iex
 ```
-/plugin marketplace add hkim6000/SkyNet-Agent
-/plugin install skynet@skynet-agent
+Claude Code - the AI that runs the agent.
+
+**Now close PowerShell and open a new one**, so it can find the new tools.
+
+```powershell
+py -m pip install pillow numpy scipy
 ```
+Image libraries for Python.
 
-Or from a terminal:
+### 2. Create a folder for your website projects
 
-```bash
-claude plugin marketplace add hkim6000/SkyNet-Agent
-claude plugin install skynet@skynet-agent
+```powershell
+mkdir C:\WebSites
 ```
+Creates the folder.
 
-Restart Claude Code, then type `/skynet:` to see the commands.
+```powershell
+cd C:\WebSites
+```
+Moves into it.
 
-**Update:** `claude plugin marketplace update skynet-agent` then `claude plugin update skynet@skynet-agent`, and restart Claude Code.
-**Remove:** `claude plugin uninstall skynet@skynet-agent`.
+```powershell
+npm i playwright
+```
+Installs the page-testing tool into this folder.
 
-## Quick start
+```powershell
+npx playwright install chromium
+```
+Downloads the hidden browser the tests use (about 150 MB).
 
-```bash
-mkdir sites && cd sites
+### 3. Sign in to Claude Code
+
+```powershell
 claude
 ```
+Starts Claude Code.
 
 ```
-/skynet:site a neighbourhood bakery with a menu, online pre-orders and a contact form
+/login
+```
+Choose **Claude account with subscription** and sign in in the browser. Then type `/exit` to return to PowerShell.
+
+### 4. Install the SkyNet Agent
+
+```powershell
+claude plugin marketplace add hkim6000/SkyNet-Agent
+```
+Adds this repository as a source of plugins.
+
+> Downloaded the ZIP instead? Unzip it to `C:\SkyNet-Agent` and run `claude plugin marketplace add C:\SkyNet-Agent`. Use the folder that contains `.claude-plugin` and `plugins`.
+
+```powershell
+claude plugin install skynet@skynet-agent
+```
+Installs the agent.
+
+### 5. Checkpoint
+
+```powershell
+claude plugin list
+```
+You should see:
+
+```
+Installed plugins:
+
+  > skynet@skynet-agent
+    Version: 1.0.0
+    Scope: user
+    Status: √ enabled
 ```
 
-1. The agent replies with a plan: brand, pages with prefixes, features, data, images and up to three questions.
-2. Answer or change anything, then type **go**.
-3. It builds the project, paints the images and runs the checks until they pass.
-4. Run it:
+Prerequisites are done. You never need to repeat Part 1.
 
-```bash
-cd Bakery
-dotnet run
+---
+
+## Part 2 - Building a website
+
+### 1. Create an empty project in Visual Studio
+
+**File → New → Project → ASP.NET Core Empty**
+
+- Project name: `Bakery`
+- Location: `C:\WebSites`
+- Tick **Place solution and project in the same directory**
+- Framework: **.NET 10**
+
+### 2. Open a terminal inside Visual Studio
+
+**Tools → Command Line → Developer PowerShell**
+
+### 3. Start Claude Code in the project folder
+
+```powershell
+cd C:\WebSites\Bakery
+```
+Moves into your project.
+
+```powershell
+claude
+```
+Starts Claude Code.
+
+### 4. Describe your website
+
+```
+/skynet:site a bakery website with online orders. Build it in this existing project in the current folder; do not create a new folder.
 ```
 
-Open the address printed in the terminal. Ask for changes in plain words ("make the header darker", "add a gift card page"); the agent changes only what you ask.
+Tip: type `/skynet` and pick **skynet:site** from the list that pops up, then type your description. Describe anything: a yoga studio, a dentist, a car wash, a photo portfolio.
 
-A full walk-through from a fresh machine is in [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md).
+### 5. Review the plan and say go
 
-## Commands and skills
+The agent replies with a plan: brand name, colours, pages, features and images. Ask for changes in plain words ("add a catering page", "use dark green"), then type:
 
-| Command | Example |
+```
+go
+```
+
+When it asks permission to run commands or write files, choose **Yes**. Building takes about 10-20 minutes.
+
+### 6. Run it
+
+When the agent says it is done, go back to Visual Studio. If it asks to reload the project, choose **Reload All**. Press **F5**.
+
+Your website opens in the browser.
+
+---
+
+## Changing your website
+
+Stay in Claude Code and ask in plain words:
+
+```
+make the header darker
+add an FAQ page linked from the footer
+the order total should include a 5% service charge
+```
+
+The agent changes only what you ask, checks it again, and tells you when to press F5.
+
+## Commands
+
+| Command | What it does |
 |---|---|
-| `/skynet:site <brief>` | `/skynet:site a yoga studio with a class timetable and bookings` |
-| `/skynet:page <page>` | `/skynet:page FAQ page with search and categories` |
-| `/skynet:sql-page <table>` | `/skynet:sql-page CUSTOMER with name, email, phone, city` |
-| `/skynet:verify [folder]` | `/skynet:verify Bakery` |
+| `/skynet:site <description>` | Build a new website |
+| `/skynet:page <description>` | Add one page to your website |
+| `/skynet:sql-page <table and columns>` | Add a page that lists, adds, edits and deletes rows in a SQL Server table |
+| `/skynet:verify` | Check the whole site again (build, layout, buttons and forms) |
 
-Commands always plan first and wait for "go".
+Every command shows a plan first and waits for **go**.
 
-Skills load automatically when Claude works on SkyNet code, and the `skynet:builder` agent preloads all of them:
-
-| Skill | Knows |
-|---|---|
-| `website` | Page model, project files, design rules, known pitfalls, README template, starter project |
-| `sql` | `Helper.cs`, parameterized queries, the list / edit / save / delete pattern |
-| `art` | Painting original artwork in Python, saved as WebP |
-| `verify` | Source checks, compile, screenshots, interaction tests, offline stub |
-
-Ask for the agent directly with "use the skynet builder agent to ...".
-
-## Database pages
-
-1. Set the connection in `appConfig/application.cfg` (keep placeholders in anything you publish):
-
-```
-app.sqldb.source | (local)
-app.sqldb.catalog | MySite
-app.sqldb.id | sa
-app.sqldb.password | your-password
-```
-
-2. Run `/skynet:sql-page <TABLE and columns>`. The agent adds `codes/Helper.cs` (once per project), a table script under `database/`, a DTO and the page.
-3. Run the table script in SQL Server Management Studio or `sqlcmd -S . -d MySite -i database/CUSTOMER.sql`.
-
-Every query uses `SqlParameter`; user input is never joined into SQL text. See the [sample page](plugins/skynet/skills/sql/sample/) and [ITEM.sql](plugins/skynet/skills/sql/sample/database/ITEM.sql). If `Microsoft.Data.SqlClient` is not found, run `dotnet add package Microsoft.Data.SqlClient`.
-
-## Troubleshooting
+## Common problems
 
 | Problem | Fix |
 |---|---|
-| `NU1101` / package not found | Check internet access to nuget.org, then `dotnet restore` |
-| `NETSDK1022` duplicate content items | Use the split `data` rule shown above (`Exclude` + `Update` for `*.json`) |
-| Warning CS1998 (async method lacks await) | Expected for page methods without database calls; the verify step allows it |
-| Port already in use | Change `applicationUrl` in `Properties/launchSettings.json` or run `dotnet run --urls http://localhost:5199` |
-| `Executable doesn't exist` from Playwright | `npx playwright install chromium`, or set `CHROMIUM_PATH` to an installed Chromium |
-| `ModuleNotFoundError: PIL` | `pip install pillow numpy scipy` |
-| Page shows `{plhd_...}` text | The page's C# does not replace that placeholder; `/skynet:verify` finds it |
-| Commands missing after install | Restart Claude Code; check `/plugin` shows `skynet` as enabled |
+| `git`, `claude` or `dotnet` "is not recognized" | Close PowerShell (or Visual Studio) and open it again |
+| `running scripts is disabled` when using npm | Run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, then try again |
+| Claude Code says **Not logged in** or **API Usage Billing** | Type `/login` and choose your subscription account |
+| `Unknown command: /skynet:` | There is a space after `skynet:`. Type `/skynet` and pick from the list |
+| `/skynet` shows nothing | Run `claude plugin list` in PowerShell; if `skynet` is missing, repeat Part 1 step 4 |
 
 ## Links
 
 - SkyNet Developer Guide: https://www.theskylite.com/documents/SkyNet_Developer_Guide.html
-- Website templates (full source, free): https://www.theskylite.com/SkyNetTemp
-- Example built the same way: [Aldermoor Gallery](https://github.com/hkim6000/SkyNet-ArtGalleryWebsite-Asp.net.Core-Full-Source) ([live](https://www.theskylite.com/ArtGallery))
-- NuGet: https://www.nuget.org/packages/TheSkyLite.SkyNet
-- The SkyLite: https://www.theskylite.com
+- Website templates (free, full source): https://www.theskylite.com/SkyNetTemp
+- SkyNet on NuGet: https://www.nuget.org/packages/TheSkyLite.SkyNet
 - YouTube: https://www.youtube.com/@hckim3948
 
 ![Aldermoor Gallery, one of the SkyNet templates](docs/showcase-artgallery.png)
 
 ## License
 
-The files in this repository (agent, skills, starter, samples and scripts) are under **Part A (MIT)** of the [SkyLite & SkyNet Framework License](LICENSE). The SkyNet Framework itself (`SkyNet.dll` from the TheSkyLite.SkyNet package) is covered by **Part B**: proprietary, free to use, not open source.
-
-Code the agent writes for your website is yours; the site still runs on `SkyNet.dll` under Part B.
+The files in this repository are under **Part A (MIT)** of the [SkyLite & SkyNet Framework License](LICENSE). The SkyNet Framework itself (`SkyNet.dll` in the TheSkyLite.SkyNet package) is covered by **Part B**: proprietary, free to use, not open source.
