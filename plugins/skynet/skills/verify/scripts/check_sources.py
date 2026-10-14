@@ -60,6 +60,8 @@ for path in files("codes", ".cs"):
         site = re.search(r'class="([a-z0-9]+)-site', html)
         if site:
             prefix = site.group(1) + "-"
+            if site.group(1) in ("ad", "ads"):
+                problems.append(f"htmls/{cls}.html prefix '{prefix}' looks like an advert; ad blockers hide it. Use another prefix")
             for cl in re.findall(r'class="([^"{]+)"', html):
                 for c in cl.split():
                     if not c.startswith(prefix):

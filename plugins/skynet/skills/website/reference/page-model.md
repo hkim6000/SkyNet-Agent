@@ -59,7 +59,7 @@ namespace MySite.codes
 - `QueryValue("k")` reads the URL query string on page load. `GetDataValue("k")` reads a value sent by `$ApiRequest`.
 - Every value read from the user is untrusted: trim it, check it against an allowed list (`Pick`) or a range (`Bound`), and `HtmlEncode` it before it goes into HTML.
 - A server method is `public async Task<ApiResponse> Name()` with no parameters. Private helpers are `private static`.
-- `LoadSite()` reads `data/site.json` (`DataPath` points at the `data` folder; fall back to `Directory.GetCurrentDirectory()/data`).
+- `LoadSite()` reads `data/site.json` from `Path.Combine(Directory.GetCurrentDirectory(), "data")`. `DataPath` is a folder only while the page loads; during API requests it is a web address, so never read or write files through it.
 
 ## ApiResponse instructions
 

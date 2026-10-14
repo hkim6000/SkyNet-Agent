@@ -1,7 +1,7 @@
 {
   "name": "skynet",
   "displayName": "SkyNet Agent",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Plan, build and verify SkyNet Framework (ASP.NET Core .NET 10) websites: page model, generic SQL data layer, art painted in code, compile and browser checks.",
   "author": {
     "name": "HC Kim",

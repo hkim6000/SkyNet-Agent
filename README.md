@@ -128,7 +128,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.0
+    Version: 1.0.1
     Scope: user
     Status: √ enabled
 ```
@@ -207,6 +207,18 @@ the order total should include a 5% service charge
 ```
 
 The agent changes only what you ask, checks it again, and tells you when to press F5.
+
+## Updating the SkyNet Agent
+
+- Downloads the newest version of the agent
+
+```powershell
+claude plugin update skynet@skynet-agent
+```
+
+- Or, inside Claude Code: type `/plugin`, open **Marketplaces**, choose **skynet-agent**, then **Update marketplace**. Choose **Enable auto-update** there to get new versions automatically.
+
+Then start a new Claude Code session (or type `/reload-plugins`). Installed from the ZIP? Download and unzip the new ZIP over `C:\SkyNet-Agent` first.
 
 ## Commands
 

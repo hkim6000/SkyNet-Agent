@@ -14,6 +14,7 @@ Each of these broke a real build or a real page. Check the list before writing c
 | Unused private fields | They raise warnings; with warnings as errors the check fails. Delete them |
 | `GetDataValue` / `QueryValue` may return null or "" for a missing key | Always `(GetDataValue("k") ?? string.Empty).Trim()`; use explicit flags (`only=1`) instead of "key present" |
 | A text value written into `ExecuteScript("X.f('" + v + "')")` | Escape it: backslash, quote, `<`, line breaks (`JsText`), or use `JsonSerializer.Serialize` |
+| `DataPath` used as a folder in a server method | During a button click (an API request) `DataPath` is a web address (`https://host/app/data`), not a folder, so `File.*` on it throws. Build file paths from the app folder: `Path.Combine(Directory.GetCurrentDirectory(), "data")` |
 | Dates that look current forever | Store offsets in days (`"start": -20`) and compute `DateTime.Today.AddDays(x)`; skip closed days in code |
 
 ## JavaScript and core.js
@@ -37,6 +38,7 @@ Each of these broke a real build or a real page. Check the list before writing c
 | Visually hidden radio inputs (`position: absolute`) with no positioned parent | They can stretch the page sideways; give the label `position: relative` and the input `left: 0; top: 0; width: 1px; height: 1px` |
 | A grid with `align-items: start` that becomes a flex column on phones | Reset to `align-items: stretch` in the media query |
 | Horizontal overflow on phones | Long words, wide tables and chip rows: use `minmax(0, 1fr)`, `overflow-x: auto` on wrappers and `flex-wrap` |
+| A page prefix or id that looks like an advert (`ad-`, `ads-`, `ad-main`, `banner-ad`, `sponsor`) | Ad blockers hide it (`display: none`): the page is blank for visitors with an ad blocker, while localhost and other browsers look fine. Never use `ad` as a prefix; an Admin page uses `db-` or `adm-` |
 | Making text smaller to fit | Reduce padding and margins instead; keep readable font sizes |
 
 ## Hosting
