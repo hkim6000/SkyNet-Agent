@@ -11,6 +11,9 @@
     <SiteRoot Condition="'$(SiteRoot)' == ''">..</SiteRoot>
   </PropertyGroup>
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Stub.cs" />
     <Compile Include="SqlStub.cs" />
     <Compile Include="Runner.cs" />

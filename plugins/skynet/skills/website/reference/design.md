@@ -7,8 +7,9 @@ Agree on these before writing code:
 - **Brand:** an invented name, a one-line idea, a palette (ink, background, paper, line, accent, one or two supporting colors) and two fonts (display + text) with solid fallbacks.
 - **Pages:** name, two-letter prefix, purpose, server methods.
 - **Data:** what goes into `data/site.json` (or which SQL tables).
-- **Demo behaviour:** what is real (validation, prices, filtering) and what is simulated (accounts, payments, uploads).
+- **What is stored:** every form and action saves for real (messages, sign-ups, orders, bookings) in `data/*.json` or SQL; say where each one goes.
 - **Images:** how many and in what style (the `art` skill).
+- **Admin (if any):** staff roles and the areas each one manages. Read [admin.md](admin.md).
 
 ## Layout
 
@@ -16,7 +17,7 @@ Agree on these before writing code:
 - Sticky header: logo, menu, search, account; on tablets and phones a burger opens a slide-in menu with a scrim.
 - Sections spaced 44 to 56px apart; one clear heading per section with a "See all" link where it helps.
 - Cards: image, small eyebrow label, title, one or two lines of detail, actions.
-- Footer: brand line, newsletter field, three link columns, a line stating the brand and data are fictional.
+- Footer: brand line, newsletter field, three link columns, a copyright line.
 - A toast element for short confirmations.
 
 ## Responsive breakpoints
@@ -35,9 +36,11 @@ On phones, put the most important action near the top (for example the booking b
 
 - **Filters and tabs:** the server returns the new list; JS updates the URL with `history.replaceState` so the view can be shared.
 - **Search suggestions:** debounce 250ms, minimum 2 characters, server returns up to 6-8 results and a "see all" link.
-- **Forms:** one error element per field, filled by the server; a confirmation box after success; a clear "Demo" note when nothing is stored.
+- **Forms:** one error element per field, filled by the server; the server saves the entry, then shows a confirmation box that says what happens next (*We will reply by email*).
 - **Viewer or modal:** open by id (`?w=key` deep link), Esc closes, arrow keys step, swipe on touch.
 - **Carts and bookings:** the browser keeps the list; the server recalculates every price and checks every rule each time.
+- **Confirm before changing data:** an in-page dialog, never `window.confirm` (browsers can suppress it and it looks foreign). The title is the question (*Cancel this appointment?*), one line says what happens, the buttons are verbs (*Keep it* / *Cancel appointment*) with the risky one in red. Enter confirms; Esc, the backdrop and the left button step back; focus stays in the dialog and returns afterwards. An optional text field takes a reason, checked before closing. Ask for every action that changes data from a list, card or detail window (check in, move, cancel, delete, publish). A form with a Save button needs no extra question, but closing it or leaving the page with unsaved changes asks *Leave without saving?*. Code: [admin.md](admin.md#confirm-dialog).
+- **Admin lists:** the server searches, filters and pages (`const int Size = 10` to `25`) and returns the rows plus a pager (*Page 1 of 11 · 273 appointments*). Search waits 250ms after typing; changing a filter goes back to page 1; saving an edit reloads the current page, not page 1; an empty result says *No services match.* Request keys must not equal query-string names (`term`, not `q`).
 
 ## Accessibility
 
@@ -49,10 +52,10 @@ On phones, put the most important action near the top (for example the booking b
 
 ## Content rules
 
-- Invent every brand, person, product, address and number. Use `.example` email domains and 555 phone numbers.
+- Sample content (brand, products, services, team, address) is invented for the owner to replace. Use `.example` email domains and 555 phone numbers.
 - No real trademarks, logos, famous artworks or characters.
-- Reviews or testimonials only when clearly labelled as fictional demo content.
-- No payment-card fields in demos; say "Demo: no payment taken".
+- No invented reviews or testimonials; leave room for the owner's real ones.
+- No payment-card fields. Orders and bookings are saved as unpaid (pay on pickup, on arrival or by invoice) until the owner adds a payment provider.
 - Write in plain, short sentences.
 
 ## Images

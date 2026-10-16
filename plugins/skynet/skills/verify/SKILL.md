@@ -47,6 +47,8 @@ Offline case: serve the pages through the stub runner. The preview server render
 python3 ${CLAUDE_SKILL_DIR}/scripts/preview_server.py <site> <runner-path-printed-by-stub_check> 8190 <RootNamespace> &
 ```
 
+The app and the preview server read the page list and the compiled C# when they start. After adding a page or changing C#, rebuild and restart them, or the new page answers 404 and old code keeps running. Stop them by process id (`kill <pid>`), never with `pkill -f <pattern>`: the pattern also matches the shell running the command and kills it.
+
 ## 4. Screenshots and layout
 
 Install once, in the folder you run the scripts from (the sites folder) or globally: `npm i playwright` and `npx playwright install chromium` (or set `CHROMIUM_PATH` to an existing Chromium). The scripts look for Playwright in the current folder, then `NODE_PATH`.
@@ -55,7 +57,7 @@ Install once, in the folder you run the scripts from (the sites folder) or globa
 node ${CLAUDE_SKILL_DIR}/scripts/shots.js http://localhost:5180 Home,Shop,Contact 1440,820,390 shots
 ```
 
-Every page at every width must report `ok`: no broken images, no horizontal overflow, no leftover `{plhd_*}`, no JavaScript errors and no failed requests. Then **look at the screenshots** (open the PNG files): check alignment, spacing, contrast, text wrapping, empty areas and overlaps. Automated checks do not see ugly layouts.
+Every page at every width must report `ok`: no broken images, no horizontal overflow, no clipped text, no leftover `{plhd_*}`, no JavaScript errors and no failed requests. **Clipped text** is text that runs out of its own box or card (for example a `nowrap` email address in a narrow column) or is cut off by an `overflow: hidden` parent; the page itself may not scroll sideways, so check the widths where columns are narrowest, often 1440 and 820, not only 390. Then **look at the screenshots** (open the PNG files): check alignment, spacing, contrast, text wrapping, empty areas and overlaps. Automated checks do not see ugly layouts.
 
 Also open pages with typical query strings (`Shop?c=botanical`, `Item?id=...`) and with a wrong one (`Item?id=zzz`): a missing record must show a friendly not-found section, never an exception.
 
@@ -68,6 +70,8 @@ node interact.js http://localhost:5180
 ```
 
 Cover every server method: filters (result count and URL), search suggestions, every form (empty submit shows server errors, valid submit shows the confirmation), carts and totals, sign-in states, modals and keyboard actions. Wait for the server with `page.waitForLoadState('networkidle')` after each action.
+
+For a site with an admin (see `admin.md` in the `website` skill), also test: the first sign-in box shows on the developer's computer, the first sign-in forces a new password and then the box and `appConfig/initial-admin.txt` are gone; each role signs in and sees only its menu items; a View-only user has no change buttons; a refused request is logged; confirm dialogs (OK goes ahead, Cancel and Esc step back). Afterwards delete `data/staff.json`, `data/activity.json`, `appConfig/initial-admin.txt` and `temp/admin`, so the delivered site makes its own first password.
 
 ## 6. Report
 

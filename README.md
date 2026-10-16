@@ -2,6 +2,8 @@
 
 Build complete websites on the **SkyNet Framework** (ASP.NET Core, .NET 10) by describing them in one sentence. The agent plans the site, waits for your "go", then writes every page, paints original images, checks the layout on desktop, tablet and phone, and hands you a project that runs in Visual Studio.
 
+The website is ready for real use: every form saves (messages, sign-ups, orders, bookings) and there is no demo mode. The sample brand, products and team are placeholders for you to replace.
+
 ![A site built by the agent](docs/screenshot-starter.png)
 
 This guide is for Windows. You need **Visual Studio** and a paid **Claude plan (Pro or Max)**; the free plan does not include Claude Code.
@@ -128,7 +130,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.1
+    Version: 1.0.2
     Scope: user
     Status: √ enabled
 ```
@@ -194,6 +196,23 @@ When the agent says it is done, go back to Visual Studio. If it asks to reload t
 
 Your website opens in the browser.
 
+### 7. Sign in to the admin (sites with a staff area)
+
+- Open the sign-in page: add `/AdminLogin` to the address in the browser, for example `http://localhost:5180/AdminLogin`.
+- The page shows the first user name, `admin`, and a password made just for your site. It is shown only on your computer, and is also saved in `appConfig\initial-admin.txt`.
+- Sign in and choose your own password. The box and the file disappear.
+- Open **Users** and add an account for each person who works on the site.
+
+---
+
+## Before you publish
+
+- Give the website write access to the `data`, `temp` and `appConfig` folders (on IIS: **Modify** for the application pool).
+- Use HTTPS.
+- Nobody has signed in yet? Read the first password from `appConfig\initial-admin.txt` on the server.
+- Open `https://your-site/data/staff.json` and `https://your-site/appConfig/initial-admin.txt` in a browser. Both must show "not found" (404).
+- Publishing again later: download the live `data` folder first, so messages, orders and staff accounts are not overwritten.
+
 ---
 
 ## Changing your website
@@ -228,6 +247,7 @@ Then start a new Claude Code session (or type `/reload-plugins`). Installed from
 | `/skynet:page <description>` | Add one page to your website |
 | `/skynet:sql-page <table and columns>` | Add a page that lists, adds, edits and deletes rows in a SQL Server table |
 | `/skynet:verify` | Check the whole site again (build, layout, buttons and forms) |
+| `/skynet:manual` | Write a user manual for your finished website: one HTML file with screenshots, diagrams and search |
 
 Every command shows a plan first and waits for **go**.
 
@@ -240,6 +260,15 @@ Every command shows a plan first and waits for **go**.
 | Claude Code says **Not logged in** or **API Usage Billing** | Type `/login` and choose your subscription account |
 | `Unknown command: /skynet:` | There is a space after `skynet:`. Type `/skynet` and pick from the list |
 | `/skynet` shows nothing | Run `claude plugin list` in PowerShell; if `skynet` is missing, repeat Part 1 step 4 |
+| Lost the first admin password before using it | Delete `appConfig\initial-admin.txt` and open the sign-in page again; a new one is made |
+| Locked out of every manager account | Remove the managers from `data\staff.json` and open the sign-in page; a new first password is made |
+
+## What's new in 1.0.2
+
+- **First admin sign-in:** the sign-in page shows the first password on your computer; you choose your own at the first sign-in.
+- **No demo mode:** every form saves for real; no demo accounts or demo notes.
+- **`/skynet:manual`:** writes a user manual for your website.
+- **Better checks:** `/skynet:verify` also finds text that runs out of its box.
 
 ## Links
 

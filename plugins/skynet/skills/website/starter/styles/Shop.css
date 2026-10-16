@@ -103,7 +103,6 @@ body { margin: 0; }
 
 .sh-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: start; }
 .sh-lead { font-size: 18px; color: var(--sh-ink2); margin-top: 12px; }
-.sh-demo { font-size: 13px; color: var(--sh-ink2); margin-top: 10px; }
 .sh-form { display: flex; flex-direction: column; gap: 14px; padding: 28px; background: var(--sh-paper); border: 1px solid var(--sh-line); border-radius: 10px; }
 .sh-field { display: flex; flex-direction: column; gap: 6px; }
 .sh-field > span { font-size: 13px; font-weight: 800; color: var(--sh-ink2); }

@@ -27,6 +27,22 @@ namespace Starter.Models
         public string Text { get; set; } = string.Empty;
     }
 
+    public class Subscriber
+    {
+        public string Email { get; set; } = string.Empty;
+        public string From { get; set; } = string.Empty;
+        public DateTime When { get; set; }
+    }
+
+    public class ContactMessage
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Topic { get; set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
+        public DateTime When { get; set; }
+    }
+
     public class Faq
     {
         public string Q { get; set; } = string.Empty;

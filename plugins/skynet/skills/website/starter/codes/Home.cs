@@ -51,7 +51,8 @@ namespace Starter.codes
                 response.SetElementContents("hm-nl-msg", "<span class=\"hm-err\">Please enter a valid email address.</span>");
                 return response;
             }
-            response.SetElementContents("hm-nl-msg", "You&rsquo;re on the list: " + HtmlEncode(email) + ". (Demo: nothing was stored.)");
+            bool added = await AddRecord("subscribers", new Subscriber { Email = email, From = "home", When = DateTime.UtcNow }, x => x.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+            response.SetElementContents("hm-nl-msg", added ? "You&rsquo;re on the list: " + HtmlEncode(email) + "." : HtmlEncode(email) + " is already on the list.");
             response.ExecuteScript("HomeJs.newsletterDone();");
             return response;
         }
@@ -75,6 +76,34 @@ namespace Starter.codes
         private static string Money(decimal v)
         {
             return "$" + v.ToString("#,0.##", CultureInfo.InvariantCulture);
+        }
+
+        private static readonly SemaphoreSlim SaveGate = new SemaphoreSlim(1, 1);
+
+        private static async Task<bool> AddRecord<T>(string name, T entry, Func<T, bool>? duplicate = null)
+        {
+            JsonSerializerOptions opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase, WriteIndented = true };
+            string dir = Path.Combine(Directory.GetCurrentDirectory(), "data");
+            string file = Path.Combine(dir, name + ".json");
+            await SaveGate.WaitAsync();
+            try
+            {
+                Directory.CreateDirectory(dir);
+                List<T> list = File.Exists(file) ? JsonSerializer.Deserialize<List<T>>(await File.ReadAllTextAsync(file), opts) ?? new List<T>() : new List<T>();
+                if (duplicate != null && list.Any(duplicate))
+                {
+                    return false;
+                }
+                list.Add(entry);
+                string tmp = file + "." + Guid.NewGuid().ToString("N") + ".tmp";
+                await File.WriteAllTextAsync(tmp, JsonSerializer.Serialize(list, opts));
+                File.Move(tmp, file, true);
+                return true;
+            }
+            finally
+            {
+                SaveGate.Release();
+            }
         }
 
         private async Task<SiteData> LoadSite()

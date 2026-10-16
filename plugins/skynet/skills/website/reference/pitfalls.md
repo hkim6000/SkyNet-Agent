@@ -16,6 +16,10 @@ Each of these broke a real build or a real page. Check the list before writing c
 | A text value written into `ExecuteScript("X.f('" + v + "')")` | Escape it: backslash, quote, `<`, line breaks (`JsText`), or use `JsonSerializer.Serialize` |
 | `DataPath` used as a folder in a server method | During a button click (an API request) `DataPath` is a web address (`https://host/app/data`), not a folder, so `File.*` on it throws. Build file paths from the app folder: `Path.Combine(Directory.GetCurrentDirectory(), "data")` |
 | Dates that look current forever | Store offsets in days (`"start": -20`) and compute `DateTime.Today.AddDays(x)`; skip closed days in code |
+| A global regex rename (`Service` to `CareService` to avoid a page/model clash) | It also renames properties and strings that merely contain the word. Rename the class declaration and its type uses only, then compile and grep the result |
+| Counts glued to a plural noun (`n + " visits"`) | Shows "1 visits". Choose the word by the number: `n + (n == 1 ? " visit" : " visits")` |
+| A site with editable words (Doctor / Dentist / Vet, Patient / Client) | One hard-coded label slips through (a rights grid, a filter, a heading). Read every label from the settings through one lookup, and grep the default word in `codes/`, `htmls/` and `scripts/` before delivering |
+| A first password or staff file in a folder the web server serves | Anyone can download it. Keep `initial-admin.txt` in `appConfig/`, show it only to local requests (address and host name both local), and check after deploying that `/appConfig/initial-admin.txt` and `/data/staff.json` answer 404 |
 
 ## JavaScript and core.js
 
@@ -40,6 +44,8 @@ Each of these broke a real build or a real page. Check the list before writing c
 | Horizontal overflow on phones | Long words, wide tables and chip rows: use `minmax(0, 1fr)`, `overflow-x: auto` on wrappers and `flex-wrap` |
 | A page prefix or id that looks like an advert (`ad-`, `ads-`, `ad-main`, `banner-ad`, `sponsor`) | Ad blockers hide it (`display: none`): the page is blank for visitors with an ad blocker, while localhost and other browsers look fine. Never use `ad` as a prefix; an Admin page uses `db-` or `adm-` |
 | Making text smaller to fit | Reduce padding and margins instead; keep readable font sizes |
+| A base reset `.xx-site button { font: inherit; }` | Element-plus-class outranks `.xx-btn` and wipes button styles. Wrap base resets in `:where()`: `:where(.xx-site) :where(button, input, select, textarea) { font: inherit; }` |
+| `white-space: nowrap` on a link (email, phone) inside a narrow grid card | It defeats `overflow-wrap: anywhere`; the text runs out of its card at desktop widths while the page itself does not scroll sideways, so page-level checks pass. Let long text wrap, or give the card a full row |
 
 ## Hosting
 

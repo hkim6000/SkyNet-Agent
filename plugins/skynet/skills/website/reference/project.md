@@ -76,7 +76,6 @@ app.Run();
 app.app.name | MySite
 app.app.version | 1.0
 app.app.releasedate | 1/1/2026
-app.app.runmode | 0
 app.app.startup | Home
 app.Settings.encryptkey | your-encrypt-key
 app.folders.code | codes
@@ -120,7 +119,8 @@ Give each project its own ports and turn hot reload off:
 - One model file (`codes/Models/MySiteModel.cs`) mirrors it with plain classes; property names match the JSON keys (case-insensitive deserialization).
 - Every page has its own `LoadSite()` that reads and deserializes the file.
 - Things that should always look current (dates, "new" badges, schedules) are stored as day offsets and computed from `DateTime.Today`.
-- Demo actions (sign-in, cart, booking, publishing) are validated on the server and confirmed, but nothing is stored server-side. Keep a display name in a cookie and per-visitor data (cart, favourites, bookings) in `localStorage`.
+- Actions that matter (messages, newsletter sign-ups, orders, bookings, accounts) are validated and saved on the server in their own file, for example `data/messages.json`, under one lock, through a temp file and `File.Move`. Only per-visitor conveniences that need no server (a cart before checkout, favourites) live in `localStorage`.
+- Files the site writes at run time (`data/messages.json`, `data/staff.json`, orders) are not part of the project: keep them out of git, and download the live `data/` folder before you publish so the live files are not overwritten.
 
 ## When the site needs a database
 

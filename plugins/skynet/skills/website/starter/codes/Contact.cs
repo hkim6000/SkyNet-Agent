@@ -45,7 +45,8 @@ namespace Starter.codes
                 response.SetElementContents("ct-sent", string.Empty);
                 return response;
             }
-            response.SetElementContents("ct-sent", "<b>Thank you, " + HtmlEncode(name) + ".</b> Your message passed every server check. (Demo: nothing was sent.)");
+            await AddRecord("messages", new ContactMessage { Name = name, Email = email, Topic = topic, Text = msg, When = DateTime.UtcNow });
+            response.SetElementContents("ct-sent", "<b>Thank you, " + HtmlEncode(name) + ".</b> We have your message and will reply by email.");
             response.ExecuteScript("ContactJs.sent();");
             return response;
         }
@@ -74,7 +75,8 @@ namespace Starter.codes
                 response.SetElementContents("ct-nl-msg", "<span class=\"ct-err\">Please enter a valid email address.</span>");
                 return response;
             }
-            response.SetElementContents("ct-nl-msg", "You&rsquo;re on the list: " + HtmlEncode(email) + ". (Demo: nothing was stored.)");
+            bool added = await AddRecord("subscribers", new Subscriber { Email = email, From = "contact", When = DateTime.UtcNow }, x => x.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+            response.SetElementContents("ct-nl-msg", added ? "You&rsquo;re on the list: " + HtmlEncode(email) + "." : HtmlEncode(email) + " is already on the list.");
             response.ExecuteScript("ContactJs.newsletterDone();");
             return response;
         }
@@ -98,6 +100,34 @@ namespace Starter.codes
         private static string Money(decimal v)
         {
             return "$" + v.ToString("#,0.##", CultureInfo.InvariantCulture);
+        }
+
+        private static readonly SemaphoreSlim SaveGate = new SemaphoreSlim(1, 1);
+
+        private static async Task<bool> AddRecord<T>(string name, T entry, Func<T, bool>? duplicate = null)
+        {
+            JsonSerializerOptions opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase, WriteIndented = true };
+            string dir = Path.Combine(Directory.GetCurrentDirectory(), "data");
+            string file = Path.Combine(dir, name + ".json");
+            await SaveGate.WaitAsync();
+            try
+            {
+                Directory.CreateDirectory(dir);
+                List<T> list = File.Exists(file) ? JsonSerializer.Deserialize<List<T>>(await File.ReadAllTextAsync(file), opts) ?? new List<T>() : new List<T>();
+                if (duplicate != null && list.Any(duplicate))
+                {
+                    return false;
+                }
+                list.Add(entry);
+                string tmp = file + "." + Guid.NewGuid().ToString("N") + ".tmp";
+                await File.WriteAllTextAsync(tmp, JsonSerializer.Serialize(list, opts));
+                File.Move(tmp, file, true);
+                return true;
+            }
+            finally
+            {
+                SaveGate.Release();
+            }
         }
 
         private async Task<SiteData> LoadSite()

@@ -103,7 +103,6 @@ body { margin: 0; }
 
 .hm-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: start; }
 .hm-lead { font-size: 18px; color: var(--hm-ink2); margin-top: 12px; }
-.hm-demo { font-size: 13px; color: var(--hm-ink2); margin-top: 10px; }
 .hm-form { display: flex; flex-direction: column; gap: 14px; padding: 28px; background: var(--hm-paper); border: 1px solid var(--hm-line); border-radius: 10px; }
 .hm-field { display: flex; flex-direction: column; gap: 6px; }
 .hm-field > span { font-size: 13px; font-weight: 800; color: var(--hm-ink2); }

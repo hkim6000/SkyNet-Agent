@@ -17,8 +17,9 @@ Reply with a compact plan:
 
 - **Brand:** an invented name, one-line idea, palette (ink, background, accent + one or two more), display and text fonts with fallbacks.
 - **Pages:** table of page, two-letter prefix, purpose, server methods.
-- **Key features:** what the server calculates or validates; what is a demo (accounts, payments, uploads).
+- **Key features:** what the server calculates or validates, and what each form saves and where.
 - **Data:** `data/site.json` sections, or SQL tables (then follow the `sql` skill).
+- **Staff area (if any):** admin pages, roles with the areas each manages, and what is logged (follow `reference/admin.md` of the `website` skill). The first admin password is made on first start and shown on the sign-in page on the developer's computer.
 - **Images:** count and styles from the `art` skill.
 - **Questions:** at most three, only if the answer changes what you build.
 

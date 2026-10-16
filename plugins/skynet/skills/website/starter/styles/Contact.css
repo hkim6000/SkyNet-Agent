@@ -103,7 +103,6 @@ body { margin: 0; }
 
 .ct-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: start; }
 .ct-lead { font-size: 18px; color: var(--ct-ink2); margin-top: 12px; }
-.ct-demo { font-size: 13px; color: var(--ct-ink2); margin-top: 10px; }
 .ct-form { display: flex; flex-direction: column; gap: 14px; padding: 28px; background: var(--ct-paper); border: 1px solid var(--ct-line); border-radius: 10px; }
 .ct-field { display: flex; flex-direction: column; gap: 6px; }
 .ct-field > span { font-size: 13px; font-weight: 800; color: var(--ct-ink2); }

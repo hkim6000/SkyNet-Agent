@@ -1,0 +1,72 @@
+<div class="hm-app" id="hm-app">
+  <div class="hm-top">
+    <button class="hm-menu" id="hm-menu" type="button" aria-label="Contents">&#9776;</button>
+    <div class="hm-logo">AB</div>
+    <div>
+      <span class="hm-title">Site Name</span>
+      <span class="hm-sub">User Manual</span>
+    </div>
+    <span class="hm-ver">Version 1.0</span>
+  </div>
+  <div class="hm-body">
+    <div class="hm-scrim" id="hm-scrim"></div>
+    <aside class="hm-rail">
+      <div class="hm-search-wrap">
+        <input class="hm-search" id="hm-search" type="text" placeholder="Search the manual&hellip;" autocomplete="off"/>
+        <div class="hm-hits" id="hm-hits"></div>
+      </div>
+      <nav class="hm-nav" id="hm-nav"></nav>
+    </aside>
+    <main class="hm-content" id="hm-content">
+      <div class="hm-inner">
+
+<section class="hm-section" id="overview" data-title="Overview">
+<h1 class="hm-h1">Overview</h1>
+<p>What the site does, for whom, in two short paragraphs.</p>
+
+<h2 id="how-the-pieces-fit">How the pieces fit together</h2>
+<div class="hm-diagram"><svg style="width:100%;height:auto;display:block;" viewBox="0 0 1000 220" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" role="img" aria-label="Site map">
+<defs><marker id="ovA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#3E524E"/></marker></defs>
+<rect x="40" y="60" width="240" height="80" rx="10" fill="#14302C"/><text x="160" y="96" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">Set up</text><text x="160" y="118" font-size="11" fill="#C9DCD8" text-anchor="middle">settings, people, items</text>
+<rect x="380" y="60" width="240" height="80" rx="10" fill="#1F7A74"/><text x="500" y="96" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">The website</text><text x="500" y="118" font-size="11" fill="#D8EEEA" text-anchor="middle">visitors book or buy</text>
+<rect x="720" y="60" width="240" height="80" rx="10" fill="#fff" stroke="#1F7A74" stroke-width="1.6"/><text x="840" y="96" font-size="15" font-weight="700" fill="#14302C" text-anchor="middle">The admin</text><text x="840" y="118" font-size="11" fill="#5F7470" text-anchor="middle">staff run the day</text>
+<g stroke="#3E524E" stroke-width="1.8" fill="none"><path d="M280 100 H374" marker-end="url(#ovA)"/><path d="M620 100 H714" marker-end="url(#ovA)"/></g>
+</svg></div>
+<p class="hm-cap"><em>One sentence that says what the diagram shows.</em></p>
+</section>
+
+<section class="hm-section" id="getting-started" data-title="1. Getting Started">
+<h1 class="hm-h1">1. Getting Started</h1>
+<h2 id="signing-in">1.1 Signing in</h2>
+<p>Click <strong>Staff sign in</strong> at the bottom of any page, or go to <code>/AdminLogin</code>.</p>
+<img loading="lazy" alt="Sign in" src="{{img:login}}"/>
+<ul>
+<li>Facts about sessions, wrong passwords and accounts, each checked in the code.</li>
+<li>See <a href="#reference" data-target="reference" data-sub="good-to-know">Reference</a>.</li>
+</ul>
+<div class="hm-note">A tip the reader should not miss.</div>
+<div class="hm-warn">Something that loses data if done wrong.</div>
+<div class="hm-pair">
+<img loading="lazy" alt="Phone" src="{{img:m_home}}"/>
+<img loading="lazy" alt="Phone admin" src="{{img:m_dashboard}}"/>
+</div>
+<p class="hm-cap"><em>Two phone screens side by side.</em></p>
+</section>
+
+<section class="hm-section" id="reference" data-title="2. Reference">
+<h1 class="hm-h1">2. Reference</h1>
+<h2 id="good-to-know">2.1 Good to know</h2>
+<div class="hm-tw"><table>
+<thead><tr><th>Item</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Status</td><td><span class="hm-pill p-booked">Booked</span> <span class="hm-pill p-conf">Confirmed</span> <span class="hm-pill p-wait">Waiting</span> <span class="hm-pill p-occ">In progress</span> <span class="hm-pill p-done">Done</span> <span class="hm-pill p-red">Cancelled</span></td></tr>
+<tr><td>Code</td><td><span class="p-code">AB-7G3VCG</span></td></tr>
+<tr><td>Key</td><td><kbd>Esc</kbd></td></tr>
+</tbody></table></div>
+</section>
+
+      </div>
+    </main>
+  </div>
+</div>
+<div class="hm-zoom" id="hm-zoom"><img id="hm-zoomimg" alt=""/></div>

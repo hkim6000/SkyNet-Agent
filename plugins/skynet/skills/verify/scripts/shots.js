@@ -27,17 +27,41 @@ const launch = process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIU
       await page.waitForTimeout(400);
       const r = await page.evaluate(() => {
         const imgs = [...document.images];
-        const broken = imgs.filter(i => i.complete && i.naturalWidth === 0).map(i => i.getAttribute('src'));
+        const broken = imgs.filter(i => i.getAttribute('src') && i.complete && i.naturalWidth === 0).map(i => i.getAttribute('src'));
         const overflow = document.documentElement.scrollWidth - window.innerWidth;
         const wide = overflow > 0 ? [...document.querySelectorAll('body *')].filter(e => e.getBoundingClientRect().right > window.innerWidth + 1 && getComputedStyle(e).position !== 'fixed').slice(0, 4).map(e => e.tagName.toLowerCase() + '.' + String(e.className).split(' ')[0]) : [];
         const holes = (document.body.innerHTML.match(/\{plhd_[a-z0-9_]*\}/g) || []).slice(0, 4);
-        return { images: imgs.length, broken, overflow, wide, holes, height: document.body.scrollHeight };
+        const name = e => e.tagName.toLowerCase() + (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/)[0] : '');
+        const shown = e => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none'; };
+        const scrolls = e => { for (let p = e.parentElement; p && p !== document.body; p = p.parentElement) { const o = getComputedStyle(p).overflowX; if (o === 'auto' || o === 'scroll') return true; } return false; };
+        const skip = 'input,select,textarea,svg,canvas,img,video,iframe,option,script,style';
+        const clipped = [];
+        for (const e of document.querySelectorAll('body *')) {
+          if (clipped.length >= 4) break;
+          if (e.matches(skip) || e.closest('svg') || !shown(e) || scrolls(e)) continue;
+          const cs = getComputedStyle(e);
+          if (cs.position === 'fixed' || cs.position === 'absolute') continue;
+          if ((cs.overflowX === 'hidden' || cs.overflowX === 'clip') && cs.textOverflow !== 'ellipsis' && e.scrollWidth > e.clientWidth + 2 && e.textContent.trim()) {
+            const kids = [...e.querySelectorAll('*')];
+            const moving = [e].concat(kids).some(k => getComputedStyle(k).animationName !== 'none');
+            const inner = !moving && kids.some(k => k.getBoundingClientRect().right > e.getBoundingClientRect().right + 2 && k.textContent.trim() && !k.matches(skip) && getComputedStyle(k).position !== 'absolute');
+            if (inner) { clipped.push(name(e) + ' cuts text'); continue; }
+          }
+          const p = e.parentElement;
+          const own = [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+          if (!p || p === document.body || !own) continue;
+          const pr = p.getBoundingClientRect(), r = e.getBoundingClientRect();
+          const pad = parseFloat(getComputedStyle(p).paddingRight) || 0;
+          const end = cs.display !== 'inline' && cs.overflowX === 'visible' && cs.textOverflow !== 'ellipsis' ? Math.max(r.right, r.left + e.scrollWidth) : r.right;
+          if (end > pr.right - pad + 3 && end <= window.innerWidth + 1 && (end > r.right + 2 || (getComputedStyle(p).overflowX === 'visible' && p.scrollWidth > p.clientWidth + 2))) clipped.push(name(e) + ' runs out of ' + name(p));
+        }
+        return { images: imgs.length, broken, overflow, wide, holes, clipped, height: document.body.scrollHeight };
       });
       const file = `${out}/${name.replace(/[^A-Za-z0-9_-]+/g, '_')}_${w}.png`;
       await page.screenshot({ path: file, fullPage: true });
-      const bad = r.broken.length || r.overflow > 0 || r.holes.length;
+      const bad = r.broken.length || r.overflow > 0 || r.holes.length || r.clipped.length;
       if (bad) problems++;
-      console.log(`${bad ? 'FAIL' : 'ok  '} ${w} ${name}  images ${r.images}  broken ${r.broken.length} ${r.broken.slice(0, 2).join(' ')}  overflow ${r.overflow} ${r.wide.join(' ')}  placeholders ${r.holes.join(' ')}  height ${r.height}  -> ${file}`);
+      console.log(`${bad ? 'FAIL' : 'ok  '} ${w} ${name}  images ${r.images}  broken ${r.broken.length} ${r.broken.slice(0, 2).join(' ')}  overflow ${r.overflow} ${r.wide.join(' ')}  placeholders ${r.holes.join(' ')}  clipped ${r.clipped.length} ${r.clipped.slice(0, 2).join(', ')}  height ${r.height}  -> ${file}`);
     }
     if (errors.length) {
       problems++;

@@ -17,11 +17,9 @@ A responsive [kind] website template for **ASP.NET Core (.NET 10)**, built on th
 [![.NET 10](https://img.shields.io/badge/.NET-10-512BD4)](https://dotnet.microsoft.com/)
 [![NuGet](https://img.shields.io/nuget/v/TheSkyLite.SkyNet?label=TheSkyLite.SkyNet)](https://www.nuget.org/packages/TheSkyLite.SkyNet)
 
-**Live demo:** [url]
-
 ![Home page](docs/screenshot-home.png)
 
-> **Fictional [business].** [Brand] and every [item], person and number on it are invented for demonstration. [Demo actions] are simulated — nothing is stored or charged.
+> **Sample content.** [Brand] and its [items], people and prices are placeholders; replace them with your own in [where]. Every form already saves for real ([what is saved and where]).
 
 ## Features
 
@@ -41,6 +39,31 @@ Requirements: .NET 10 SDK.
     dotnet run
 
 The SkyNet package (`TheSkyLite.SkyNet`) restores from NuGet. The app opens on **[startup page]**.
+
+[Only for a site with a staff area: the next three sections.]
+
+## Permissions
+
+| Area | Rights | Extra right |
+|---|---|---|
+| [area] | View, Edit | [extra right, or blank] |
+| Users, Settings | managers only | |
+
+## First sign-in
+
+1. Run the site on your computer and open **/AdminLogin**. The page shows the first user name (`admin`) and a password made just for this site. It is shown only on the computer the site runs on, and is also in `appConfig/initial-admin.txt`.
+2. Sign in and choose your own password. The box and the file disappear.
+3. Open **Users** and add an account for each person.
+
+Forgot the first password before using it? Delete `appConfig/initial-admin.txt` and open the sign-in page again. Locked out of every manager account? Remove the managers from `data/staff.json` and open the sign-in page.
+
+## Deploying
+
+1. Give the site write access to `data/`, `temp/` and `appConfig/`. Use HTTPS.
+2. If nobody has signed in yet, read the first password from `appConfig/initial-admin.txt` on the server.
+3. Check that `/data/staff.json` and `/appConfig/initial-admin.txt` answer 404 in a browser.
+
+> **Redeploying:** publishing copies `data/` over the live files. Download the live `data/` folder first or leave it out of the publish.
 
 ## Project structure
 
