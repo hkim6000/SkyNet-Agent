@@ -130,7 +130,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.2
+    Version: 1.0.3
     Scope: user
     Status: √ enabled
 ```
@@ -262,6 +262,13 @@ Every command shows a plan first and waits for **go**.
 | `/skynet` shows nothing | Run `claude plugin list` in PowerShell; if `skynet` is missing, repeat Part 1 step 4 |
 | Lost the first admin password before using it | Delete `appConfig\initial-admin.txt` and open the sign-in page again; a new one is made |
 | Locked out of every manager account | Remove the managers from `data\staff.json` and open the sign-in page; a new first password is made |
+
+## What's new in 1.0.3
+
+- **Catches pages a real server cannot find:** `/skynet:verify` fails when a page shares its name with another class (a `Member` model next to a `Member` page) or when a request method has a private helper with the same name. The offline check now fails on them the same way the live server does.
+- **Signed-in checks:** screenshots can run with a signed-in member or staff user, and every page is checked for duplicate element ids.
+- **Publishing to IIS:** a ready `web.config` in the starter project and the list of folders the app pool must be able to write.
+- **Manuals:** a tip for capturing a busy working day at any hour.
 
 ## What's new in 1.0.2
 

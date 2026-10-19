@@ -12,7 +12,7 @@ const launch = process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIU
   const browser = await chromium.launch(launch);
   let problems = 0;
   for (const w of widths) {
-    const ctx = await browser.newContext({ viewport: { width: w, height: 900 } });
+    const ctx = await browser.newContext(Object.assign({ viewport: { width: w, height: 900 } }, process.env.STATE ? { storageState: process.env.STATE } : {}));
     const page = await ctx.newPage();
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
@@ -31,6 +31,9 @@ const launch = process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIU
         const overflow = document.documentElement.scrollWidth - window.innerWidth;
         const wide = overflow > 0 ? [...document.querySelectorAll('body *')].filter(e => e.getBoundingClientRect().right > window.innerWidth + 1 && getComputedStyle(e).position !== 'fixed').slice(0, 4).map(e => e.tagName.toLowerCase() + '.' + String(e.className).split(' ')[0]) : [];
         const holes = (document.body.innerHTML.match(/\{plhd_[a-z0-9_]*\}/g) || []).slice(0, 4);
+        const seen = {};
+        document.querySelectorAll('[id]').forEach(e => { seen[e.id] = (seen[e.id] || 0) + 1; });
+        const dups = Object.keys(seen).filter(k => seen[k] > 1).slice(0, 4);
         const name = e => e.tagName.toLowerCase() + (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/)[0] : '');
         const shown = e => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none'; };
         const scrolls = e => { for (let p = e.parentElement; p && p !== document.body; p = p.parentElement) { const o = getComputedStyle(p).overflowX; if (o === 'auto' || o === 'scroll') return true; } return false; };
@@ -55,13 +58,13 @@ const launch = process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIU
           const end = cs.display !== 'inline' && cs.overflowX === 'visible' && cs.textOverflow !== 'ellipsis' ? Math.max(r.right, r.left + e.scrollWidth) : r.right;
           if (end > pr.right - pad + 3 && end <= window.innerWidth + 1 && (end > r.right + 2 || (getComputedStyle(p).overflowX === 'visible' && p.scrollWidth > p.clientWidth + 2))) clipped.push(name(e) + ' runs out of ' + name(p));
         }
-        return { images: imgs.length, broken, overflow, wide, holes, clipped, height: document.body.scrollHeight };
+        return { images: imgs.length, broken, overflow, wide, holes, clipped, dups, height: document.body.scrollHeight };
       });
       const file = `${out}/${name.replace(/[^A-Za-z0-9_-]+/g, '_')}_${w}.png`;
       await page.screenshot({ path: file, fullPage: true });
-      const bad = r.broken.length || r.overflow > 0 || r.holes.length || r.clipped.length;
+      const bad = r.broken.length || r.overflow > 0 || r.holes.length || r.clipped.length || r.dups.length;
       if (bad) problems++;
-      console.log(`${bad ? 'FAIL' : 'ok  '} ${w} ${name}  images ${r.images}  broken ${r.broken.length} ${r.broken.slice(0, 2).join(' ')}  overflow ${r.overflow} ${r.wide.join(' ')}  placeholders ${r.holes.join(' ')}  clipped ${r.clipped.length} ${r.clipped.slice(0, 2).join(', ')}  height ${r.height}  -> ${file}`);
+      console.log(`${bad ? 'FAIL' : 'ok  '} ${w} ${name}  images ${r.images}  broken ${r.broken.length} ${r.broken.slice(0, 2).join(' ')}  overflow ${r.overflow} ${r.wide.join(' ')}  placeholders ${r.holes.join(' ')}  clipped ${r.clipped.length} ${r.clipped.slice(0, 2).join(', ')}  duplicate ids ${r.dups.join(' ')}  height ${r.height}  -> ${file}`);
     }
     if (errors.length) {
       problems++;

@@ -119,8 +119,63 @@ Give each project its own ports and turn hot reload off:
 - One model file (`codes/Models/MySiteModel.cs`) mirrors it with plain classes; property names match the JSON keys (case-insensitive deserialization).
 - Every page has its own `LoadSite()` that reads and deserializes the file.
 - Things that should always look current (dates, "new" badges, schedules) are stored as day offsets and computed from `DateTime.Today`.
+- Records with a deadline (a seat held for payment at the desk, an offer to pay within 24 hours) are checked on every load: expired ones are closed and the place goes to the next person in line. Sample records of that kind store their deadline as an offset from now, or they have expired before anyone sees them.
 - Actions that matter (messages, newsletter sign-ups, orders, bookings, accounts) are validated and saved on the server in their own file, for example `data/messages.json`, under one lock, through a temp file and `File.Move`. Only per-visitor conveniences that need no server (a cart before checkout, favourites) live in `localStorage`.
 - Files the site writes at run time (`data/messages.json`, `data/staff.json`, orders) are not part of the project: keep them out of git, and download the live `data/` folder before you publish so the live files are not overwritten.
+
+## Publishing to IIS
+
+Put a `web.config` next to the `.csproj` (it is published with the site). Change `MySite.dll` to the project's assembly name. Keep it this plain: it is tested on a live IIS server, and extra headers or `removeServerHeader` can stop the site from starting on some IIS versions. A published site has no `codes/` folder (the C# is compiled into the `.dll`):
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <location path="." inheritInChildApplications="false">
+    <system.webServer>
+      <handlers>
+        <add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModuleV2" resourceType="Unspecified" />
+      </handlers>
+      <aspNetCore processPath="dotnet" arguments=".\MySite.dll" stdoutLogEnabled="false" stdoutLogFile=".\logs\stdout" hostingModel="inprocess" />
+      <directoryBrowse enabled="false" />
+      <security>
+        <requestFiltering>
+          <requestLimits maxAllowedContentLength="31457280" />
+          <hiddenSegments>
+            <add segment="appConfig" />
+            <add segment="htmls" />
+            <add segment="data" />
+            <add segment="logs" />
+          </hiddenSegments>
+          <fileExtensions allowUnlisted="true">
+            <add fileExtension=".json" allowed="false" />
+            <add fileExtension=".dll" allowed="false" />
+            <add fileExtension=".exe" allowed="false" />
+            <add fileExtension=".pdb" allowed="false" />
+            <add fileExtension=".cfg" allowed="false" />
+          </fileExtensions>
+        </requestFiltering>
+      </security>
+    </system.webServer>
+  </location>
+</configuration>
+```
+
+Give the application pool identity (`IIS AppPool\<pool name>`) **Modify** on the folders the site writes, and nothing more:
+
+| Folder | Why |
+|---|---|
+| `data\` | content and records the site saves |
+| `temp\` | sign-in sessions, uploads in progress |
+| `appConfig\` | only for a site with a staff area: the first password file (`admin.md`) |
+| `images\uploads\` | only when the admin uploads files; it is not published, so create it on the server before granting |
+| `logs\` | only when `stdoutLogEnabled` is turned on |
+
+```bat
+icacls data /grant "IIS AppPool\MySite":(OI)(CI)M
+icacls temp /grant "IIS AppPool\MySite":(OI)(CI)M
+```
+
+After publishing, `/data/staff.json` and `/appConfig/application.cfg` must answer 404.
 
 ## When the site needs a database
 

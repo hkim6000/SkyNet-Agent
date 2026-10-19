@@ -9,6 +9,10 @@ function ok(cond, label) {
   if (!cond) fails++;
 }
 
+async function dupIds(page) {
+  return page.evaluate(() => { const n = {}; document.querySelectorAll('[id]').forEach(e => { n[e.id] = (n[e.id] || 0) + 1; }); return Object.keys(n).filter(k => n[k] > 1); });
+}
+
 async function settle(page) {
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(250);
@@ -49,6 +53,7 @@ async function settle(page) {
   await settle(page);
   ok((await page.locator('#ct-sent').textContent()).includes('Thank you'), 'form accepted');
 
+  ok((await dupIds(page)).length === 0, 'no duplicate ids after the form');
   ok(errors.length === 0, 'no JavaScript errors ' + errors.slice(0, 3).join(' | '));
   await browser.close();
   console.log(fails ? `FAILS ${fails}` : 'ALL PASS');

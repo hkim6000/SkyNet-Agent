@@ -16,7 +16,7 @@ Run every step. Fix what fails, then run the failing step again. Report the resu
 python3 ${CLAUDE_SKILL_DIR}/scripts/check_sources.py <site>
 ```
 
-Fails on: comments in `.cs/.js/.css`, `Task.CompletedTask`, a `{plhd_*}` in a page's HTML that its C# never replaces, HTML classes without the page prefix, duplicate or class-named server methods, real secrets in `application.cfg`, CRLF line endings. Warns when a request key is also a query-string name read by the page (see the `website` skill, pitfalls).
+Fails on: comments in `.cs/.js/.css`, `Task.CompletedTask`, a `{plhd_*}` in a page's HTML that its C# never replaces, HTML classes without the page prefix, duplicate or class-named server methods (a public endpoint and a private helper with one name included), a page that shares its name with any other class (a `Member` model next to a `Member` page: SkyNet answers `not found`), real secrets in `application.cfg`, CRLF line endings. Warns when a request key is also a query-string name read by the page (see the `website` skill, pitfalls).
 
 ## 2. Compile
 
@@ -57,7 +57,15 @@ Install once, in the folder you run the scripts from (the sites folder) or globa
 node ${CLAUDE_SKILL_DIR}/scripts/shots.js http://localhost:5180 Home,Shop,Contact 1440,820,390 shots
 ```
 
-Every page at every width must report `ok`: no broken images, no horizontal overflow, no clipped text, no leftover `{plhd_*}`, no JavaScript errors and no failed requests. **Clipped text** is text that runs out of its own box or card (for example a `nowrap` email address in a narrow column) or is cut off by an `overflow: hidden` parent; the page itself may not scroll sideways, so check the widths where columns are narrowest, often 1440 and 820, not only 390. Then **look at the screenshots** (open the PNG files): check alignment, spacing, contrast, text wrapping, empty areas and overlaps. Automated checks do not see ugly layouts.
+Every page at every width must report `ok`: no broken images, no horizontal overflow, no clipped text, no duplicate element ids, no leftover `{plhd_*}`, no JavaScript errors and no failed requests. **Clipped text** is text that runs out of its own box or card (for example a `nowrap` email address in a narrow column) or is cut off by an `overflow: hidden` parent; the page itself may not scroll sideways, so check the widths where columns are narrowest, often 1440 and 820, not only 390. Then **look at the screenshots** (open the PNG files): check alignment, spacing, contrast, text wrapping, empty areas and overlaps. Automated checks do not see ugly layouts.
+
+**Signed in, too.** Headers and pages change when a member or staff user is signed in (a name chip, a tier badge, "My classes"), and that is where overflow hides. In the interaction script, sign in and save the session with `await ctx.storageState({ path: 'signed-in.json' })`, then run the same pages again with it:
+
+```bash
+STATE=signed-in.json node ${CLAUDE_SKILL_DIR}/scripts/shots.js http://localhost:5180 Home,Account 1440,1320,1180,820,390 shots-in
+```
+
+Check the widths between the desktop and the tablet layout (1320, 1180) as well: a signed-in header is widest just before the menu folds.
 
 Also open pages with typical query strings (`Shop?c=botanical`, `Item?id=...`) and with a wrong one (`Item?id=zzz`): a missing record must show a friendly not-found section, never an exception.
 
@@ -69,7 +77,9 @@ Copy `${CLAUDE_SKILL_DIR}/scripts/interact.template.js` next to the site, rewrit
 node interact.js http://localhost:5180
 ```
 
-Cover every server method: filters (result count and URL), search suggestions, every form (empty submit shows server errors, valid submit shows the confirmation), carts and totals, sign-in states, modals and keyboard actions. Wait for the server with `page.waitForLoadState('networkidle')` after each action.
+Cover every server method: filters (result count and URL), search suggestions, every form (empty submit shows server errors, valid submit shows the confirmation), carts and totals, sign-in states, modals and keyboard actions. Wait for the server with `page.waitForLoadState('networkidle')` after each action. After opening each modal or form that the server fills in, call `dupIds(page)`: an id used twice (a footer and a form field, say) makes the server write into the wrong element.
+
+The offline preview server also catches pages that real SkyNet cannot find: a page name shared with another class, or a request method that has a private helper with the same name, fails in the runner with `not found` or `ambiguous`, as on a real server.
 
 For a site with an admin (see `admin.md` in the `website` skill), also test: the first sign-in box shows on the developer's computer, the first sign-in forces a new password and then the box and `appConfig/initial-admin.txt` are gone; each role signs in and sees only its menu items; a View-only user has no change buttons; a refused request is logged; confirm dialogs (OK goes ahead, Cancel and Esc step back). Afterwards delete `data/staff.json`, `data/activity.json`, `appConfig/initial-admin.txt` and `temp/admin`, so the delivered site makes its own first password.
 

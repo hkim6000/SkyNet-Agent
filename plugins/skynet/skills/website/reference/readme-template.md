@@ -59,7 +59,7 @@ Forgot the first password before using it? Delete `appConfig/initial-admin.txt` 
 
 ## Deploying
 
-1. Give the site write access to `data/`, `temp/` and `appConfig/`. Use HTTPS.
+1. Publish with the `web.config` from the project (IIS). Give the application pool Modify on `data/`, `temp/` and `appConfig/` (and `images/uploads/`, created first, if the admin uploads files). Use HTTPS.
 2. If nobody has signed in yet, read the first password from `appConfig/initial-admin.txt` on the server.
 3. Check that `/data/staff.json` and `/appConfig/initial-admin.txt` answer 404 in a browser.
 

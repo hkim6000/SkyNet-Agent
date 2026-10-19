@@ -21,7 +21,13 @@ public static class Runner
                 WebCore.Data[args[i]] = args[i + 1];
             }
         }
-        Type? t = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes()).FirstOrDefault(x => x.Name == page && x.Namespace == ns + ".codes" && typeof(WebPage).IsAssignableFrom(x));
+        List<Type> named = typeof(Runner).Assembly.GetTypes().Where(x => x.Name == page && !x.IsNested && x.Namespace != "SkyNet").ToList();
+        if (named.Count > 1)
+        {
+            Console.Error.WriteLine("not found : " + page + " is ambiguous, more than one class has this name: " + string.Join(", ", named.Select(x => x.FullName)));
+            Environment.Exit(2);
+        }
+        Type? t = named.FirstOrDefault(x => typeof(WebPage).IsAssignableFrom(x));
         if (t == null)
         {
             Console.Error.WriteLine("page not found: " + ns + ".codes." + page);
@@ -38,7 +44,13 @@ public static class Runner
         }
         else
         {
-            var m = t!.GetMethod(mode);
+            var all = t!.GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static).Where(x => x.Name == mode).ToList();
+            if (all.Count > 1)
+            {
+                Console.Error.WriteLine("method " + page + "." + mode + " is ambiguous: " + all.Count + " methods share the name");
+                Environment.Exit(3);
+            }
+            var m = all.FirstOrDefault(x => x.IsPublic && !x.IsStatic && x.GetParameters().Length == 0);
             if (m == null)
             {
                 Console.Error.WriteLine("method not found: " + page + "." + mode);

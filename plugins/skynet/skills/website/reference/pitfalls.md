@@ -7,8 +7,8 @@ Each of these broke a real build or a real page. Check the list before writing c
 | Problem | Rule |
 |---|---|
 | A server method with the same name as its class (`Search.Search()`) does not compile | Name methods after the action: `Suggest`, `Find`, `Filter` |
-| A model class with the same name as a page (`Series` model, `Series` page) is ambiguous | Give models distinct names: `ComicSeries`, `Exhibit`, `GalleryEvent` |
-| Two methods with the same name (a public `Pick()` endpoint and a private `Pick(string, ...)` helper) make method lookup ambiguous | Every public server method name must be unique in the class, also among private helpers |
+| A model class with the same name as a page (`Member` model, `Member` page) | It compiles, but SkyNet finds pages by class name across the whole project, so the page answers `not found : MySite.Models.Member/`. Give models distinct names: `ClubMember`, `Coach`, `ComicSeries`. The `verify` source check fails on it |
+| Two methods with the same name (a public `Board()` endpoint and a private `Board(Ctx, ...)` helper) make method lookup ambiguous | It compiles, but the request fails at run time. Every public server method name must be unique in the class, also among private helpers: name helpers `BoardHtml`, `PanelHtml` |
 | A page named `Calendar`, `Event` or `Helper` | `Calendar` hides `System.Globalization.Calendar` inside that file (fine); never name a page `Helper` when `codes/Helper.cs` exists |
 | `await Task.CompletedTask;` | Never write it; accept the CS1998 warning |
 | Unused private fields | They raise warnings; with warnings as errors the check fails. Delete them |
@@ -45,6 +45,8 @@ Each of these broke a real build or a real page. Check the list before writing c
 | A page prefix or id that looks like an advert (`ad-`, `ads-`, `ad-main`, `banner-ad`, `sponsor`) | Ad blockers hide it (`display: none`): the page is blank for visitors with an ad blocker, while localhost and other browsers look fine. Never use `ad` as a prefix; an Admin page uses `db-` or `adm-` |
 | Making text smaller to fit | Reduce padding and margins instead; keep readable font sizes |
 | A base reset `.xx-site button { font: inherit; }` | Element-plus-class outranks `.xx-btn` and wipes button styles. Wrap base resets in `:where()`: `:where(.xx-site) :where(button, input, select, textarea) { font: inherit; }` |
+| The header's right side grows when someone signs in (name chip, tier badge, "My classes") | Signed-out checks pass while the signed-in header runs past the screen at 1180 to 1500 px. Check pages signed in too (`STATE` in `shots.js`); at middle widths hide the name and keep the badge, and trim nav padding |
+| Shared parts (header, footer) and a form using the same id (`-cname` for the footer's center name and the card form's name on card) | The server fills the wrong one and the form field cannot be typed into. Give shared parts ids that name their place (`-fname`, `-copyname`); `verify` reports duplicate ids |
 | `white-space: nowrap` on a link (email, phone) inside a narrow grid card | It defeats `overflow-wrap: anywhere`; the text runs out of its card at desktop widths while the page itself does not scroll sideways, so page-level checks pass. Let long text wrap, or give the card a full row |
 
 ## Hosting

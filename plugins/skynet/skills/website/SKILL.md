@@ -36,7 +36,7 @@ For database pages, use the `sql` skill. For artwork painted in code, use the `a
 ## Build order for a new site
 
 1. Agree on the plan (brand, palette, fonts, pages and their prefixes, data, server methods).
-2. Copy [starter/](starter/) to the new project folder and rename the namespace and project.
+2. Copy [starter/](starter/) to the new project folder and rename the namespace and project (also the `.dll` name in `web.config`).
 3. Write `data/site.json` and the model classes.
 4. Build pages one at a time: HTML, then CSS, then C# (`OnInitialized` plus methods), then JS.
 5. Add images (the `art` skill paints them in code; WebP, lazy loaded).

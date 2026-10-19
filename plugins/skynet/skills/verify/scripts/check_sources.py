@@ -73,6 +73,20 @@ for path in files("codes", ".cs"):
         for k in sorted(keys & query):
             warnings.append(f"{cls}: request key '{k}' is also a query-string name; rename it if this request is sent from the {cls} page")
 
+pages = {}
+types = {}
+for path in files("codes", ".cs"):
+    text = read(path)
+    for m in re.finditer(r"\b(?:class|record|struct|enum|interface)\s+([A-Z]\w*)", text):
+        types.setdefault(m.group(1), []).append(rel(path))
+    m = re.search(r"public class (\w+)\s*:\s*Web(Page|Base)", text)
+    if m:
+        pages[m.group(1)] = rel(path)
+for name, where in sorted(pages.items()):
+    others = [f for f in types.get(name, []) if f != where] + ([where] if types.get(name, []).count(where) > 1 else [])
+    if others:
+        problems.append(f"page {name} ({where}) shares its name with another type in {', '.join(sorted(set(others)))}; SkyNet finds pages by class name, so /{name} answers 'not found'. Rename the other type")
+
 cfg = os.path.join(ROOT, "appConfig", "application.cfg")
 if os.path.exists(cfg):
     for line in read(cfg).splitlines():
