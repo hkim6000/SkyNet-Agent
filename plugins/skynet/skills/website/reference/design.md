@@ -14,7 +14,8 @@ Agree on these before writing code:
 ## Layout
 
 - Content width about 1240px with 28px side padding (16px on phones).
-- Sticky header: logo, menu, search, account; on tablets and phones a burger opens a slide-in menu with a scrim.
+- Sticky header: logo, menu, search, account; on tablets and phones a burger opens a slide-in menu with a scrim. The brand name stays visible and whole at 390px (public and admin); drop secondary items first.
+- Admin "View site" links open in a new tab (`target="_blank" rel="noopener"`), so staff keep their place.
 - Sections spaced 44 to 56px apart; one clear heading per section with a "See all" link where it helps.
 - Cards: image, small eyebrow label, title, one or two lines of detail, actions.
 - Footer: brand line, newsletter field, three link columns, a copyright line.
@@ -55,7 +56,7 @@ On phones, put the most important action near the top (for example the booking b
 - Sample content (brand, products, services, team, address) is invented for the owner to replace. Use `.example` email domains and 555 phone numbers.
 - No real trademarks, logos, famous artworks or characters.
 - No invented reviews or testimonials; leave room for the owner's real ones.
-- No payment-card fields. Orders and bookings are saved as unpaid (pay on pickup, on arrival or by invoice) until the owner adds a payment provider.
+- No payment-card fields. Orders and bookings are saved as unpaid (pay on pickup, on arrival or by invoice) until the owner adds a payment provider. If the plan includes online payment, use the provider's hosted checkout page, keep the key in a server-side file the owner enters in Settings, confirm payment through the provider's signed webhook (plus a status check when the customer returns), and never cancel an unpaid card order without first asking the provider whether it was paid.
 - Write in plain, short sentences.
 
 ## Images

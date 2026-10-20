@@ -2,7 +2,7 @@
 
 Build complete websites on the **SkyNet Framework** (ASP.NET Core, .NET 10) by describing them in one sentence. The agent plans the site, waits for your "go", then writes every page, paints original images, checks the layout on desktop, tablet and phone, and hands you a project that runs in Visual Studio.
 
-The website is ready for real use: every form saves (messages, sign-ups, orders, bookings) and there is no demo mode. The sample brand, products and team are placeholders for you to replace.
+The website is ready for real use: every form saves (messages, sign-ups, orders, bookings). A run-mode switch in `application.cfg` pre-fills the staff sign-in for a public showcase (Demo) or asks for real accounts (Production). The sample brand, products and team are placeholders for you to replace.
 
 ![A site built by the agent](docs/screenshot-starter.png)
 
@@ -130,7 +130,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.3
+    Version: 1.0.4
     Scope: user
     Status: √ enabled
 ```
@@ -262,6 +262,16 @@ Every command shows a plan first and waits for **go**.
 | `/skynet` shows nothing | Run `claude plugin list` in PowerShell; if `skynet` is missing, repeat Part 1 step 4 |
 | Lost the first admin password before using it | Delete `appConfig\initial-admin.txt` and open the sign-in page again; a new one is made |
 | Locked out of every manager account | Remove the managers from `data\staff.json` and open the sign-in page; a new first password is made |
+
+## What's new in 1.0.4
+
+- **Pages editor:** the owner edits the public pages in place: blocks for page top, text, picture and text, cards, steps, numbers, checklists, people, questions, quote, picture or video and call to action; drag or arrow to move, hide, remove, save with the last five versions kept. Parts that come from the site's data (product list, forms) stay on their page.
+- **Media library:** its own staff page for photos and MP4 videos, checked by file contents, with a video size limit in Settings, a picker every other admin page reuses, and up to six photos or videos per product.
+- **Demo and Production run mode:** `app.app.runmode` in `application.cfg`. Demo pre-fills the staff sign-in for a public showcase; Production is the real sign-in. Switching to Production ends demo sessions.
+- **Messages** is its own staff page; "View site" opens in a new tab.
+- **Payments rule:** hosted checkout must be confirmed by the provider's signed webhook, and an unpaid card order is never cancelled without asking the provider first.
+- **Build fix:** the starter `.csproj` now handles `temp\*.json` the same way as `data\*.json`, so the duplicate-content error no longer appears after the first staff sign-in. `/skynet:verify` checks for it.
+- **Phone header:** the shop name must stay visible at 390px; the checks look for it.
 
 ## What's new in 1.0.3
 

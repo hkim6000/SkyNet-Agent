@@ -28,6 +28,13 @@ def files(folder, ext):
     return sorted(out)
 
 
+for name in os.listdir(ROOT):
+    if name.endswith(".csproj"):
+        proj = read(os.path.join(ROOT, name))
+        for folder in ("data", "temp"):
+            if re.search(r'<Content Include="' + folder + r'\\\*\*"\s*>', proj):
+                problems.append(f"{name} includes {folder}\\** without Exclude=\"{folder}\\**\\*.json\" (NETSDK1022 once a .json file appears there)")
+
 for path in files("codes", ".cs") + files("scripts", ".js") + files("styles", ".css"):
     text = read(path)
     for i, line in enumerate(text.split("\n"), 1):

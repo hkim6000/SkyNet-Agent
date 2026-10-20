@@ -49,7 +49,14 @@ The SkyNet package (`TheSkyLite.SkyNet`) restores from NuGet. The app opens on *
 | [area] | View, Edit | [extra right, or blank] |
 | Users, Settings | managers only | |
 
-## First sign-in
+## Run mode
+
+`appConfig/application.cfg` has `app.app.runmode`:
+
+- **0 Demo** (as shipped): the staff sign-in is filled in (`demo` / `demo1234`) and any user name and password signs in as a demo manager with every right.
+- **1 Production:** staff sign in with their own accounts. Set this before you go live.
+
+## First sign-in (Production)
 
 1. Run the site on your computer and open **/AdminLogin**. The page shows the first user name (`admin`) and a password made just for this site. It is shown only on the computer the site runs on, and is also in `appConfig/initial-admin.txt`.
 2. Sign in and choose your own password. The box and the file disappear.

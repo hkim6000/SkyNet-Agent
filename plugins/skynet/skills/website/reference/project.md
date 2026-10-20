@@ -44,7 +44,8 @@ The [starter](../starter/) folder contains all of these, ready to copy.
     <Content Include="logs\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
     <Content Include="scripts\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
     <Content Include="styles\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
-    <Content Include="temp\**"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
+    <Content Include="temp\**" Exclude="temp\**\*.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
+    <Content Update="temp\**\*.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
     <Content Include="data\**" Exclude="data\**\*.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
     <Content Update="data\**\*.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>Always</CopyToPublishDirectory></Content>
   </ItemGroup>
@@ -52,7 +53,7 @@ The [starter](../starter/) folder contains all of these, ready to copy.
 </Project>
 ```
 
-Use the latest `TheSkyLite.SkyNet` version from NuGet (`dotnet add package TheSkyLite.SkyNet` updates it). The `data` rule is split on purpose: the Web SDK already includes `*.json` as content, and including it twice fails with NETSDK1022.
+Use the latest `TheSkyLite.SkyNet` version from NuGet (`dotnet add package TheSkyLite.SkyNet` updates it). The `data` and `temp` rules are split on purpose: the Web SDK already includes `*.json` as content, and including it twice fails with NETSDK1022. `temp` needs it too, because the staff sign-in writes `temp/admin/sessions.json`, so the error only appears after the first sign-in. Reference only `TheSkyLite.SkyNet`; it carries its own dependency versions, so never add `System.*` packages to a site to silence an audit warning.
 
 ## Program.cs
 
@@ -72,10 +73,13 @@ app.Run();
 
 ## appConfig/application.cfg
 
+The file starts with a comment header (`*****` lines). Line 2 of that header documents the run mode: `***** 2. app.app.runmode : 0.Demo (staff sign-in is filled in and any user name and password signs in), 1.Production (staff sign in with their own accounts)`. See [admin.md](admin.md#run-mode-demo-and-production).
+
 ```
 app.app.name | MySite
 app.app.version | 1.0
 app.app.releasedate | 1/1/2026
+app.app.runmode | 0
 app.app.startup | Home
 app.Settings.encryptkey | your-encrypt-key
 app.folders.code | codes

@@ -1,6 +1,6 @@
 # Admin and staff rights
 
-Read this when a site has a staff area: bookings, orders, articles, a schedule, anything people sign in to manage. It is the pattern used by the hotel, newspaper and clinic templates. The site always runs on its real data; there is no demo mode.
+Read this when a site has a staff area: bookings, orders, articles, a schedule, anything people sign in to manage. It is the pattern used by the hotel, newspaper and clinic templates. The site always runs on its real data. The only switch is the **run mode** below: Demo pre-fills the sign-in for a public showcase, Production is the real thing.
 
 ## Shape
 
@@ -10,7 +10,8 @@ Read this when a site has a staff area: bookings, orders, articles, a schedule, 
 | Dashboard | `Admin` (prefix `db-`; never `ad-`, see pitfalls) |
 | One page per area | `AdminBookings`, `AdminRooms`, ... |
 | Always | `AdminUsers`, `AdminSettings`, `AdminActivity`, `AdminAccount` |
-| Shared C# | `codes/Core/Store.cs`, `Access.cs`, `Auth.cs`, `Local.cs`, `Ui.cs` |
+| Shared C# | `codes/Core/Store.cs`, `Access.cs`, `Auth.cs`, `Local.cs`, `Ui.cs`; `Media.cs` when there is a media library ([media.md](media.md)); `Blocks.cs` when pages are block-edited ([pages.md](pages.md)) |
+| Usual areas | Orders or bookings, the catalogue, **Pages** (page text and pictures, [pages.md](pages.md)), **Media library** ([media.md](media.md)), **Messages** (the contact form inbox), Activity log, Settings, Users |
 | Data | `data/site.json`, `data/staff.json`, `data/activity.json` |
 | Run-time files | `temp/admin/sessions.json`; `appConfig/initial-admin.txt` until the first sign-in |
 
@@ -208,6 +209,37 @@ public override async Task OnInitialized()
 - After deploying, open `https://<site>/appConfig/initial-admin.txt` and `https://<site>/data/staff.json` in a browser: both must answer 404. If a host serves those folders, block them in the server settings.
 - `application.cfg` has no admin keys. Never commit `initial-admin.txt`, `data/staff.json` or `temp/` from a developer machine; add them to `.gitignore`.
 
+## Run mode: Demo and Production
+
+`appConfig/application.cfg` carries the switch, right after `app.app.releasedate`, and the header comment explains it:
+
+```
+***** 2. app.app.runmode : 0.Demo (staff sign-in is filled in and any user name and password signs in), 1.Production (staff sign in with their own accounts)
+app.app.runmode | 0
+```
+
+Templates ship with `0` (Demo) so a public showcase works without a password; the README tells the owner to set `1` before going live. `Store.Demo()` reads the line (cache it by the file's write time) and everything else keys off it:
+
+- **Demo:** the sign-in form is pre-filled (`demo` / `demo1234`) with a note *Any user name and password signs in as a demo manager with every right*. `SignIn` accepts anything and opens a session for a built-in `u-demo` manager (`Store.DemoManager()` creates it on first use: Admin, Active, no forced password change). A real account with its correct password still signs in as itself, so the owner can test roles. The first-password box and `initial-admin.txt` are never made in Demo. Nothing is blocked: visitors can upload, edit and delete like a manager.
+- **Production:** exactly the first-sign-in flow above. `Auth.Check` also refuses a session whose user is `u-demo` while the mode is `1`, so switching the file ends every demo session at once.
+
+```csharp
+public static bool Demo()
+{
+    DateTime stamp = File.GetLastWriteTimeUtc(ConfigFile);
+    if (stamp != configStamp)
+    {
+        string line = File.ReadLines(ConfigFile).Select(l => l.Trim()).FirstOrDefault(l => l.StartsWith("app.app.runmode", StringComparison.Ordinal)) ?? string.Empty;
+        string[] part = line.Split('|', 2);
+        demoMode = part.Length == 2 && part[1].Trim() == "0";
+        configStamp = stamp;
+    }
+    return demoMode;
+}
+```
+
+Test both: in Demo, an empty form and a random pair both reach the dashboard as *Demo manager*; in Production, both are refused and `demo`/`demo1234` is refused too.
+
 ## Storage rules
 
 - Wrap every load-change-save in one lock: `using (await Store.Hold()) { load; change; save; }`.
@@ -388,4 +420,5 @@ ask({ title: 'Cancel this appointment?', text: 'The time becomes free for others
 - Every role signs in and sees only its menu; a View user has no change buttons; a refused request appears in the log as Refused.
 - Every confirm dialog: OK goes ahead; Cancel, Esc and the backdrop step back.
 - After testing, delete `data/staff.json`, `data/activity.json`, `appConfig/initial-admin.txt` and `temp/admin`, so the delivered project starts clean and makes its own first password.
-- The README has the permission table and the first sign-in steps.
+- The README has the permission table, the run-mode line and the first sign-in steps.
+- "View site" in the admin header opens in a new tab.

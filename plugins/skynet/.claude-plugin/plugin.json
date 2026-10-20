@@ -1,8 +1,8 @@
 {
   "name": "skynet",
   "displayName": "SkyNet Agent",
-  "version": "1.0.3",
-  "description": "Plan, build and verify SkyNet Framework (ASP.NET Core .NET 10) websites: page model, staff admin with rights, generic SQL data layer, art painted in code, compile and browser checks, user manuals.",
+  "version": "1.0.4",
+  "description": "Plan, build and verify SkyNet Framework (ASP.NET Core .NET 10) websites: page model, staff admin with rights, media library and block-edited pages, Demo/Production run mode, generic SQL data layer, art painted in code, compile and browser checks, user manuals.",
   "author": {
     "name": "HC Kim",
     "url": "https://www.theskylite.com"

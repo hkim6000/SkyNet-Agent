@@ -47,6 +47,7 @@ Each of these broke a real build or a real page. Check the list before writing c
 | A base reset `.xx-site button { font: inherit; }` | Element-plus-class outranks `.xx-btn` and wipes button styles. Wrap base resets in `:where()`: `:where(.xx-site) :where(button, input, select, textarea) { font: inherit; }` |
 | The header's right side grows when someone signs in (name chip, tier badge, "My classes") | Signed-out checks pass while the signed-in header runs past the screen at 1180 to 1500 px. Check pages signed in too (`STATE` in `shots.js`); at middle widths hide the name and keep the badge, and trim nav padding |
 | Shared parts (header, footer) and a form using the same id (`-cname` for the footer's center name and the card form's name on card) | The server fills the wrong one and the form field cannot be typed into. Give shared parts ids that name their place (`-fname`, `-copyname`); `verify` reports duplicate ids |
+| The shop name is hidden or cut to "Petalbo…" in the header at 390px | The brand is part of the layout, not decoration. On phones shorten the other side first (hide the role line, the "View site" link, menu text), keep the name on one line with `min-width: 0; overflow: hidden; text-overflow: ellipsis` only as the last resort, and check the public and the admin header at 390 |
 | `white-space: nowrap` on a link (email, phone) inside a narrow grid card | It defeats `overflow-wrap: anywhere`; the text runs out of its card at desktop widths while the page itself does not scroll sideways, so page-level checks pass. Let long text wrap, or give the card a full row |
 
 ## Hosting
@@ -55,4 +56,5 @@ Each of these broke a real build or a real page. Check the list before writing c
 |---|---|
 | A strict Content-Security-Policy (for example `default-src 'self' 'unsafe-inline'`) blocks Google Fonts, `blob:` and `data:` images | Always give fonts a solid fallback stack; draw local previews with `createImageBitmap` on a `<canvas>` instead of `blob:` URLs |
 | The site runs in a sub-folder (`/MySite/Menu`) | Use relative links (`href="Menu"`, `src="images/..."`), never root-absolute ones |
-| `data/*.json` content duplicated by the Web SDK (NETSDK1022) | Use the csproj rules in project.md: `Exclude="data\**\*.json"` plus a separate `Content Update` |
+| `data/*.json` or `temp/*.json` content duplicated by the Web SDK (NETSDK1022) | Use the csproj rules in project.md: `Exclude="...\**\*.json"` plus a separate `Content Update`, for `data` **and** `temp`. The `temp` case shows up only after the first staff sign-in writes `temp/admin/sessions.json` |
+| Hosted card checkout (Stripe Checkout style) confirmed only when the customer comes back | A customer who pays and closes the tab is charged, and the site still marks the order unpaid and later cancels it. Confirm payment with the provider's signed webhook, and before auto-cancelling any unpaid card order ask the provider for the session's status first. Never expire a paid order |

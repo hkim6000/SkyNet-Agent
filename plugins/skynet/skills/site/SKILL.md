@@ -19,7 +19,7 @@ Reply with a compact plan:
 - **Pages:** table of page, two-letter prefix, purpose, server methods.
 - **Key features:** what the server calculates or validates, and what each form saves and where.
 - **Data:** `data/site.json` sections, or SQL tables (then follow the `sql` skill).
-- **Staff area (if any):** admin pages, roles with the areas each manages, and what is logged (follow `reference/admin.md` of the `website` skill). The first admin password is made on first start and shown on the sign-in page on the developer's computer.
+- **Staff area (if any):** admin pages, roles with the areas each manages, and what is logged (follow `reference/admin.md` of the `website` skill). Owner-editable content means a Media library, a Pages editor and a Messages page (`reference/media.md`, `reference/pages.md`), not a form per text field. The first admin password is made on first start and shown on the sign-in page on the developer's computer; the run mode in `application.cfg` ships as Demo.
 - **Images:** count and styles from the `art` skill.
 - **Questions:** at most three, only if the answer changes what you build.
 

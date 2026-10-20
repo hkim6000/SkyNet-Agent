@@ -65,7 +65,7 @@ Every page at every width must report `ok`: no broken images, no horizontal over
 STATE=signed-in.json node ${CLAUDE_SKILL_DIR}/scripts/shots.js http://localhost:5180 Home,Account 1440,1320,1180,820,390 shots-in
 ```
 
-Check the widths between the desktop and the tablet layout (1320, 1180) as well: a signed-in header is widest just before the menu folds.
+Check the widths between the desktop and the tablet layout (1320, 1180) as well: a signed-in header is widest just before the menu folds. At 390 look at the header itself: the shop name must be visible and not cut to "Petalbo…", on the public pages and in the admin.
 
 Also open pages with typical query strings (`Shop?c=botanical`, `Item?id=...`) and with a wrong one (`Item?id=zzz`): a missing record must show a friendly not-found section, never an exception.
 
@@ -81,7 +81,7 @@ Cover every server method: filters (result count and URL), search suggestions, e
 
 The offline preview server also catches pages that real SkyNet cannot find: a page name shared with another class, or a request method that has a private helper with the same name, fails in the runner with `not found` or `ambiguous`, as on a real server.
 
-For a site with an admin (see `admin.md` in the `website` skill), also test: the first sign-in box shows on the developer's computer, the first sign-in forces a new password and then the box and `appConfig/initial-admin.txt` are gone; each role signs in and sees only its menu items; a View-only user has no change buttons; a refused request is logged; confirm dialogs (OK goes ahead, Cancel and Esc step back). Afterwards delete `data/staff.json`, `data/activity.json`, `appConfig/initial-admin.txt` and `temp/admin`, so the delivered site makes its own first password.
+For a site with an admin (see `admin.md` in the `website` skill), also test both run modes: with `app.app.runmode | 0` the sign-in is pre-filled and an empty or random pair reaches the dashboard as the demo manager; with `1` both are refused. In Production: the first sign-in box shows on the developer's computer, the first sign-in forces a new password and then the box and `appConfig/initial-admin.txt` are gone; each role signs in and sees only its menu items; a View-only user has no change buttons; a refused request is logged; confirm dialogs (OK goes ahead, Cancel and Esc step back). Afterwards delete `data/staff.json`, `data/activity.json`, `appConfig/initial-admin.txt` and `temp/admin`, so the delivered site makes its own first password. With a media library (`media.md`) run its "Before delivering" list, and with block-edited pages (`pages.md`) theirs: a moved block changes the public page after Save, a bad link is refused, Restore brings a version back.
 
 ## 6. Report
 
