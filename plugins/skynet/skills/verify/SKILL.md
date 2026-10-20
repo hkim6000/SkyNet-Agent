@@ -57,6 +57,8 @@ Install once, in the folder you run the scripts from (the sites folder) or globa
 node ${CLAUDE_SKILL_DIR}/scripts/shots.js http://localhost:5180 Home,Shop,Contact 1440,820,390 shots
 ```
 
+`shots.js` uses Playwright's own Chromium when it is installed and otherwise the one at `CHROMIUM_PATH` or `/opt/pw-browsers/chromium`; it never asks you to run `playwright install`.
+
 Every page at every width must report `ok`: no broken images, no horizontal overflow, no clipped text, no duplicate element ids, no leftover `{plhd_*}`, no JavaScript errors and no failed requests. **Clipped text** is text that runs out of its own box or card (for example a `nowrap` email address in a narrow column) or is cut off by an `overflow: hidden` parent; the page itself may not scroll sideways, so check the widths where columns are narrowest, often 1440 and 820, not only 390. Then **look at the screenshots** (open the PNG files): check alignment, spacing, contrast, text wrapping, empty areas and overlaps. Automated checks do not see ugly layouts.
 
 **Signed in, too.** Headers and pages change when a member or staff user is signed in (a name chip, a tier badge, "My classes"), and that is where overflow hides. In the interaction script, sign in and save the session with `await ctx.storageState({ path: 'signed-in.json' })`, then run the same pages again with it:
@@ -65,7 +67,7 @@ Every page at every width must report `ok`: no broken images, no horizontal over
 STATE=signed-in.json node ${CLAUDE_SKILL_DIR}/scripts/shots.js http://localhost:5180 Home,Account 1440,1320,1180,820,390 shots-in
 ```
 
-Check the widths between the desktop and the tablet layout (1320, 1180) as well: a signed-in header is widest just before the menu folds. At 390 look at the header itself: the shop name must be visible and not cut to "Petalbo…", on the public pages and in the admin.
+Check the widths between the desktop and the tablet layout (1320, 1180) as well: a signed-in header is widest just before the menu folds. At 390 look at the header itself: the shop name must be visible and not cut to "Petalbo…", on the public pages and in the admin, and the admin header must not show the signed-in name next to the brand. Open every admin list at 390 with data in it: rows must be cards, with no column cut off inside a side-scroll box.
 
 Also open pages with typical query strings (`Shop?c=botanical`, `Item?id=...`) and with a wrong one (`Item?id=zzz`): a missing record must show a friendly not-found section, never an exception.
 
@@ -77,7 +79,7 @@ Copy `${CLAUDE_SKILL_DIR}/scripts/interact.template.js` next to the site, rewrit
 node interact.js http://localhost:5180
 ```
 
-Cover every server method: filters (result count and URL), search suggestions, every form (empty submit shows server errors, valid submit shows the confirmation), carts and totals, sign-in states, modals and keyboard actions. Wait for the server with `page.waitForLoadState('networkidle')` after each action. After opening each modal or form that the server fills in, call `dupIds(page)`: an id used twice (a footer and a form field, say) makes the server write into the wrong element.
+For bookings and orders, test the status rules against the clock: create a booking for a future day and check that check-in and no-show are refused by the server (and their buttons are missing), then one for today and walk it booked → arrived → done → paid. Cover every server method: filters (result count and URL), search suggestions, every form (empty submit shows server errors, valid submit shows the confirmation), carts and totals, sign-in states, modals and keyboard actions. Wait for the server with `page.waitForLoadState('networkidle')` after each action. After opening each modal or form that the server fills in, call `dupIds(page)`: an id used twice (a footer and a form field, say) makes the server write into the wrong element.
 
 The offline preview server also catches pages that real SkyNet cannot find: a page name shared with another class, or a request method that has a private helper with the same name, fails in the runner with `not found` or `ambiguous`, as on a real server.
 

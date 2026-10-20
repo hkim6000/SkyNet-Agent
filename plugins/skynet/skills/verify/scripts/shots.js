@@ -5,7 +5,14 @@ const base = (process.argv[2] || 'http://localhost:5180/').replace(/\/?$/, '/');
 const pages = (process.argv[3] || 'Home').split(',');
 const widths = (process.argv[4] || '1440,820,390').split(',').map(Number);
 const out = process.argv[5] || 'shots';
-const launch = process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {};
+const launch = (() => {
+  if (process.env.CHROMIUM_PATH) { return { executablePath: process.env.CHROMIUM_PATH }; }
+  try { if (fs.existsSync(chromium.executablePath())) { return {}; } } catch (e) { }
+  for (const c of ['/opt/pw-browsers/chromium', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome']) {
+    if (fs.existsSync(c)) { return { executablePath: c }; }
+  }
+  return {};
+})();
 
 (async () => {
   fs.mkdirSync(out, { recursive: true });

@@ -14,7 +14,7 @@ Agree on these before writing code:
 ## Layout
 
 - Content width about 1240px with 28px side padding (16px on phones).
-- Sticky header: logo, menu, search, account; on tablets and phones a burger opens a slide-in menu with a scrim. The brand name stays visible and whole at 390px (public and admin); drop secondary items first.
+- Sticky header: logo, menu, search, account; on tablets and phones a burger opens a slide-in menu with a scrim. The brand name stays visible and whole at 390px (public and admin); drop secondary items first. In the admin header at phone width hide the signed-in name and role (they are in the slide-in menu) and keep only the burger, the brand and Sign out.
 - Admin "View site" links open in a new tab (`target="_blank" rel="noopener"`), so staff keep their place.
 - Sections spaced 44 to 56px apart; one clear heading per section with a "See all" link where it helps.
 - Cards: image, small eyebrow label, title, one or two lines of detail, actions.
@@ -41,6 +41,7 @@ On phones, put the most important action near the top (for example the booking b
 - **Viewer or modal:** open by id (`?w=key` deep link), Esc closes, arrow keys step, swipe on touch.
 - **Carts and bookings:** the browser keeps the list; the server recalculates every price and checks every rule each time.
 - **Confirm before changing data:** an in-page dialog, never `window.confirm` (browsers can suppress it and it looks foreign). The title is the question (*Cancel this appointment?*), one line says what happens, the buttons are verbs (*Keep it* / *Cancel appointment*) with the risky one in red. Enter confirms; Esc, the backdrop and the left button step back; focus stays in the dialog and returns afterwards. An optional text field takes a reason, checked before closing. Ask for every action that changes data from a list, card or detail window (check in, move, cancel, delete, publish). A form with a Save button needs no extra question, but closing it or leaving the page with unsaved changes asks *Leave without saving?*. Code: [admin.md](admin.md#confirm-dialog).
+- **Admin lists on phones:** below 600px a table with more than three columns becomes a stack of cards (one record per card, label and value per line) instead of a side-scrolling table; nothing is cut off and nothing scrolls sideways.
 - **Admin lists:** the server searches, filters and pages (`const int Size = 10` to `25`) and returns the rows plus a pager (*Page 1 of 11 · 273 appointments*). Search waits 250ms after typing; changing a filter goes back to page 1; saving an edit reloads the current page, not page 1; an empty result says *No services match.* Request keys must not equal query-string names (`term`, not `q`).
 
 ## Accessibility
@@ -56,6 +57,7 @@ On phones, put the most important action near the top (for example the booking b
 - Sample content (brand, products, services, team, address) is invented for the owner to replace. Use `.example` email domains and 555 phone numbers.
 - No real trademarks, logos, famous artworks or characters.
 - No invented reviews or testimonials; leave room for the owner's real ones.
+- **Visit and order status follows the clock.** A booking can be checked in (arrived) only on its own day, marked no-show only after its start time, and marked done only after check-in; the server refuses the rest with a message, and the buttons for actions that are not yet allowed are not shown. Cancel is allowed any time before check-in.
 - No payment-card fields. Orders and bookings are saved as unpaid (pay on pickup, on arrival or by invoice) until the owner adds a payment provider. If the plan includes online payment, use the provider's hosted checkout page, keep the key in a server-side file the owner enters in Settings, confirm payment through the provider's signed webhook (plus a status check when the customer returns), and never cancel an unpaid card order without first asking the provider whether it was paid.
 - Write in plain, short sentences.
 

@@ -34,7 +34,8 @@ The [starter](../starter/) folder contains all of these, ready to copy.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TheSkyLite.SkyNet" Version="1.0.5" />
+    <PackageReference Include="TheSkyLite.SkyNet" Version="1.0.6" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,7 +54,7 @@ The [starter](../starter/) folder contains all of these, ready to copy.
 </Project>
 ```
 
-Use the latest `TheSkyLite.SkyNet` version from NuGet (`dotnet add package TheSkyLite.SkyNet` updates it). The `data` and `temp` rules are split on purpose: the Web SDK already includes `*.json` as content, and including it twice fails with NETSDK1022. `temp` needs it too, because the staff sign-in writes `temp/admin/sessions.json`, so the error only appears after the first sign-in. Reference only `TheSkyLite.SkyNet`; it carries its own dependency versions, so never add `System.*` packages to a site to silence an audit warning.
+Use the latest `TheSkyLite.SkyNet` version from NuGet (`dotnet add package TheSkyLite.SkyNet` updates it). The `data` and `temp` rules are split on purpose: the Web SDK already includes `*.json` as content, and including it twice fails with NETSDK1022. `temp` needs it too, because the staff sign-in writes `temp/admin/sessions.json`, so the error only appears after the first sign-in. Keep the two package lines as they are: `TheSkyLite.SkyNet` at the version in the starter and `System.Security.Cryptography.Pkcs` pinned to 10.0.13, which lifts the 9.0.x version the framework package would otherwise pull in. Add no other `System.*` packages to silence an audit warning.
 
 ## Program.cs
 
@@ -78,7 +79,7 @@ The file starts with a comment header (`*****` lines). Line 2 of that header doc
 ```
 app.app.name | MySite
 app.app.version | 1.0
-app.app.releasedate | 1/1/2026
+app.app.releasedate | 1/1/2026       (set to the day you deliver the site, M/D/YYYY)
 app.app.runmode | 0
 app.app.startup | Home
 app.Settings.encryptkey | your-encrypt-key

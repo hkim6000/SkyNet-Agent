@@ -421,4 +421,5 @@ ask({ title: 'Cancel this appointment?', text: 'The time becomes free for others
 - Every confirm dialog: OK goes ahead; Cancel, Esc and the backdrop step back.
 - After testing, delete `data/staff.json`, `data/activity.json`, `appConfig/initial-admin.txt` and `temp/admin`, so the delivered project starts clean and makes its own first password.
 - The README has the permission table, the run-mode line and the first sign-in steps.
-- "View site" in the admin header opens in a new tab.
+- "View site" in the admin header opens in a new tab; at 390 the header shows the brand and Sign out only.
+- The project root holds the starter's `LICENSE`; `app.app.releasedate` is the delivery date; the csproj carries `TheSkyLite.SkyNet` and `System.Security.Cryptography.Pkcs` 10.0.13 and nothing else.

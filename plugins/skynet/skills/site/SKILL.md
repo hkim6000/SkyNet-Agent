@@ -31,7 +31,7 @@ Then stop and wait for the user to say "go". Apply any changes they ask for firs
 2. Write `data/site.json` and `codes/Models/<Project>Model.cs`.
 3. Build each page: `htmls/X.html`, `styles/X.css`, `codes/X.cs`, `scripts/X.js`, following `reference/page-model.md` and `reference/pitfalls.md` of the `website` skill.
 4. Paint the images with the `art` skill; check a contact sheet and fix weak ones.
-5. Copy the `LICENSE` from the plugin root if the user wants the MIT template license; write `README.md` from `reference/readme-template.md` with real counts.
+5. Keep the starter's `LICENSE` at the project root (template code MIT, framework proprietary) and point the README's license section at it; write `README.md` from `reference/readme-template.md` with real counts. Set `app.app.releasedate` to today's date.
 
 ## Step 3 - Verify
 

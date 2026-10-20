@@ -130,7 +130,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.4
+    Version: 1.0.5
     Scope: user
     Status: √ enabled
 ```
@@ -262,6 +262,16 @@ Every command shows a plan first and waits for **go**.
 | `/skynet` shows nothing | Run `claude plugin list` in PowerShell; if `skynet` is missing, repeat Part 1 step 4 |
 | Lost the first admin password before using it | Delete `appConfig\initial-admin.txt` and open the sign-in page again; a new one is made |
 | Locked out of every manager account | Remove the managers from `data\staff.json` and open the sign-in page; a new first password is made |
+
+## What's new in 1.0.5
+
+- **Packages:** the starter references `TheSkyLite.SkyNet` 1.0.6 and pins `System.Security.Cryptography.Pkcs` 10.0.13 (no more 9.0.x audit warning).
+- **License:** the starter ships the template `LICENSE` (template code MIT, framework proprietary) and the README points at it.
+- **Status rules by the clock:** check-in only on the visit day, no-show only after the start time, done only after check-in; the verify skill tests them with a future booking.
+- **Admin on phones:** the header shows the brand and Sign out only; lists become cards below 600px.
+- **Builder:** never ends a turn while a background build, test or screenshot run is still going.
+- **`shots.js`:** falls back to an installed Chromium when Playwright's own browser is missing.
+- `app.app.releasedate` is set to the delivery date.
 
 ## What's new in 1.0.4
 

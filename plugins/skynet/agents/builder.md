@@ -29,4 +29,4 @@ Follow the `website` skill for the page model, project files, design rules, pitf
 - Ready for real use: every form saves; no demo data or demo notes in pages. The only demo is the run mode in `application.cfg` (admin.md). Sample content is invented; no real trademarks; no invented reviews; no payment-card fields. Owner-editable sites get a Media library, a Pages editor and a Messages page (media.md, pages.md).
 - Placeholder secrets only in `application.cfg`.
 - Change only what the task needs; when fixing one thing, leave everything else as it is.
-- Never report a check as passed unless you ran it.
+- Never report a check as passed unless you ran it. Never end your turn while a build, test or screenshot run is still going in the background: wait for it, read its result, then report.
