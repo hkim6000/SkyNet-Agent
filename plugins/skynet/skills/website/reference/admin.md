@@ -82,6 +82,7 @@ public class Staff
 - The browser keeps the token in a cookie (`xx_tok`, `path=` the site's base folder, `samesite=lax`). Every admin request sends it as the key `tok`; `Load` answers with the menu and the signed-in person, or `expired()` sends the browser back to `AdminLogin`.
 - Changing someone's password, or switching them off, closes all their sessions. Changing your own password in My account closes your other sessions and keeps this one.
 - A user with `MustChange` (the first manager, or anyone whose password a manager reset) gets no session until they choose their own password on the sign-in page.
+- **Staff sign-in is reachable from the public site.** Every public page's footer links to **Staff sign in** (`/AdminLogin`). When the site also has customer accounts, the header's **Sign in** opens a gateway page with a customer card and a staff card ([accounts.md](accounts.md)); without customer accounts the header needs no sign-in button and the footer link is enough.
 
 ```js
 function api(method, list) {
@@ -220,7 +221,7 @@ app.app.runmode | 0
 
 Templates ship with `0` (Demo) so a public showcase works without a password; the README tells the owner to set `1` before going live. `Store.Demo()` reads the line (cache it by the file's write time) and everything else keys off it:
 
-- **Demo:** the sign-in form is pre-filled (`demo` / `demo1234`) with a note *Any user name and password signs in as a demo manager with every right*. `SignIn` accepts anything and opens a session for a built-in `u-demo` manager (`Store.DemoManager()` creates it on first use: Admin, Active, no forced password change). A real account with its correct password still signs in as itself, so the owner can test roles. The first-password box and `initial-admin.txt` are never made in Demo. Nothing is blocked: visitors can upload, edit and delete like a manager.
+- **Demo:** the sign-in form is pre-filled (`demo` / `demo1234`) with a note *Any user name and password signs in as a demo manager with every right* that also lists the sample staff logins by role (*instructors maya and luis, registrar rosa … password demo1234*). A customer sign-in form is pre-filled the same way with the first sample customer and lists the others. `SignIn` accepts anything and opens a session for a built-in `u-demo` manager (`Store.DemoManager()` creates it on first use: Admin, Active, no forced password change). A real account with its correct password still signs in as itself, so the owner can test roles. The first-password box and `initial-admin.txt` are never made in Demo. Nothing is blocked: visitors can upload, edit and delete like a manager.
 - **Production:** exactly the first-sign-in flow above. `Auth.Check` also refuses a session whose user is `u-demo` while the mode is `1`, so switching the file ends every demo session at once.
 
 ```csharp
@@ -424,4 +425,6 @@ ask({ title: 'Cancel this appointment?', text: 'The time becomes free for others
 - "View site" in the admin header opens in a new tab; at 390 the header shows the brand and Sign out only.
 - Sample data is in place for the Demo, and `Core/Init.cs` with the Settings button exist and were tested both ways ([initialize.md](initialize.md)).
 - The users list shows rights in words, not letters.
+- Every public footer has **Staff sign in**; in Demo both sign-in forms are pre-filled and list the sample logins; in Production both start empty.
+- The admin header is built the same way on every admin page: at 390 the brand text is hidden and the signed-in name fits (`check_sources.py` compares the phone rules of every admin stylesheet and fails when one page differs).
 - The project root holds the starter's `LICENSE`; `app.app.releasedate` is the delivery date; the csproj carries `TheSkyLite.SkyNet` and `System.Security.Cryptography.Pkcs` 10.0.13 and nothing else.

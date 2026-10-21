@@ -6,7 +6,14 @@ const OUT = (process.argv[3] || 'manual/raw').replace(/\/?$/, '/');
 const ONLY = process.argv[4] ? process.argv[4].split(',') : null;
 const USER = process.env.MANUAL_USER || 'admin';
 const PASS = process.env.MANUAL_PASS || '';
-const LAUNCH = process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {};
+const LAUNCH = (() => {
+  if (process.env.CHROMIUM_PATH) { return { executablePath: process.env.CHROMIUM_PATH }; }
+  try { if (fs.existsSync(chromium.executablePath())) { return {}; } } catch (e) { }
+  for (const c of ['/opt/pw-browsers/chromium', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome']) {
+    if (fs.existsSync(c)) { return { executablePath: c }; }
+  }
+  return {};
+})();
 const SCRUB_WORDS = [];
 
 const SCRUB = words => {

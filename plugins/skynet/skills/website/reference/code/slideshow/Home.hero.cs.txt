@@ -1,0 +1,34 @@
+// Home.cs - the page-top renderer: one picture, or a slideshow when the block has slides
+
+        private static string Hero(SiteData site, List<MediaItem> media, Block b, bool h1)
+        {
+            string tag = h1 ? "h1" : "h2";
+            bool vid = Blocks.IsVideo(b.Media);
+            string mv = Mv(media, b.Media, Tok(site, b.Title), vid, h1);
+            List<BlockItem> more = b.Items.Where(i => i.Media != string.Empty && !Blocks.IsVideo(i.Media) && media.Any(m => m.Path == i.Media)).ToList();
+            if (mv != string.Empty && more.Count > 0)
+            {
+                MediaItem? first = media.FirstOrDefault(m => m.Path == b.Media);
+                StringBuilder sl = new StringBuilder("<div class=\"hm-bhero-p hm-slides\" id=\"hm-slides\" aria-roledescription=\"carousel\" aria-label=\"Pictures of the school\">");
+                List<(string Html, string Cap)> all = new List<(string, string)> { (mv, first?.Caption ?? string.Empty) };
+                foreach (BlockItem it in more)
+                {
+                    MediaItem? m = media.FirstOrDefault(x => x.Path == it.Media);
+                    string alt = m != null && m.Alt != string.Empty ? m.Alt : it.Title;
+                    all.Add(("<img src=\"" + Ui.Esc(it.Media) + "\" alt=\"" + Ui.Esc(alt) + "\" decoding=\"async\">", it.Title));
+                }
+                for (int k = 0; k < all.Count; k++)
+                {
+                    sl.Append("<figure class=\"hm-slide" + (k == 0 ? " hm-on" : string.Empty) + "\" aria-roledescription=\"slide\" aria-label=\"" + (k + 1) + " of " + all.Count + "\"" + (k == 0 ? string.Empty : " aria-hidden=\"true\"") + ">" + all[k].Html + (all[k].Cap == string.Empty ? string.Empty : "<figcaption>" + Ui.Esc(all[k].Cap) + "</figcaption>") + "</figure>");
+                }
+                sl.Append("<div class=\"hm-sctl\"><button type=\"button\" class=\"hm-sarr\" aria-label=\"Previous picture\" onclick=\"HomeJs.slide(-1)\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 6l-6 6 6 6\"/></svg></button><div class=\"hm-sdots\">");
+                for (int k = 0; k < all.Count; k++)
+                {
+                    sl.Append("<button type=\"button\" class=\"hm-sdot" + (k == 0 ? " hm-on" : string.Empty) + "\" aria-label=\"Show picture " + (k + 1) + "\" aria-pressed=\"" + (k == 0 ? "true" : "false") + "\" onclick=\"HomeJs.slideTo(" + k + ")\"></button>");
+                }
+                sl.Append("</div><button type=\"button\" class=\"hm-sarr\" aria-label=\"Next picture\" onclick=\"HomeJs.slide(1)\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 6l6 6-6 6\"/></svg></button></div></div>");
+                return "<section class=\"hm-bhero hm-bslides\" id=\"" + Ui.Esc(b.Id) + "\">" + sl + "<div class=\"hm-wrap hm-bhero-in\"><div class=\"hm-bhero-t\">" + Kick(site, b) + "<" + tag + " class=\"hm-btitle\">" + Ui.Esc(Tok(site, b.Title)) + "</" + tag + ">" + Rich(site, b.Text, "hm-blead") + Btns(site, b) + "</div></div></section>";
+            }
+            return "<section class=\"hm-bhero" + (mv == string.Empty ? " hm-bplain" : string.Empty) + "\" id=\"" + Ui.Esc(b.Id) + "\">" + (mv != string.Empty ? "<div class=\"hm-bhero-p\">" + mv + "</div>" : string.Empty) + "<div class=\"hm-wrap hm-bhero-in\"><div class=\"hm-bhero-t\">" + Kick(site, b) + "<" + tag + " class=\"hm-btitle\">" + Ui.Esc(Tok(site, b.Title)) + "</" + tag + ">" + Rich(site, b.Text, "hm-blead") + Btns(site, b) + "</div></div></section>";
+        }
+

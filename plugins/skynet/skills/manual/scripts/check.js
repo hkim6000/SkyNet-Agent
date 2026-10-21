@@ -4,8 +4,15 @@ const path = require('path');
 
 const file = path.resolve(process.argv[2] || '');
 const out = process.argv[3] || path.join(path.dirname(file), 'check');
-const banned = (process.argv[4] || 'demo,lorem,TODO').split(',').filter(Boolean);
-const LAUNCH = process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {};
+const banned = (process.argv[4] || 'demo,lorem,TODO,demo1234,sample').split(',').filter(Boolean);
+const LAUNCH = (() => {
+  if (process.env.CHROMIUM_PATH) { return { executablePath: process.env.CHROMIUM_PATH }; }
+  try { if (fs.existsSync(chromium.executablePath())) { return {}; } } catch (e) { }
+  for (const c of ['/opt/pw-browsers/chromium', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome']) {
+    if (fs.existsSync(c)) { return { executablePath: c }; }
+  }
+  return {};
+})();
 
 if (!fs.existsSync(file)) {
   console.log('usage: node check.js <Manual.html> [shots-folder] [banned,words]');

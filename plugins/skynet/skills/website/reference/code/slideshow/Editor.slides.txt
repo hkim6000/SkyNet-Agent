@@ -1,0 +1,22 @@
+// Blocks.cs - the hero spec gains items (media + caption):
+new PartSpec { Key = "hero", Name = "Page top", Desc = "Big title, text, buttons and a picture or video. On the Home page, more pictures play as a slideshow.", Fields = "kicker,title,text,media,buttons,items", ItemFields = "media,title" },
+
+// Blocks.Clean - keep slides only on the home page, media and a 60-character caption:
+                    if (type == "hero")
+                    {
+                        b.Items = page.Key == "home" ? b.Items.Where(x => x.Media != string.Empty).Select(x => new BlockItem { Media = x.Media, Title = x.Title.Length > 60 ? x.Title.Substring(0, 60) : x.Title }).ToList() : new List<BlockItem>();
+                    }
+
+
+// AdminPages.ItemEd - the caption placeholder:
+                "hero" => ("Caption, for example Classroom", string.Empty),
+
+// AdminPages.Ed - the Slides list (Ed takes the page key so other pages' heroes show no list; AddBlock passes it too):
+            if (Blocks.Has(spec, "items") && (b.Type != "hero" || page == "home"))
+            {
+                sb.Append(b.Type == "hero" ? "<div class=\"pg-slides\"><b>Slides</b><p class=\"pg-hint2\">The picture above is the first slide. Add more pictures and they change every 7 seconds. The caption shows in the corner of each picture.</p><div class=\"pg-eitems pg-sitems\" data-f=\"items\">" : "<div><div class=\"pg-eitems\" data-f=\"items\">");
+                foreach (BlockItem it in b.Items)
+                {
+                    sb.Append(ItemEd(lib, b, spec, it, ro));
+                }
+                sb.Append("</div>" + (ro ? string.Empty : "<button type=\"button\" class=\"pg-eadd\" onclick=\"AdminPagesJs.addItem(this)\">+ Add " + (b.Type switch { "steps" => "a step", "faq" => "a question", "boxes" => "a box", "cards" => "a card", "stats" => "a number", "people" => "a person", "hero" => "a slide", _ => "a line" }) + "</button>...

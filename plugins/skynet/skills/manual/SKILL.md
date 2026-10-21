@@ -14,7 +14,7 @@ Load the `skynet:website` skill (and `admin.md` if the site has a staff area) an
 
 ## Rules
 
-- **Real use.** Write for the clinic, shop or hotel that runs the site. Capture with `app.app.runmode | 1` so the sign-in page and the admin look as they do in Production; put the mode back afterwards. No sample passwords or invented staff logins in the text, and no password in any screenshot or diagram (mask it as `****-****-****`). The word "demo" appears nowhere; describe run mode only in Installation & Setup. Installation & Setup shows the first-sign-in box once; everywhere else people sign in with their own accounts.
+- **Real use.** Write for the clinic, shop or hotel that runs the site. Capture with `app.app.runmode | 1` on a copy of the project so the sign-in page and the admin look as they do in Production (step 2 lists the capture-only patches); the delivered project stays as it is. No sample passwords or invented staff logins in the text, and no password in any screenshot or diagram (mask it as `****-****-****`). The word "demo" appears nowhere; describe run mode only in Installation & Setup. Installation & Setup shows the first-sign-in box once; everywhere else people sign in with their own accounts.
 - **One worked flow.** Walk the site's main flow end to end for the screenshots (request → record → each status → payment, or the site's equivalent), including one refused action, so every chapter shows a real record rather than an empty list.
 - **Every fact from the code.** Before writing a sentence about a limit, a status, a right, a badge or a button, find it in the C# or JS. Write nothing from memory or from the README alone; when the code and the README disagree, the code wins.
 - **Plain words, short sentences.** The reader is the front desk, not a developer. Name buttons in **bold** exactly as on screen. Use the site's own words (its Words settings).
@@ -33,7 +33,13 @@ Wait for "go".
 
 ## Step 2 - Capture
 
-1. **Back up** `data/`, `appConfig/` and `temp/` outside the project. The capture adds records you must not deliver.
+0. **Capture on a copy.** Copy the whole project to a capture folder and work there; the delivered project is never touched. On the copy, make the Production screens possible without a real server or provider (these are capture-only patches, listed here so you never invent your own):
+   - `Local.Request()` returns `true` when there is no `HttpContext` (the preview server has none), so the first-sign-in box shows.
+   - Write `data/initialized.txt` by hand before the first start, so the first Production start does not wipe the sample records you are about to photograph.
+   - Payment or refund calls to the provider are simulated with a realistic id (`re_3Q…`, `pi_3Q…`), and the config carries a key that *looks* set (`sk_live_…CaptureOnly…`), so Settings shows "set" and the refund desk works. Nothing contacts the provider.
+   - In the sample data, replace the test-payment wording with the real method name (`"Card (Stripe)"`), `pi_demo_`/`cs_demo_`/`re_demo_` ids with provider-shaped ids, and `"source": "demo"` with `"stripe"`, so no screenshot says demo.
+   - For a reset-link or notification email, point `app.mail.server` at a local SMTP on port 25 (a 30-line Python socket server that answers 220/250/354 is enough) and read the mail it writes.
+1. **Back up** `data/`, `appConfig/` and `temp/` of the capture copy too, so a step can be rerun on fresh data.
 2. **Fill the data for the screenshots.** Start from the site's sample data (`data/`, see the website skill's initialize.md); it already has staff for each role and records in every status. If the site has none, write a small script that adds invented records to the copy in `data/`: staff for each role, customers or patients, bookings or orders around today with every status, a few website messages. Make today look like a working day: earlier visits done, one in progress, one waiting, the rest booked. If you capture at night or on a closed day, set the site's time zone in the copied data to one where it is now mid-afternoon on a working day (UTC+12, +13 or +14 cover most hours), so sessions are running and the dashboard is busy; put the real time zone back before you capture the Settings page. A site that moves its sample dates to today on the first run rewrites `data/` as soon as it starts, one more reason to restore from the backup.
 3. Start the app on your computer and open `/AdminLogin`. Screenshot the first-sign-in box (`first_signin`), sign in with the password it shows, screenshot the *choose your own password* step (`first_choose`), and save a new password. Then sign in as a manager with a real-looking name, so the header and the activity log show a person, not `admin`.
 4. Copy `${CLAUDE_SKILL_DIR}/scripts/capture.template.js` next to the site, rewrite the steps, and run it:
@@ -46,7 +52,7 @@ MANUAL_USER=<manager login> MANUAL_PASS=<their password> node capture.js http://
    - Windows and dialogs: element screenshots (`part()`), taken with a tall viewport so nothing is cut.
    - Confirm dialogs: open them, screenshot, then step back or confirm.
    - Rerun one step with a third argument: `node capture.js <url> manual/raw schedule,users`. Steps that change data need the data reset first.
-5. **Restore** `data/`, `appConfig/` and `temp/` from the backup and prove it: `diff -r <backup>/data data` and `diff -r <backup>/appConfig appConfig` print nothing. The delivered site must still make its own first password.
+5. **Prove the delivered project is untouched**: `diff -rq <project> <capture copy>` lists only the capture-only patches and the records the capture added, all of them in the copy. Delete the copy when the manual is built.
 6. Convert to JPEG (full screens 1100 px wide, windows half their pixel width up to 1100, phones 430):
 
 ```bash
@@ -83,10 +89,10 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/build.py manual "Willowmere Clinic"
 node ${CLAUDE_SKILL_DIR}/scripts/check.js manual/Willowmere_Clinic_User_Manual.html manual/check
 ```
 
-`build.py` embeds the JPEGs and reports missing and unused images; `check.js` fails on placeholder words (`demo`, `lorem`, `TODO` by default; add the site's own as the third argument), broken cross-links, h2 without id, broken images, content wider than the page at 1440, 820 and 390, JavaScript errors, an empty search and a zoom that does not open. It also saves every diagram as a PNG: open each one and fix overlapping text, labels on lines and text outside boxes.
+`build.py` embeds the JPEGs and reports missing and unused images; `check.js` fails on placeholder words (`demo`, `demo1234`, `sample`, `lorem`, `TODO` by default; add the site's own as the third argument; "sample" is allowed only where you write "invented" instead), broken cross-links, h2 without id, broken images, content wider than the page at 1440, 820 and 390, JavaScript errors, an empty search and a zoom that does not open. It also saves every diagram as a PNG: open each one and fix overlapping text, labels on lines and text outside boxes.
 
 Then read the whole manual once more against the code: every number, button name and right.
 
 ## Step 5 - Deliver
 
-Send the one HTML file. List, in a few lines, the site problems found while capturing and whether they were fixed. Confirm that the project's `data/`, `appConfig/` and `temp/` are back to their original state.
+Send the one HTML file. List, in a few lines, the site problems found while capturing and whether they were fixed. Confirm that the delivered project was not touched (`diff -r <project> <capture copy>` shows only the capture-only patches, all of them in the copy) and that its `data/`, `appConfig/` and `temp/` are as they were.

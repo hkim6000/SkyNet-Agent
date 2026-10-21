@@ -10,6 +10,8 @@ Target folder: `$ARGUMENTS` (default: the current project folder, the one that h
 
 Run every step. Fix what fails, then run the failing step again. Report the results in a short table; never claim a check passed without running it.
 
+**Order and data.** Back up `data/`, `appConfig/` and `temp/` first. Run read-only checks, then the flows that add records (sign-up, order, request, approve), then the destructive tests last (Initialize data from Settings, the first Production start), restoring the backup before each destructive one and after the whole run. Never leave the delivered `data/` with test records. Wait for every background process you started before you report; the plugin's Stop hook blocks the turn while one is running.
+
 ## 1. Source checks
 
 ```bash

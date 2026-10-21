@@ -1,0 +1,47 @@
+// Join.js - the parts that switch forms and call the server; the rest is the usual page skeleton
+
+    function mode(m) {
+        el('jn-form-in').hidden = m !== 'in';
+        el('jn-form-new').hidden = m !== 'new';
+        el('jn-form-forgot').hidden = m !== 'forgot';
+        el('jn-form-reset').hidden = m !== 'reset';
+        el('jn-tab-in').classList.toggle('jn-act', m !== 'new');
+        el('jn-tab-new').classList.toggle('jn-act', m === 'new');
+        el('jn-tab-in').setAttribute('aria-selected', m !== 'new' ? 'true' : 'false');
+        el('jn-tab-new').setAttribute('aria-selected', m === 'new' ? 'true' : 'false');
+        if (m === 'forgot') {
+            el('jn-femail').focus();
+        }
+    }
+
+    function forgot() {
+        call('Forgot', [{ key: 'femail', vlu: val('jn-femail') }]);
+        return false;
+    }
+
+    function reset() {
+        call('Reset', [{ key: 'rtoken', vlu: val('jn-reset') }, { key: 'rpass1', vlu: el('jn-rpass1').value }, { key: 'rpass2', vlu: el('jn-rpass2').value }]);
+        return false;
+    }
+
+    function signIn() {
+        call('SignIn', [{ key: 'jemail', vlu: val('jn-email') }, { key: 'jpass', vlu: el('jn-pass').value }]);
+        return false;
+    }
+
+    function signUp() {
+        call('SignUp', [{ key: 'jname', vlu: val('jn-name') }, { key: 'jemail2', vlu: val('jn-email2') }, { key: 'jphone', vlu: val('jn-phone') }, { key: 'jpass2', vlu: el('jn-pass2').value }, { key: 'jpass3', vlu: el('jn-pass3').value }]);
+        return false;
+    }
+
+    function target() {
+        var m = location.search.match(/[?&]next=([^&]*)/);
+        var n = m ? decodeURIComponent(m[1]) : '';
+        return /^[A-Za-z]+(\?[A-Za-z0-9=&%._-]*)?$/.test(n) && n.indexOf('Join') !== 0 ? n : 'MyCourses';
+    }
+
+    function signed(tok) {
+        setCookie('bp_stu', tok, 14);
+        location.href = target();
+    }
+

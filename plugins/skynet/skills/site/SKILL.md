@@ -20,8 +20,9 @@ Reply with a compact plan:
 - **Key features:** what the server calculates or validates, and what each form saves and where.
 - **Data:** `data/site.json` sections, or SQL tables (then follow the `sql` skill).
 - **Staff area (if any):** admin pages, roles with the areas each manages, and what is logged (follow `reference/admin.md` of the `website` skill). Owner-editable content means a Media library, a Pages editor and a Messages page (`reference/media.md`, `reference/pages.md`), not a form per text field. The first admin password is made on first start and shown on the sign-in page on the developer's computer; the run mode in `application.cfg` ships as Demo.
-- **Images:** count and styles from the `art` skill.
-- **Questions:** at most three, only if the answer changes what you build.
+- **Customer accounts (if any):** say that customers get the sign-in gateway, sign-up with a phone number, Edit profile, Change password and the emailed reset link (`reference/accounts.md`), and that `app.mail.*` must be filled in for the reset mail.
+- **Images:** count and styles from the `art` skill. For a business with premises, the Home page top shows the building and its rooms.
+- **Questions:** at most three, only if the answer changes what you build. When the site has premises, one of them is always: *Page top: one picture, or a slideshow of the building and rooms every 7 seconds?* (`reference/code/slideshow/`).
 
 Then stop and wait for the user to say "go". Apply any changes they ask for first.
 
@@ -31,7 +32,7 @@ Then stop and wait for the user to say "go". Apply any changes they ask for firs
 2. Write `data/site.json` and `codes/Models/<Project>Model.cs`.
 3. Build each page: `htmls/X.html`, `styles/X.css`, `codes/X.cs`, `scripts/X.js`, following `reference/page-model.md` and `reference/pitfalls.md` of the `website` skill.
 4. Paint the images with the `art` skill; check a contact sheet and fix weak ones.
-5. For a staff area, write the sample data and add `Core/Init.cs` with the Settings button (`reference/initialize.md`).
+5. For a staff area, write the sample data and add `Core/Init.cs` with the Settings button (`reference/initialize.md`). For customer accounts, build the gateway, sign-up, reset mail and account page from `reference/accounts.md` and its code.
 6. Keep the starter's `LICENSE` at the project root (template code MIT, framework proprietary) and point the README's license section at it; set `app.app.releasedate` to today's date. Run `${CLAUDE_SKILL_DIR}/../verify/scripts/readme_shots.js <url> <project>` against the running site to make `docs/screenshot-home.png` and `docs/screenshot-responsive.png`, look at both, then write `README.md` from `reference/readme-template.md` with real counts.
 
 ## Step 3 - Verify

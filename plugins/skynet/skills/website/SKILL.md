@@ -20,6 +20,8 @@ SkyNet is a server-driven web framework for ASP.NET Core. The browser calls a C#
 | [reference/media.md](reference/media.md) | Staff upload photos or videos and pick them for products, pages or people: the media library page, the shared picker, size and type checks |
 | [reference/pages.md](reference/pages.md) | The owner edits the public pages themselves: block-edited pages (Pages admin), data parts, versions, the per-page renderer |
 | [reference/initialize.md](reference/initialize.md) | Any site with a staff area: the sample data it ships with, and Initialize data (once on the first Production start, or from Settings) |
+| [reference/accounts.md](reference/accounts.md) | Customers sign in (students, members, patients): the sign-in gateway, sign-up with a phone number, the account page with a password change, and the emailed reset link |
+| [reference/code/slideshow/](reference/code/slideshow/README.txt) | The developer chose a Home slideshow: the page-top renderer, script, styles and the Slides list in the Pages editor |
 | [reference/readme-template.md](reference/readme-template.md) | Writing the README for a finished site |
 | [starter/](starter/) | A working three-page SkyNet project to copy and extend |
 

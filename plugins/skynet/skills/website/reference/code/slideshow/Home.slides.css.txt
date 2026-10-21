@@ -1,0 +1,34 @@
+/* Home.css - slideshow rules; the lines inside the 980px and 680px media queries go into those queries */
+
+/* desktop */
+.hm-slide { position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity 1.1s ease; }
+.hm-slide.hm-on { opacity: 1; }
+.hm-slides .hm-slide img { object-position: 70% 20%; }
+.hm-slide figcaption { position: absolute; right: 24px; bottom: 70px; z-index: 3; padding: 5px 13px; border-radius: 999px; background: rgba(31, 42, 55, 0.74); color: #fff; font-size: 13.5px; font-weight: 600; }
+.hm-sctl { position: absolute; right: 24px; bottom: 20px; z-index: 3; display: flex; align-items: center; gap: 8px; padding: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.86); box-shadow: 0 4px 14px rgba(31, 42, 55, 0.16); }
+.hm-sarr { width: 34px; height: 34px; border: 0; border-radius: 999px; background: none; color: var(--hm-ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.hm-sarr:hover { background: var(--hm-soft); }
+.hm-sdots { display: flex; gap: 4px; }
+.hm-sdot { width: 24px; height: 24px; border: 0; padding: 0; background: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.hm-sdot::after { content: ""; width: 9px; height: 9px; border-radius: 999px; background: #B9AE9C; transition: width 0.3s, background 0.3s; }
+.hm-sdot.hm-on::after { width: 22px; background: var(--hm-accent); }
+.hm-sdot:focus-visible, .hm-sarr:focus-visible { outline: 2px solid var(--hm-ink); outline-offset: 1px; }
+@media (prefers-reduced-motion: reduce) { .hm-slide, .hm-sdot::after { transition: none; } }
+
+/* inside @media (min-width: 681px) and (max-width: 980px): a stronger wash so the text stays readable over the picture */
+.hm-bhero.hm-bslides::before { background: linear-gradient(90deg, rgba(251, 238, 218, 0.95) 0%, rgba(251, 238, 218, 0.82) 48%, rgba(251, 238, 218, 0) 82%); }
+
+/* inside @media (max-width: 680px): the picture sits under the text and the controls move to the middle */
+.hm-slides { position: relative; }
+.hm-slides .hm-slide img { object-position: 83% center; }
+.hm-slide figcaption { right: auto; left: 12px; bottom: auto; top: 12px; font-size: 13px; }
+.hm-sctl { right: 50%; transform: translateX(50%); bottom: 12px; }
+
+/* AdminPages.css - the Slides list in the editor */
+.pg-slides { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--pg-line); }
+.pg-slides > b { display: block; font-size: 14px; }
+.pg-slides > .pg-hint2 { margin: 2px 0 10px; }
+.pg-x-hero .pg-eitems { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.pg-x-hero .pg-emi { align-items: stretch; }
+.pg-x-hero .pg-emi .pg-emb { aspect-ratio: 5 / 2; width: 100%; border-radius: 8px; margin: 0 0 4px; }
+.pg-x-hero .pg-emi .pg-emx { right: 6px; transform: none; bottom: 10px; }

@@ -130,7 +130,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.6
+    Version: 1.0.7
     Scope: user
     Status: √ enabled
 ```
@@ -188,7 +188,7 @@ The agent replies with a plan: brand name, colours, pages, features and images. 
 go
 ```
 
-When it asks permission to run commands or write files, choose **Yes**. Building takes about 10-20 minutes.
+When it asks permission to run commands or write files, choose **Yes**. Building takes about 10-20 minutes for a brochure site and up to an hour for a site with a staff area, customer accounts and payments. The agent cannot finish while its own tests are still running, so a long quiet spell at the end is the verification, not a hang.
 
 ### 6. Run it
 
@@ -198,7 +198,7 @@ Your website opens in the browser.
 
 ### 7. Sign in to the admin (sites with a staff area)
 
-- Open the sign-in page: add `/AdminLogin` to the address in the browser, for example `http://localhost:5180/AdminLogin`.
+- Open the sign-in page: click **Staff sign in** in the website footer, or add `/AdminLogin` to the address in the browser, for example `http://localhost:5180/AdminLogin`. A site with customer accounts has a **Sign in** button in the header that offers both the customer and the staff sign-in.
 - The page shows the first user name, `admin`, and a password made just for your site. It is shown only on your computer, and is also saved in `appConfig\initial-admin.txt`.
 - Sign in and choose your own password. The box and the file disappear.
 - Open **Users** and add an account for each person who works on the site.
@@ -212,6 +212,7 @@ Your website opens in the browser.
 - Nobody has signed in yet? Read the first password from `appConfig\initial-admin.txt` on the server.
 - Open `https://your-site/data/staff.json` and `https://your-site/appConfig/initial-admin.txt` in a browser. Both must show "not found" (404).
 - Publishing again later: download the live `data` folder first, so messages, orders and staff accounts are not overwritten.
+- A site with customer accounts emails password-reset links: fill in the `app.mail.*` lines of `appConfig\application.cfg` (server, port, address, user, password). Until then the site tells customers to contact you, and staff reset passwords from the customer's record.
 
 ---
 
@@ -262,6 +263,14 @@ Every command shows a plan first and waits for **go**.
 | `/skynet` shows nothing | Run `claude plugin list` in PowerShell; if `skynet` is missing, repeat Part 1 step 4 |
 | Lost the first admin password before using it | Delete `appConfig\initial-admin.txt` and open the sign-in page again; a new one is made |
 | Locked out of every manager account | Remove the managers from `data\staff.json` and open the sign-in page; a new first password is made |
+
+## What's new in 1.0.7
+
+- **The agent cannot finish early.** A plugin Stop hook (`hooks/hooks.json`, `scripts/still_running.sh`) refuses to end the turn while a preview server, `dotnet`, a screenshot or an interaction script started under the working folder is still running; the builder waits, reads the result, then reports. Verify now runs read-only checks first, record-adding flows next and the destructive tests (Initialize data, the first Production start) last, on restored data.
+- **Customer accounts** (`reference/accounts.md` + code): the header's Sign in opens a gateway with a customer card and a staff card; every footer links to Staff sign in; sign-up asks for a phone number; the account page has Edit profile and Change password; **Forgot your password?** emails a one-hour, single-use reset link through the `app.mail.*` settings (`Mailer.cs`), and says whom to contact until mail is set up. In Demo both sign-in forms are pre-filled and list the sample logins.
+- **Home slideshow as a developer option** (`reference/code/slideshow/`): the plan asks "one picture, or a slideshow of the building and rooms every 7 seconds?"; the code gives the Pages editor a Slides list, dots, arrows, swipe, pause on the controls and stillness under reduced motion. The Home page top of a business with premises shows the building and its rooms.
+- **New design rules:** menu labels are nouns (Certificate, not Verify); text follows the record's current state (a refunded order stops saying "access ended" once the student enrolled again); nothing clips (chart labels wrap); every payment or refund call carries an idempotency key.
+- **Checks:** `check_sources.py` fails when one admin page's phone header differs from the others (the brand clipping that slipped through in 1.0.6). The manual skill's `check.js` and `capture.template.js` find Chromium the way `shots.js` does, `check.js` bans `demo1234` and `sample` by default, and the manual skill lists the capture-only patches to apply on a copy of the project, never on the delivered one.
 
 ## What's new in 1.0.6
 

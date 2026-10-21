@@ -4,6 +4,10 @@ using Microsoft.Data.SqlClient;
 
 namespace SkyNet
 {
+    public static class Mail
+    {
+    }
+
     public class ApiResponse
     {
         public List<(string op, string k, string v)> Ops { get; } = new();

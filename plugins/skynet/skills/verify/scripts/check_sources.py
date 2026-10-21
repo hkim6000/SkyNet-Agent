@@ -117,6 +117,28 @@ if os.path.exists(readme):
         if not shot.startswith("http") and not os.path.exists(os.path.join(ROOT, shot)):
             problems.append(f"README.md shows {shot} but the file is missing")
 
+admin_css = [p for p in files("styles", ".css") if os.path.basename(p).startswith("Admin") and os.path.basename(p) != "AdminLogin.css"]
+if len(admin_css) > 1:
+    shapes = {}
+    for path in admin_css:
+        text = read(path)
+        px = None
+        m = re.search(r"\.([a-z0-9]{2,3})-site\b|\.([a-z0-9]{2,3})-logo\b", text)
+        if m:
+            px = m.group(1) or m.group(2)
+        if not px:
+            continue
+        phone = re.search(r"@media\s*\(max-width:\s*(680|600|640|700)px\)\s*\{(.*?)\n\}", text, re.S)
+        block = phone.group(2) if phone else ""
+        hides_brand = re.search(r"\." + px + r"-logo\s+span\s*\{[^}]*display:\s*none", block) is not None
+        who_minw = re.search(r"\." + px + r"-who\s*\{[^}]*min-width:\s*0", block) is not None
+        shapes[rel(path)] = (hides_brand, who_minw)
+    if shapes:
+        common = max(set(shapes.values()), key=list(shapes.values()).count)
+        for name, shape in shapes.items():
+            if shape != common:
+                problems.append(f"{name}: the phone header rules differ from the other admin pages (brand text hidden: {shape[0]}, name column min-width 0: {shape[1]}); copy the header block from a page that is right")
+
 for w in warnings:
     print("WARN " + w)
 for p in problems:

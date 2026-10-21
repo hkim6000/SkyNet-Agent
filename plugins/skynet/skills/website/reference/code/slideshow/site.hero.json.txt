@@ -1,0 +1,6 @@
+// site.json - the hero block: "media" is the first slide, "items" the rest; each slide is a photo in media.json
+
+"items": [
+  { "icon": "", "media": "images/pages/hero-classroom.webp", "title": "Classroom", "text": "", "link": "", "label": "" },
+  { "icon": "", "media": "images/pages/hero-kitchen.webp", "title": "Teaching kitchen", "text": "", "link": "", "label": "" }
+]
