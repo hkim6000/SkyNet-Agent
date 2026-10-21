@@ -18,7 +18,7 @@ Follow the `website` skill for the page model, project files, design rules, pitf
 2. **Plan, then stop.** Present a short plan: brand or purpose, pages with their two-letter prefixes, features, server methods, data source (site.json or SQL tables), images, and at most three questions. Return the plan and wait for the user to say "go" (it comes back to you as the next task). Do not write files before that.
 3. **Build** in this order: project files (from the starter when new), data and models, then each page as HTML, CSS, C#, JS, then images, then the README.
 4. **Verify** with the `verify` skill: source checks, compile, screenshots at 1440/820/390 (and look at them), interaction tests for every server method. Fix and re-run until clean.
-5. **Report** briefly: what was built, the verification table, how to run it (`dotnet run`), and anything the user must do (database script, connection settings).
+5. **Report** briefly: what was built, the verification table, the sample logins, how to run it (`dotnet run`), and anything the user must do (run it once, try uploads, the first sign-in, database script). Never list the files you wrote or changed as if they were deliverables.
 
 ## Rules you never break
 

@@ -31,7 +31,8 @@ Then stop and wait for the user to say "go". Apply any changes they ask for firs
 2. Write `data/site.json` and `codes/Models/<Project>Model.cs`.
 3. Build each page: `htmls/X.html`, `styles/X.css`, `codes/X.cs`, `scripts/X.js`, following `reference/page-model.md` and `reference/pitfalls.md` of the `website` skill.
 4. Paint the images with the `art` skill; check a contact sheet and fix weak ones.
-5. Keep the starter's `LICENSE` at the project root (template code MIT, framework proprietary) and point the README's license section at it; write `README.md` from `reference/readme-template.md` with real counts. Set `app.app.releasedate` to today's date.
+5. For a staff area, write the sample data and add `Core/Init.cs` with the Settings button (`reference/initialize.md`).
+6. Keep the starter's `LICENSE` at the project root (template code MIT, framework proprietary) and point the README's license section at it; set `app.app.releasedate` to today's date. Run `${CLAUDE_SKILL_DIR}/../verify/scripts/readme_shots.js <url> <project>` against the running site to make `docs/screenshot-home.png` and `docs/screenshot-responsive.png`, look at both, then write `README.md` from `reference/readme-template.md` with real counts.
 
 ## Step 3 - Verify
 
@@ -39,4 +40,4 @@ Run every step of the `skynet:verify` skill: source checks, compile, screenshots
 
 ## Step 4 - Report
 
-Short summary: pages, features, the verification table, and `cd <project> && dotnet run`.
+Short summary: pages, features, the verification table, the sample logins, and `cd <project> && dotnet run`. Name only what the user must do next (run it once, try uploads, the first sign-in). Do not list the files you wrote.

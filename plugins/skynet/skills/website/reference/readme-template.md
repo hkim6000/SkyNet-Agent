@@ -56,6 +56,18 @@ The SkyNet package (`TheSkyLite.SkyNet`) restores from NuGet. The app opens on *
 - **0 Demo** (as shipped): the staff sign-in is filled in (`demo` / `demo1234`) and any user name and password signs in as a demo manager with every right.
 - **1 Production:** staff sign in with their own accounts. Set this before you go live.
 
+## Sample data
+
+The site ships with invented records so the Demo looks like a working business: staff for each role (all with the password `demo1234`), [customers, quotes, jobs, invoices, messages] around the day it was built, and an activity log. Sign in as `[office login]` or `[technician login]` to see each role. The sample files are `data/[staff].json`, `data/[records].json` ...; Initialize data removes them.
+
+## Going live
+
+1. Set `app.app.runmode | 1` in `appConfig/application.cfg`.
+2. Start the site and open **/AdminLogin**. On this first start in Production the site removes every record made in Demo (sample and test data, all staff accounts, sessions and uploaded customer files), keeps your settings, prices, pages and media, writes `data/initialized.txt`, and shows a new first password. This happens once; later starts and mode switches never remove anything.
+3. Follow **First sign-in** below.
+
+To wipe the data while still in Demo, a manager opens **Settings**, **Initialize data**, and types `INITIALIZE`.
+
 ## First sign-in (Production)
 
 1. Run the site on your computer and open **/AdminLogin**. The page shows the first user name (`admin`) and a password made just for this site. It is shown only on the computer the site runs on, and is also in `appConfig/initial-admin.txt`.

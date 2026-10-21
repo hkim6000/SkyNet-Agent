@@ -130,7 +130,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.5
+    Version: 1.0.6
     Scope: user
     Status: √ enabled
 ```
@@ -262,6 +262,15 @@ Every command shows a plan first and waits for **go**.
 | `/skynet` shows nothing | Run `claude plugin list` in PowerShell; if `skynet` is missing, repeat Part 1 step 4 |
 | Lost the first admin password before using it | Delete `appConfig\initial-admin.txt` and open the sign-in page again; a new one is made |
 | Locked out of every manager account | Remove the managers from `data\staff.json` and open the sign-in page; a new first password is made |
+
+## What's new in 1.0.6
+
+- **Sample data and Initialize data:** every site with a staff area ships with invented records and staff for each role (password `demo1234`, no manager), so the Demo looks like a working business. On the first start in Production the site wipes them once, keeps settings, prices, pages and media, and shows a new first password; a manager can also wipe from Settings while in Demo by typing INITIALIZE.
+- **README screenshots:** `readme_shots.js` makes `docs/screenshot-home.png` and `docs/screenshot-responsive.png`; `check_sources.py` fails a README without them, and warns when a site references an older SkyNet package than the starter.
+- **Preview plays video:** the offline preview serves MP4 and WebM.
+- **New design rules, each verified:** undo frees the source (a voided invoice puts the job back to "To invoice"); staff records are pre-filled from the customer's request; the site promises only what it does (no "we will email you" without email); rights are shown in words, not VEX; Demo text stays off Production pages.
+- **Manual skill:** captures in Production mode, no "demo" word, passwords masked, one worked flow end to end, sample data as the starting point.
+- **Builder:** reports what to do next, never a list of files written.
 
 ## What's new in 1.0.5
 

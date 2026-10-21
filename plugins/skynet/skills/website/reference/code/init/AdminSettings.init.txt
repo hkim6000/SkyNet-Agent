@@ -1,0 +1,67 @@
+Additions to AdminSettings (prefix st-) for the Initialize data button.
+
+1. FormHtml, after the closing </form>, managers only and Demo mode only:
+
+            if (Store.Demo())
+            {
+                sb.Append("<section class=\"st-panel st-stack st-danger\"><h2>Initialize data</h2><p class=\"st-hint\">Removes every record made so far: requests, quotes, jobs, invoices, messages, the activity log and all staff accounts. Settings, prices, pages and the media library stay. The next sign-in page shows a new first password.</p><button type=\"button\" class=\"st-btn st-btn-danger\" onclick=\"AdminSettingsJs.initialize()\">Initialize data</button></section>");
+            }
+
+2. New server method:
+
+        public async Task<ApiResponse> Initialize()
+        {
+            ApiResponse response = new ApiResponse();
+            Ctx? c = await Guard(response);
+            if (c == null)
+            {
+                return response;
+            }
+            if (!c.U.Admin)
+            {
+                return await Refuse(response, c, "initialize data", "settings", "Only managers can initialize the data.");
+            }
+            if (!Store.Demo())
+            {
+                return await Refuse(response, c, "initialize data", "settings", "In Production the data is initialized once, on the first start. Edit records in their own pages instead.");
+            }
+            if ((GetDataValue("word") ?? string.Empty).Trim() != "INITIALIZE")
+            {
+                response.ExecuteScript("AdminSettingsJs.toast('Type INITIALIZE to confirm.');");
+                return response;
+            }
+            await Store.Log(c.U.Id, "initialize data", "requested from Settings", true);
+            int removed = await Init.Run("Settings, by " + c.U.Name, false);
+            response.ExecuteScript("AdminSettingsJs.initialized(" + removed + ");");
+            return response;
+        }
+
+3. AdminSettings.js, two functions added to the namespace and to the return list:
+
+    function initialize() {
+        ask({ title: 'Initialize all data?', text: 'Every request, quote, job, invoice, message, log entry and staff account is removed. Settings, prices, pages and media stay. Type INITIALIZE to confirm.', value: '', place: 'INITIALIZE', ok: 'Initialize', no: 'Keep everything', danger: true, check: function (v) { return v === 'INITIALIZE' ? '' : 'Type INITIALIZE in capitals.'; } }, function (word) {
+            api('Initialize', [{ key: 'word', vlu: word }]);
+        });
+    }
+
+    function initialized(n) {
+        toast(n + ' records removed. Signing you out.');
+        setTimeout(expired, 1500);
+    }
+
+4. AdminSettings.css:
+
+.st-danger { border-color: #E3B4AE; }
+.st-btn-danger { background: #B23A2E; }
+.st-btn-danger:hover { background: #8F2D23; }
+
+5. Two calls to Init.OnStart(), both harmless after the first: in Program.cs before app.Run(), so the data is clean before the first request, and in AdminLogin.OnInitialized before Store.EnsureFirstManager(), which the offline verify harness can exercise:
+
+MySite.Core.Init.OnStart().GetAwaiter().GetResult();
+
+            await Init.OnStart();
+            await Store.EnsureFirstManager();
+
+   Store.Demo() reads appConfig/application.cfg by write time, so the check sees a mode switch at once; the marker data/initialized.txt makes the Production run happen only once. The Settings button never writes the marker, so a reset while still in Demo does not use up the go-live run.
+
+6. Store.Log must accept the user id "system" (show it as "System" in Who), the same way it shows "u-demo" as "Demo manager".

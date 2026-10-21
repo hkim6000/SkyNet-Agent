@@ -47,7 +47,7 @@ Offline case: serve the pages through the stub runner. The preview server render
 python3 ${CLAUDE_SKILL_DIR}/scripts/preview_server.py <site> <runner-path-printed-by-stub_check> 8190 <RootNamespace> &
 ```
 
-The app and the preview server read the page list and the compiled C# when they start. After adding a page or changing C#, rebuild and restart them, or the new page answers 404 and old code keeps running. Stop them by process id (`kill <pid>`), never with `pkill -f <pattern>`: the pattern also matches the shell running the command and kills it.
+The preview server serves photos and MP4/WebM videos with their real types, so video blocks and galleries play. The app and the preview server read the page list and the compiled C# when they start. After adding a page or changing C#, rebuild and restart them, or the new page answers 404 and old code keeps running. Stop them by process id (`kill <pid>`), never with `pkill -f <pattern>`: the pattern also matches the shell running the command and kills it.
 
 ## 4. Screenshots and layout
 
@@ -80,6 +80,8 @@ node interact.js http://localhost:5180
 ```
 
 For bookings and orders, test the status rules against the clock: create a booking for a future day and check that check-in and no-show are refused by the server (and their buttons are missing), then one for today and walk it booked → arrived → done → paid. Cover every server method: filters (result count and URL), search suggestions, every form (empty submit shows server errors, valid submit shows the confirmation), carts and totals, sign-in states, modals and keyboard actions. Wait for the server with `page.waitForLoadState('networkidle')` after each action. After opening each modal or form that the server fills in, call `dupIds(page)`: an id used twice (a footer and a form field, say) makes the server write into the wrong element.
+
+Also test, when the site has them: **undo frees the source** (void an invoice or cancel an order, then do the next step again from the same job or slot); **pre-fill** (a new request opens with the customer's choices as lines); **rights in words** on the users list; **Initialize data** both ways (Production first start wipes once and never again; the Settings button needs INITIALIZE, is hidden from non-managers and refused in Production); and the README screenshots exist (`check_sources.py` fails without them; make them with `readme_shots.js <url> <project>`).
 
 The offline preview server also catches pages that real SkyNet cannot find: a page name shared with another class, or a request method that has a private helper with the same name, fails in the runner with `not found` or `ambiguous`, as on a real server.
 

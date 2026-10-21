@@ -34,6 +34,12 @@ for name in os.listdir(ROOT):
         for folder in ("data", "temp"):
             if re.search(r'<Content Include="' + folder + r'\\\*\*"\s*>', proj):
                 problems.append(f"{name} includes {folder}\\** without Exclude=\"{folder}\\**\\*.json\" (NETSDK1022 once a .json file appears there)")
+        m = re.search(r'Include="TheSkyLite\.SkyNet"\s+Version="([0-9.]+)"', proj)
+        starter = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "website", "starter", "Starter.csproj")
+        if m and os.path.exists(starter):
+            sm = re.search(r'Include="TheSkyLite\.SkyNet"\s+Version="([0-9.]+)"', read(starter))
+            if sm and [int(x) for x in m.group(1).split(".")] < [int(x) for x in sm.group(1).split(".")]:
+                warnings.append(f"{name} references TheSkyLite.SkyNet {m.group(1)}; the starter uses {sm.group(1)}")
 
 for path in files("codes", ".cs") + files("scripts", ".js") + files("styles", ".css"):
     text = read(path)
@@ -101,6 +107,15 @@ if os.path.exists(cfg):
         if len(parts) == 2 and (parts[0].endswith("password") or parts[0].endswith("encryptkey")):
             if parts[1] not in ("your-password", "your-encrypt-key", ""):
                 problems.append(f"appConfig/application.cfg {parts[0]} is not a placeholder")
+
+readme = os.path.join(ROOT, "README.md")
+if os.path.exists(readme):
+    shots = [s for s in re.findall(r'!\[[^\]]*\]\(([^)]+)\)', read(readme)) if not s.startswith("http")]
+    if not shots:
+        problems.append("README.md has no screenshots; run readme_shots.js and add docs/screenshot-home.png and docs/screenshot-responsive.png")
+    for shot in shots:
+        if not shot.startswith("http") and not os.path.exists(os.path.join(ROOT, shot)):
+            problems.append(f"README.md shows {shot} but the file is missing")
 
 for w in warnings:
     print("WARN " + w)

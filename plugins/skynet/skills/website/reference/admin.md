@@ -422,4 +422,6 @@ ask({ title: 'Cancel this appointment?', text: 'The time becomes free for others
 - After testing, delete `data/staff.json`, `data/activity.json`, `appConfig/initial-admin.txt` and `temp/admin`, so the delivered project starts clean and makes its own first password.
 - The README has the permission table, the run-mode line and the first sign-in steps.
 - "View site" in the admin header opens in a new tab; at 390 the header shows the brand and Sign out only.
+- Sample data is in place for the Demo, and `Core/Init.cs` with the Settings button exist and were tested both ways ([initialize.md](initialize.md)).
+- The users list shows rights in words, not letters.
 - The project root holds the starter's `LICENSE`; `app.app.releasedate` is the delivery date; the csproj carries `TheSkyLite.SkyNet` and `System.Security.Cryptography.Pkcs` 10.0.13 and nothing else.

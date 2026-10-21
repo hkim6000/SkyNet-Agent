@@ -24,7 +24,7 @@ MOCK = ("<script>window.__log=[];window.__busy=0;window.__vars={};"
         "else if(x.op==='var'){window.__vars[x.k]=JSON.parse(x.v);}else{eval(x.v);}});window.__busy--;})"
         ".catch(function(e){window.__busy--;window.__err=String(e);});}</script>")
 TYPES = {".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp", ".svg": "image/svg+xml", ".gif": "image/gif",
-         ".js": "application/javascript", ".css": "text/css", ".woff2": "font/woff2", ".json": "application/json", ".ico": "image/x-icon"}
+         ".js": "application/javascript", ".css": "text/css", ".woff2": "font/woff2", ".json": "application/json", ".ico": "image/x-icon", ".mp4": "video/mp4", ".webm": "video/webm"}
 
 
 class Handler(BaseHTTPRequestHandler):
