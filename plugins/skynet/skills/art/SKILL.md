@@ -67,7 +67,8 @@ face = scenes.portrait(dict(bg="#D6E2CC", skin="#D9A985", hair="#2E2420", style=
 1. Plan the set: how many images, which styles, a palette that matches the site.
 2. Paint a first batch and make a contact sheet (paste thumbnails onto one image) and **look at it**.
 3. Fix what looks wrong: change the seed for a different composition, adjust colours, sizes and positions. Repeat until every image is good.
-4. Save WebP: works about 1400px, thumbnails 640px, banners 1600px, portraits 480px.
+4. Then check each image **at its thumbnail size** (640px and the card size the page uses): every object must still read as what it is. A light object on a light ground (a white tub on pearl tiles, a cream sofa on a sand wall) needs a cast shadow, a darker rim or an outline; otherwise it is a blob. Repaint the set, not the one image, so the set stays consistent.
+5. Save WebP: works about 1400px, thumbnails 640px, banners 1600px, portraits 480px.
 
 ## Rules
 

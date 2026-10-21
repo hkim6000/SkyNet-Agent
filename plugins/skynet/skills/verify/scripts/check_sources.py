@@ -79,6 +79,17 @@ for path in files("codes", ".cs"):
                 for c in cl.split():
                     if not c.startswith(prefix):
                         problems.append(f"htmls/{cls}.html class '{c}' does not start with '{prefix}'")
+            chrome = {prefix + s for s in ("head", "foot", "nav", "site")}
+            page_chrome = set()
+            for cl in re.findall(r'class="([^"{]+)"', html):
+                page_chrome |= chrome & set(cl.split())
+            sources = [(f"codes/{cls}.cs", text)]
+            if os.path.exists(js_path := os.path.join(ROOT, "scripts", cls + ".js")):
+                sources.append((f"scripts/{cls}.js", read(js_path)))
+            for name, src in sources:
+                for cl in re.findall(r'''(?:class=|className\s*=\s*|classList\.add\()\\?["']([^"'{\\]+)''', src):
+                    for c in page_chrome & set(cl.split()):
+                        problems.append(f"{name} writes class '{c}' into page content, but htmls/{cls}.html uses it for the page header, footer or frame; its CSS will style the content as the frame. Name the content part '{prefix}c{c[len(prefix):]}'")
     js_path = os.path.join(ROOT, "scripts", cls + ".js")
     if os.path.exists(js_path):
         keys = set(re.findall(r"key:\s*'([A-Za-z0-9_]+)'", read(js_path)))
