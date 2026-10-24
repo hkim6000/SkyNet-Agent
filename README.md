@@ -267,7 +267,6 @@ Every command shows a plan first and waits for **go**.
 ## What's new in 1.0.9
 
 - **Packages:** the starter references `TheSkyLite.SkyNet` 1.0.8.
-- **License:** the starter `LICENSE` and this repository's `LICENSE` carry the new framework license (Part B): free for individuals and organizations with under USD 1,000,000 in annual revenue; others may evaluate the framework free for 90 days and need a commercial license for production use. Generated READMEs state the same terms. SkyNet 1.0.7 and earlier keep the license they were released with.
 
 ## What's new in 1.0.8
 
