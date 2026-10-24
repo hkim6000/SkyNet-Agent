@@ -130,7 +130,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.8
+    Version: 1.0.9
     Scope: user
     Status: √ enabled
 ```
@@ -264,6 +264,11 @@ Every command shows a plan first and waits for **go**.
 | Lost the first admin password before using it | Delete `appConfig\initial-admin.txt` and open the sign-in page again; a new one is made |
 | Locked out of every manager account | Remove the managers from `data\staff.json` and open the sign-in page; a new first password is made |
 
+## What's new in 1.0.9
+
+- **Packages:** the starter references `TheSkyLite.SkyNet` 1.0.8.
+- **License:** the starter `LICENSE` and this repository's `LICENSE` carry the new framework license (Part B): free for individuals and organizations with under USD 1,000,000 in annual revenue; others may evaluate the framework free for 90 days and need a commercial license for production use. Generated READMEs state the same terms. SkyNet 1.0.7 and earlier keep the license they were released with.
+
 ## What's new in 1.0.8
 
 - **Frame classes stay on the frame.** `check_sources.py` fails a page whose C# or JavaScript writes the page's header, footer, menu or wrapper class (`xx-head`, `xx-foot`, `xx-nav`, `xx-site`) into content, where the frame's CSS turns a card bottom into a dark footer band. Card parts are `xx-chead` and `xx-cfoot` (design.md).
@@ -346,4 +351,4 @@ Live demo and full source of websites built with SkyNet.
 
 ## License
 
-The files in this repository are under **Part A (MIT)** of the [SkyLite & SkyNet Framework License](LICENSE). The SkyNet Framework itself (`SkyNet.dll` in the TheSkyLite.SkyNet package) is covered by **Part B**: proprietary, free to use, not open source.
+The files in this repository are under **Part A (MIT)** of the [SkyLite & SkyNet Framework License](LICENSE). The SkyNet Framework itself (`SkyNet.dll` in the TheSkyLite.SkyNet package) is covered by **Part B**: proprietary, not open source, free for individuals and organizations with under USD 1,000,000 in annual revenue; others may evaluate it free for 90 days and need a commercial license for production use.

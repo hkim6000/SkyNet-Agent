@@ -113,7 +113,7 @@ Forgot the first password before using it? Delete `appConfig/initial-admin.txt` 
 ## License
 
 - **This template:** MIT — free to use, modify and redistribute, including commercially.
-- **SkyNet Framework** (`TheSkyLite.SkyNet` NuGet package): proprietary, free to use including commercial use; see the license included in the package.
+- **SkyNet Framework** (`TheSkyLite.SkyNet` NuGet package): proprietary. Free for individuals and organizations with under USD 1,000,000 in annual revenue, including commercial use; others may evaluate it free for 90 days and need a commercial license from [theskylite.com](https://www.theskylite.com) to use it in production. See the license included in the package.
 
 Both parts are in the `LICENSE` file at the project root. Never write "choose your own license" in a delivered README.
 ```

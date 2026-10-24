@@ -34,7 +34,7 @@ The [starter](../starter/) folder contains all of these, ready to copy.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TheSkyLite.SkyNet" Version="1.0.6" />
+    <PackageReference Include="TheSkyLite.SkyNet" Version="1.0.8" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
   </ItemGroup>
 
