@@ -354,4 +354,4 @@ Live demo and full source of websites built with SkyNet.
 
 ## License
 
-The files in this repository are under **Part A (MIT)** of the [SkyLite & SkyNet Framework License](LICENSE). The SkyNet Framework itself (`SkyNet.dll` in the TheSkyLite.SkyNet package) is covered by **Part B**: proprietary, free including commercial for individuals and organizations with under USD 10,000,000 in annual revenue; others may evaluate it free for 90 days and need a commercial license for production use.
+The files in this repository are under [SkyLite & SkyNet Framework License](LICENSE). 
