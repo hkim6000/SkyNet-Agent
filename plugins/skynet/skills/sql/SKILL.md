@@ -15,7 +15,7 @@ SkyNet talks to SQL Server through `SQLData`. Every project gets one shared file
 | [sample/codes/Helper.cs](sample/codes/Helper.cs) | The data layer. Copy it into `codes/` and change the namespace |
 | [sample/codes/Item.cs](sample/codes/Item.cs) + `htmls/`, `scripts/`, `styles/` | A complete list / add / edit / delete page |
 | [sample/codes/Models/MyAppModel.cs](sample/codes/Models/MyAppModel.cs) | The DTO used by `GetListT<T>` |
-| [sample/database/ITEM.sql](sample/database/ITEM.sql) | Table script with sample rows |
+| [sample/data/ITEM.sql](sample/data/ITEM.sql) | Table script with sample rows |
 
 ## Connection
 
@@ -63,6 +63,16 @@ if (Helper.IsError(result)) { ... }
 7. **Output:** every value written into HTML goes through `HtmlEncode`; one record for a form goes to the browser with `SetVariableData("item", new { id = ..., name = ... })` and is read with `$GetVarData('item')` in an `ExecuteScript` callback. Use explicit lower-case property names in that anonymous object.
 8. **Lists:** render rows in C# (`StringBuilder`), put a lower-case `data-search` attribute on each row for instant client-side filtering, and re-render with a `Refresh()` method after saves and deletes.
 9. **One helper only.** `codes/Helper.cs` is the single shared C# file besides the models; keep page logic inside each page.
+
+## SQL scripts
+
+- SQL scripts are plain `.sql` files in the project's `data/` folder. Do not create a `database` folder. `web.config` hides `data/` from the web, so the scripts are never served.
+- A script for one table is `data/<TABLE>.sql` and starts with `USE [<catalog>];` and `GO`, with the catalog from `app.sqldb.catalog`.
+- A site with its own database gets three scripts named after the project:
+  - `data/<Project>_Init.sql` creates the database when it does not exist, then `USE`s it, then creates the tables and the rows the site cannot start without.
+  - `data/<Project>_Demo_Seeddata.sql` starts with `USE` and adds the fictional sample rows.
+  - `data/<Project>_Demo_Rollback.sql` starts with `USE` and removes the sample rows again.
+- A later change to a database that is already in use goes in its own numbered script (`data/<Project>_Update_02.sql`) that is safe to run twice. Never ask the user to run Init again on a database with data.
 
 ## Page pattern (see Item.cs)
 

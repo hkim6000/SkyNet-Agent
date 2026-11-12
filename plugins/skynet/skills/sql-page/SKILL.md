@@ -30,7 +30,7 @@ Wait for "go".
 
 ## Step 3 - Build (after "go")
 
-- `database/<TABLE>.sql`: `CREATE TABLE`, indexes and a few fictional sample rows.
+- `data/<TABLE>.sql`: `USE [<catalog>]`, `CREATE TABLE`, indexes and a few fictional sample rows (see the SQL scripts rules in the `skynet:sql` skill; no `database` folder).
 - The DTO in the project's model file.
 - `codes/X.cs`, `htmls/X.html`, `scripts/X.js`, `styles/X.css` following `sql/sample/` (Item page) and the project's own look.
 - Every value through `SqlParameter` with type and size; server-side validation before any write; `ModalWindow` for database errors.

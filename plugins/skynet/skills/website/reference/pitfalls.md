@@ -20,6 +20,8 @@ Each of these broke a real build or a real page. Check the list before writing c
 | Counts glued to a plural noun (`n + " visits"`) | Shows "1 visits". Choose the word by the number: `n + (n == 1 ? " visit" : " visits")` |
 | A site with editable words (Doctor / Dentist / Vet, Patient / Client) | One hard-coded label slips through (a rights grid, a filter, a heading). Read every label from the settings through one lookup, and grep the default word in `codes/`, `htmls/` and `scripts/` before delivering |
 | A first password or staff file in a folder the web server serves | Anyone can download it. Keep `initial-admin.txt` in `appConfig/`, show it only to local requests (address and host name both local), and check after deploying that `/appConfig/initial-admin.txt` and `/data/staff.json` answer 404 |
+| A button is hidden for a read-only or locked state, but its server method still does the work | Anyone can still call the method from the browser. Check the same rule again at the top of the server method and refuse there; hiding the button is only for comfort |
+| An account with an empty or published password in Production | Whoever opens the sign-in page first owns the site. In Production the first password is random, shown once to a local request, and must be changed at the first sign-in ([admin.md](admin.md)) |
 
 ## JavaScript and core.js
 
@@ -31,6 +33,8 @@ Each of these broke a real build or a real page. Check the list before writing c
 | `localStorage` can throw (private mode, blocked storage) | Wrap every read and write in `try/catch` with an in-memory fallback |
 | A cookie set on `/` collides between sites on one domain | Set `path=` to the app's base folder (`location.pathname` without the page name) |
 | `history.replaceState` with the wrong base | Use relative page URLs: `history.replaceState(null, '', 'Menu?c=x')` |
+| `$WaitOn()` called before the input check | When the check fails and returns without a request, the wait overlay never closes and the page looks frozen. Check the input first, then call `$WaitOn()` right before `$ApiRequest` |
+| A list that is already on screen stays as it was after another tab or panel changes its data | The user sees buttons for a state that no longer exists (Delete on a locked record). Reload the list when its tab is shown again and when the shared data it depends on changes |
 
 ## CSS and layout
 

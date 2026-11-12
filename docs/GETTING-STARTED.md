@@ -149,7 +149,7 @@ app.sqldb.password | your-password
 4. After "go" and the build, run the script it wrote:
 
 ```bash
-sqlcmd -S . -d Bakery -i database/PRODUCT.sql
+sqlcmd -S . -i data/PRODUCT.sql
 ```
 
 5. `dotnet run` and open `/Product` (or the page name the agent chose).

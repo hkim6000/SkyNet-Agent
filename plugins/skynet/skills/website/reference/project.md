@@ -34,8 +34,7 @@ The [starter](../starter/) folder contains all of these, ready to copy.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TheSkyLite.SkyNet" Version="1.0.9" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+    <PackageReference Include="TheSkyLite.SkyNet" Version="1.0.10" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,7 +53,7 @@ The [starter](../starter/) folder contains all of these, ready to copy.
 </Project>
 ```
 
-Use the latest `TheSkyLite.SkyNet` version from NuGet (`dotnet add package TheSkyLite.SkyNet` updates it). The `data` and `temp` rules are split on purpose: the Web SDK already includes `*.json` as content, and including it twice fails with NETSDK1022. `temp` needs it too, because the staff sign-in writes `temp/admin/sessions.json`, so the error only appears after the first sign-in. Keep the two package lines as they are: `TheSkyLite.SkyNet` at the version in the starter and `System.Security.Cryptography.Pkcs` pinned to 10.0.13, which lifts the 9.0.x version the framework package would otherwise pull in. Add no other `System.*` packages to silence an audit warning.
+Use the latest `TheSkyLite.SkyNet` version from NuGet (`dotnet add package TheSkyLite.SkyNet` updates it). The `data` and `temp` rules are split on purpose: the Web SDK already includes `*.json` as content, and including it twice fails with NETSDK1022. `temp` needs it too, because the staff sign-in writes `temp/admin/sessions.json`, so the error only appears after the first sign-in. Keep the one package line as it is: `TheSkyLite.SkyNet` at the version in the starter. Do not pin `System.Security.Cryptography.Pkcs`: SkyNet 1.0.10 brings the patched 10.0.13 itself, and a direct pin only adds a warning in Visual Studio. Add no `System.*` packages to silence an audit warning.
 
 ## Program.cs
 
@@ -99,6 +98,12 @@ app.sqldb.password | your-password
 ```
 
 The full file in the starter has every key SkyNet reads. `app.app.startup` is the page that opens at `/`. Secrets stay as placeholders in anything you publish.
+
+Key names:
+
+- Keys that start with `app.` belong to the SkyNet framework. Never invent a new `app.` key.
+- A setting of the site's own starts with `user.`, for example `user.orders.email | orders@example.com`. Read it with `new WebCore().GetWebEnv("user.orders.email")`.
+- The file is read when the site starts. After changing it, restart the site (on IIS: recycle the application pool), or the old values stay in use.
 
 ## Properties/launchSettings.json
 

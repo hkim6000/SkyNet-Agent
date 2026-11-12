@@ -130,7 +130,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.10
+    Version: 1.0.11
     Scope: user
     Status: √ enabled
 ```
@@ -263,6 +263,13 @@ Every command shows a plan first and waits for **go**.
 | `/skynet` shows nothing | Run `claude plugin list` in PowerShell; if `skynet` is missing, repeat Part 1 step 4 |
 | Lost the first admin password before using it | Delete `appConfig\initial-admin.txt` and open the sign-in page again; a new one is made |
 | Locked out of every manager account | Remove the managers from `data\staff.json` and open the sign-in page; a new first password is made |
+
+## What's new in 1.0.11
+
+- **Packages:** the starter references `TheSkyLite.SkyNet` 1.0.10. The pinned `System.Security.Cryptography.Pkcs` line is gone, because SkyNet 1.0.10 brings the patched version itself.
+- **SQL scripts:** table scripts are plain `.sql` files in `data/` (no `database` folder), start with `USE`, and a site with its own database gets Init, Seed and Rollback scripts.
+- **Config keys:** `app.` keys belong to the framework; a site's own settings start with `user.`. Restart the site after changing `application.cfg`.
+- **Pitfalls:** four more from a real product build (stuck wait overlay, stale open lists, server-side refusal for read-only states, empty first password).
 
 ## What's new in 1.0.10
 

@@ -427,4 +427,4 @@ ask({ title: 'Cancel this appointment?', text: 'The time becomes free for others
 - The users list shows rights in words, not letters.
 - Every public footer has **Staff sign in**; in Demo both sign-in forms are pre-filled and list the sample logins; in Production both start empty.
 - The admin header is built the same way on every admin page: at 390 the brand text is hidden and the signed-in name fits (`check_sources.py` compares the phone rules of every admin stylesheet and fails when one page differs).
-- The project root holds the starter's `LICENSE`; `app.app.releasedate` is the delivery date; the csproj carries `TheSkyLite.SkyNet` and `System.Security.Cryptography.Pkcs` 10.0.13 and nothing else.
+- The project root holds the starter's `LICENSE`; `app.app.releasedate` is the delivery date; the csproj carries `TheSkyLite.SkyNet` and nothing else (no pinned `System.Security.Cryptography.Pkcs`: SkyNet 1.0.10 brings the patched version itself).
