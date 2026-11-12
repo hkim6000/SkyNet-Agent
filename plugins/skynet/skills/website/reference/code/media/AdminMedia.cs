@@ -38,13 +38,6 @@ namespace MySite.codes
             return "<div class=\"am-panel\"><h1>No access</h1><p class=\"am-hint\">You do not have access to the media library. Ask a manager if you need it.</p></div>";
         }
 
-        private async Task Shell(ApiResponse response, Ctx c, SiteData site)
-        {
-            response.SetElementContents("am-brand", Ui.Esc(site.Brand));
-            response.SetElementContents("am-menu", await Auth.Menu("am", "AdminMedia", c));
-            response.SetElementContents("am-who", Auth.Who("am", c));
-        }
-
         public async Task<ApiResponse> Load()
         {
             ApiResponse response = new ApiResponse();
@@ -54,7 +47,6 @@ namespace MySite.codes
                 return response;
             }
             SiteData site = await Store.LoadSite();
-            await Shell(response, c, site);
             if (!Access.Can(c.U, AreaKey, 'V'))
             {
                 response.SetElementContents("am-main", NoAccess());
@@ -258,7 +250,7 @@ namespace MySite.codes
         private static string PageHtml(SiteData site, List<MediaItem> media, Ctx c)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("<div class=\"am-ph\"><div><h1>Media library</h1><p>Photos and videos for the home page, occasions and bouquets.</p></div></div>");
+            sb.Append("<div class=\"am-ph\"><div><h1>Media library</h1><p>Photos and videos for every page of the website.</p></div></div>");
             if (Access.Can(c.U, AreaKey, 'E'))
             {
                 sb.Append("<section class=\"am-panel am-uppanel\"><label class=\"am-btn am-upbtn\"><input type=\"file\" id=\"am-upfile\" multiple accept=\"" + Media.Accept + "\" onchange=\"AdminMediaJs.upload()\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 16V4M6 10l6-6 6 6M4 20h16\"/></svg>Upload photos or videos</label>");

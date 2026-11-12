@@ -295,10 +295,10 @@ namespace MySite.Core
 
         private static readonly Dictionary<string, string> Fixed = new Dictionary<string, string>
         {
-            { "images/hero.webp", "Stand-in picture when a photo is missing" },
-            { "images/about/workshop.webp", "About page" },
-            { "images/about/morning-cut.webp", "About page" }
+            { "images/hero.webp", "Stand-in picture when a photo is missing" }
         };
+
+        public static Func<SiteData, string, List<string>>? AlsoUsedBy { get; set; }
 
         public static List<string> UsedBy(SiteData site, string path)
         {
@@ -308,13 +308,9 @@ namespace MySite.Core
                 used.Add(page);
             }
             used.AddRange(Blocks.Uses(site, path));
-            foreach (Occasion o in site.Occasions.Where(x => x.Image == path))
+            if (AlsoUsedBy != null)
             {
-                used.Add("Occasion: " + o.Label);
-            }
-            foreach (Bouquet b in site.Bouquets.Where(x => x.Photos.Contains(path)))
-            {
-                used.Add("Bouquet: " + b.Title);
+                used.AddRange(AlsoUsedBy(site, path));
             }
             return used;
         }
@@ -324,10 +320,6 @@ namespace MySite.Core
             switch (type)
             {
                 case "hero": return "Hero";
-                case "promises": return "Promises";
-                case "favourites": return "Favourite bouquets";
-                case "occasions": return "Shop by occasion";
-                case "delivery": return "Delivery";
                 case "text": return "Text";
                 case "photo": return "Photo";
                 case "phototext": return "Photo and text";

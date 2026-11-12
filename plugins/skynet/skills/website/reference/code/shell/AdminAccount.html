@@ -1,0 +1,19 @@
+<div class="ac-site" data-page="AdminAccount">
+<main class="ac-main">
+    <div class="ac-ph"><h1>My account</h1><p>Your sign-in details.</p></div>
+    <section class="ac-panel">
+        <dl class="ac-kv"><dt>Name</dt><dd id="ac-name"></dd><dt>User name</dt><dd id="ac-login"></dd><dt>Access</dt><dd id="ac-rights"></dd></dl>
+    </section>
+    <section class="ac-panel">
+        <h2>Change password</h2>
+        <form class="ac-form" onsubmit="return AdminAccountJs.change()" novalidate>
+            <label class="ac-field" for="ac-cur"><span>Current password</span><input type="password" id="ac-cur" maxlength="128" autocomplete="current-password"></label>
+            <label class="ac-field" for="ac-new"><span>New password</span><input type="password" id="ac-new" maxlength="128" autocomplete="new-password"></label>
+            <label class="ac-field" for="ac-new2"><span>New password again</span><input type="password" id="ac-new2" maxlength="128" autocomplete="new-password"></label>
+            <em class="ac-err" id="ac-err" role="alert"></em>
+            <p class="ac-hint">8 characters or more. Your other sign-ins are closed; this one stays open.</p>
+            <button type="submit" class="ac-btn" id="ac-go">Save new password</button>
+        </form>
+    </section>
+</main>
+</div>

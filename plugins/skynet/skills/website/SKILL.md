@@ -16,7 +16,8 @@ SkyNet is a server-driven web framework for ASP.NET Core. The browser calls a C#
 | [reference/pitfalls.md](reference/pitfalls.md) | Always, before writing and again before verifying |
 | [reference/project.md](reference/project.md) | Creating a project: folders, csproj, Program.cs, application.cfg, data/site.json |
 | [reference/design.md](reference/design.md) | Designing pages: layout, responsive breakpoints, confirm dialogs, admin lists, content rules |
-| [reference/admin.md](reference/admin.md) | The site has a staff area: sign-in, rights by area, activity log, the first admin password, Demo and Production run mode |
+| [reference/admin.md](reference/admin.md) | The site has a staff area: the admin shell, one admin or several staff, sign-in, rights by area, activity log, the first admin password, Demo and Production run mode |
+| [reference/code/core/](reference/code/core/) and [reference/code/shell/](reference/code/shell/) | Any staff area: copy `Store`, `Access`, `Auth`, `Local`, `Ui`, the staff `Program.cs`, and the `Admin` shell, `AdminHome`, `AdminLogin`, `AdminAccount` pages, then rename |
 | [reference/media.md](reference/media.md) | Staff upload photos or videos and pick them for products, pages or people: the media library page, the shared picker, size and type checks |
 | [reference/pages.md](reference/pages.md) | The owner edits the public pages themselves: block-edited pages (Pages admin), data parts, versions, the per-page renderer |
 | [reference/initialize.md](reference/initialize.md) | Any site with a staff area: the sample data it ships with, and Initialize data (once on the first Production start, or from Settings) |
@@ -45,6 +46,6 @@ For database pages, use the `sql` skill. For artwork painted in code, use the `a
 3. Write `data/site.json` and the model classes.
 4. Build pages one at a time: HTML, then CSS, then C# (`OnInitialized` plus methods), then JS.
 5. Add images (the `art` skill paints them in code; WebP, lazy loaded).
-6. For a staff area, build `codes/Core/`, `AdminLogin` and the dashboard first, then one admin page per area ([reference/admin.md](reference/admin.md)). A site whose content the owner will edit gets a **Media library** ([reference/media.md](reference/media.md)), a **Pages** editor ([reference/pages.md](reference/pages.md)) and a **Messages** page rather than a form-per-field "Content" page.
+6. For a staff area, copy `codes/Core/` and the shell pages from `reference/code/core` and `reference/code/shell` first, then one panel page per area ([reference/admin.md](reference/admin.md)). A site whose content the owner will edit gets a **Media library** ([reference/media.md](reference/media.md)), a **Pages** editor ([reference/pages.md](reference/pages.md)) and a **Messages** page rather than a form-per-field "Content" page.
 7. Verify, fix, verify again.
 8. Write the README from [reference/readme-template.md](reference/readme-template.md) with real counts.

@@ -35,13 +35,6 @@ namespace MySite.codes
             return response;
         }
 
-        private async Task Shell(ApiResponse response, Ctx c, SiteData site)
-        {
-            response.SetElementContents("pg-brand", Ui.Esc(site.Brand));
-            response.SetElementContents("pg-menu", await Auth.Menu("pg", "AdminPages", c));
-            response.SetElementContents("pg-who", Auth.Who("pg", c));
-        }
-
         public async Task<ApiResponse> Load()
         {
             ApiResponse response = new ApiResponse();
@@ -51,7 +44,6 @@ namespace MySite.codes
                 return response;
             }
             SiteData site = await Store.LoadSite();
-            await Shell(response, c, site);
             if (!Access.Can(c.U, AreaKey, 'V'))
             {
                 response.SetElementContents("pg-main", "<div class=\"pg-panel\"><h1>No access</h1><p class=\"pg-hint\">You do not have access to pages. Ask a manager if you need it.</p></div>");
@@ -218,7 +210,7 @@ namespace MySite.codes
             }
             if (canE)
             {
-                sb.Append("<div class=\"pg-addp\" id=\"pg-addp\"><b>Add a block</b><div class=\"pg-addl\">" + string.Concat(Blocks.Types.Select(t => "<button type=\"button\" onclick=\"AdminPagesJs.addBlock('" + t.Key + "')\"><b>" + Ui.Esc(t.Name) + "</b><small>" + Ui.Esc(t.Desc) + "</small></button>")) + "</div><p class=\"pg-hint2\">Blocks marked From your data (bouquets, forms) cannot be removed, but you can move them, change their titles or hide them.</p></div>");
+                sb.Append("<div class=\"pg-addp\" id=\"pg-addp\"><b>Add a block</b><div class=\"pg-addl\">" + string.Concat(Blocks.Types.Select(t => "<button type=\"button\" onclick=\"AdminPagesJs.addBlock('" + t.Key + "')\"><b>" + Ui.Esc(t.Name) + "</b><small>" + Ui.Esc(t.Desc) + "</small></button>")) + "</div><p class=\"pg-hint2\">Blocks marked From your data (item lists, forms) cannot be removed, but you can move them, change their titles or hide them.</p></div>");
             }
             return sb.ToString();
         }

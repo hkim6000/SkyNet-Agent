@@ -13,29 +13,14 @@ var AdminMediaJs = (function () {
         return e ? (e.value || '').trim() : '';
     }
 
-    function base() {
-        return location.pathname.replace(/[^\/]*$/, '');
-    }
-
-    function getCookie(name) {
-        var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-        return m ? decodeURIComponent(m[1]) : '';
-    }
-
     function api(method, list) {
         list = list || [];
-        list.push({ key: 'tok', vlu: getCookie('fs_tok') });
+        list.push({ key: 'tok', vlu: AdminJs.tok() });
         $ApiRequest('AdminMedia/' + method, JSON.stringify(list));
     }
 
     function expired() {
-        document.cookie = 'fs_tok=; path=' + base() + '; max-age=0';
-        location.href = 'AdminLogin';
-    }
-
-    function signout() {
-        document.cookie = 'fs_tok=; path=' + base() + '; max-age=0';
-        location.href = 'AdminLogin';
+        AdminJs.expired();
     }
 
     function toast(msg) {
@@ -48,15 +33,6 @@ var AdminMediaJs = (function () {
         }, 3400);
     }
 
-    function openMenu() {
-        el('am-rail').classList.add('am-open');
-        el('am-scrim').classList.add('am-open');
-    }
-
-    function closeMenu() {
-        el('am-rail').classList.remove('am-open');
-        el('am-scrim').classList.remove('am-open');
-    }
 
     function openModal(title) {
         var m = el('am-modal');
@@ -275,13 +251,16 @@ var AdminMediaJs = (function () {
         toast('File deleted');
     }
 
+    function shown() {
+        api('Load');
+    }
+
     function reveal() {
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 if (askBox && askBox.classList.contains('am-open')) {
                     return;
                 }
-                closeMenu();
                 closeModal();
             }
         });
@@ -300,11 +279,9 @@ var AdminMediaJs = (function () {
 
     return {
         reveal: reveal,
+        shown: shown,
         expired: expired,
-        signout: signout,
         toast: toast,
-        openMenu: openMenu,
-        closeMenu: closeMenu,
         openModal: openModal,
         closeModal: closeModal,
         shut: shut,
@@ -322,7 +299,9 @@ var AdminMediaJs = (function () {
     };
 })();
 
-if (document.readyState === 'loading') {
+if (!window.AdminJs) {
+    location.replace('Admin?p=AdminMedia');
+} else if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', AdminMediaJs.reveal);
 } else {
     AdminMediaJs.reveal();

@@ -34,6 +34,8 @@ Each of these broke a real build or a real page. Check the list before writing c
 | A cookie set on `/` collides between sites on one domain | Set `path=` to the app's base folder (`location.pathname` without the page name) |
 | `history.replaceState` with the wrong base | Use relative page URLs: `history.replaceState(null, '', 'Menu?c=x')` |
 | `$WaitOn()` called before the input check | When the check fails and returns without a request, the wait overlay never closes and the page looks frozen. Check the input first, then call `$WaitOn()` right before `$ApiRequest` |
+| Two `$ApiRequest` calls started at once (a list load and a counter refresh in the same click) | The core can drop the second one, so a badge or panel silently stays old. Do both in one server method, or start the second from the first one's response (`response.ExecuteScript("XxJs.next();")`) |
+| Admin menu entries as links to separate pages (`href="AdminRooms"`) | Every click reloads the whole screen: the header and menu flash and the scroll position is lost. Use the shell: one `Admin` page, panels loaded with `PartialDocument` ([admin.md](admin.md#admin-shell)) |
 | A list that is already on screen stays as it was after another tab or panel changes its data | The user sees buttons for a state that no longer exists (Delete on a locked record). Reload the list when its tab is shown again and when the shared data it depends on changes |
 
 ## CSS and layout
@@ -47,6 +49,8 @@ Each of these broke a real build or a real page. Check the list before writing c
 | A grid with `align-items: start` that becomes a flex column on phones | Reset to `align-items: stretch` in the media query |
 | Horizontal overflow on phones | Long words, wide tables and chip rows: use `minmax(0, 1fr)`, `overflow-x: auto` on wrappers and `flex-wrap` |
 | A page prefix or id that looks like an advert (`ad-`, `ads-`, `ad-main`, `banner-ad`, `sponsor`) | Ad blockers hide it (`display: none`): the page is blank for visitors with an ad blocker, while localhost and other browsers look fine. Never use `ad` as a prefix; an Admin page uses `db-` or `adm-` |
+| A full-screen viewer (`position: fixed; inset: 0`) whose picture and caption are in normal flow | A tall picture or a long caption makes the box taller than the screen; the close button and arrows move out of sight. Give the viewer `height: 100dvh; overflow: hidden`, a grid with `grid-template-rows: auto minmax(0, 1fr) auto`, and the picture `max-width: 100%; max-height: 100%; object-fit: contain` |
+| `.xx-site a { color: inherit; }` | Element-plus-class outranks `.xx-card-link { color: ... }`, so every card link and button made of an `<a>` loses its colour. Write link resets with `:where(.xx-site) a { color: inherit; }` |
 | Making text smaller to fit | Reduce padding and margins instead; keep readable font sizes |
 | A base reset `.xx-site button { font: inherit; }` | Element-plus-class outranks `.xx-btn` and wipes button styles. Wrap base resets in `:where()`: `:where(.xx-site) :where(button, input, select, textarea) { font: inherit; }` |
 | The header's right side grows when someone signs in (name chip, tier badge, "My classes") | Signed-out checks pass while the signed-in header runs past the screen at 1180 to 1500 px. Check pages signed in too (`STATE` in `shots.js`); at middle widths hide the name and keep the badge, and trim nav padding |
@@ -58,7 +62,8 @@ Each of these broke a real build or a real page. Check the list before writing c
 
 | Problem | Rule |
 |---|---|
-| A strict Content-Security-Policy (for example `default-src 'self' 'unsafe-inline'`) blocks Google Fonts, `blob:` and `data:` images | Always give fonts a solid fallback stack; draw local previews with `createImageBitmap` on a `<canvas>` instead of `blob:` URLs |
+| A strict Content-Security-Policy (for example `default-src 'self' 'unsafe-inline'`) blocks Google Fonts, `blob:` and `data:` images | Serve fonts from `styles/fonts/` (design.md) with a solid fallback stack; draw local previews with `createImageBitmap` on a `<canvas>` instead of `blob:` URLs |
+| `appConfig/`, `data/`, `temp/` or `logs/` readable from the browser (`/data/staff.json`) | The `web.config` rules only work on IIS. Keep the `closed` list in `Program.cs` (project.md), which answers 404 on every host |
 | The site runs in a sub-folder (`/MySite/Menu`) | Use relative links (`href="Menu"`, `src="images/..."`), never root-absolute ones |
 | `data/*.json` or `temp/*.json` content duplicated by the Web SDK (NETSDK1022) | Use the csproj rules in project.md: `Exclude="...\**\*.json"` plus a separate `Content Update`, for `data` **and** `temp`. The `temp` case shows up only after the first staff sign-in writes `temp/admin/sessions.json` |
 | Hosted card checkout (Stripe Checkout style) confirmed only when the customer comes back | A customer who pays and closes the tab is charged, and the site still marks the order unpaid and later cancels it. Confirm payment with the provider's signed webhook, and before auto-cancelling any unpaid card order ask the provider for the session's status first. Never expire a paid order |

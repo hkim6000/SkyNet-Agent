@@ -7,16 +7,60 @@ Read this when a site has a staff area: bookings, orders, articles, a schedule, 
 | Part | Files |
 |---|---|
 | Sign-in page | `AdminLogin` (prefix `lg-`) |
-| Dashboard | `Admin` (prefix `db-`; never `ad-`, see pitfalls) |
-| One page per area | `AdminBookings`, `AdminRooms`, ... |
-| Always | `AdminUsers`, `AdminSettings`, `AdminActivity`, `AdminAccount` |
-| Shared C# | `codes/Core/Store.cs`, `Access.cs`, `Auth.cs`, `Local.cs`, `Ui.cs`; `Media.cs` when there is a media library ([media.md](media.md)); `Blocks.cs` when pages are block-edited ([pages.md](pages.md)) |
+| Shell | `Admin` (prefix `db-`; never `ad-`, see pitfalls): top bar, left menu, right content panel. Loads once |
+| Dashboard | `AdminHome` (prefix `hd-`), the first panel |
+| One page per area | `AdminBookings`, `AdminRooms`, ... Each is a **panel page**: it holds only its content and opens inside the shell |
+| Always | `AdminSettings`, `AdminAccount`; with several staff also `AdminUsers` and `AdminActivity` |
+| Shared C# | `codes/Core/Store.cs`, `Access.cs`, `Auth.cs`, `Local.cs`, `Ui.cs`; `Media.cs` when there is a media library ([media.md](media.md)); `Blocks.cs` when pages are block-edited ([pages.md](pages.md)); `Init.cs` ([initialize.md](initialize.md)) |
 | Usual areas | Orders or bookings, the catalogue, **Pages** (page text and pictures, [pages.md](pages.md)), **Media library** ([media.md](media.md)), **Messages** (the contact form inbox), Activity log, Settings, Users |
 | Data | `data/site.json`, `data/staff.json`, `data/activity.json` |
 | Run-time files | `temp/admin/sessions.json`; `appConfig/initial-admin.txt` until the first sign-in |
 
-`codes/Core/` is the one exception to "pages are self-contained": sign-in, rights and storage must behave the same on every page, so they live in one place. Everything else (markup, CSS, JS, page methods) stays per page.
+**Copy the working code, do not rewrite it.** [code/core/](code/core/) holds `Store.cs`, `Access.cs`, `Auth.cs`, `Ui.cs`, `Local.cs`, the classes to add to the model file (`Models.core.txt`) and the full `Program.cs` for a site with a staff area (`Program.cs.txt`). [code/shell/](code/shell/) holds the four files of `Admin` (shell), `AdminHome` (dashboard), `AdminLogin` and `AdminAccount`. All of them are tested together on the real framework. Rename the namespace `MySite`, the cookie name `ms_tok` (in `Admin.js` and `AdminLogin.js`), the colours and the logo; change `Access.Areas` to the site's areas.
 
+`codes/Core/` is the one exception to "pages are self-contained": sign-in, rights and storage must behave the same on every page, so they live in one place. A calculation that several pages must show the same way (a price, a total, a fee) may live there too, as `Core/<Name>.cs` (for example `Core/Pricing.cs`). Everything else (markup, CSS, JS, page methods) stays per page.
+
+## One admin or several staff
+
+Ask in the plan: *Staff area: one admin, or several staff with roles?*
+
+| | Several staff (default) | One admin |
+|---|---|---|
+| Switch | `Access.OneAdmin = false` | `Access.OneAdmin = true` |
+| Rights | Letters per area per person (below) | The signed-in admin may do everything; `Access.Can` answers yes |
+| Pages | Users, Activity log, Settings, My account | Settings, My account; no Users, no Activity page (the log is still written) |
+| Sample staff | One account per role ([initialize.md](initialize.md)) | None |
+
+Areas marked `StaffOnly` (Users, Activity log) disappear from the menu and are refused in one-admin mode. Every page still calls `Access.Can`, so a site can move from one admin to several staff later by changing the switch and adding the two pages.
+
+## Admin shell
+
+The staff area is **one page that never reloads**. `Admin` draws the top bar (brand, signed-in person, View site, Sign out) and the left menu once; the right side holds one panel per area page.
+
+- **Menu click:** `AdminJs.open('AdminRooms')` asks `Admin/Open`. The server checks the session and the area right, then answers `response.SetElementContents("db-p-AdminRooms", await PartialDocument("AdminRooms"))`: SkyNet runs that page's `OnInitialized` and puts its HTML, CSS and JS into the panel. The top bar and menu stay; nothing flashes.
+- **Opened panels stay.** Coming back to a page shows its panel at once and calls `XxJs.shown()`, which reloads its list (pitfalls: a list on screen must not go stale). A page with unsaved edits does not reload in `shown()`.
+- **The address follows:** `Admin?p=AdminRooms` with `history.pushState`; Back, Forward, refresh and bookmarks open the right panel. The query name is `p`, so no page may use `p` as a request key (pitfalls).
+- **Badges** (unread messages, people waiting) come from `Auth.Badges`, a function the site sets in `Program.cs`; after a change a panel calls `AdminJs.refresh()` to update them.
+- **Refused or expired:** a page the person may not open is refused, logged and the dashboard shows instead; an expired session sends the browser to `AdminLogin`.
+- **On tablets and phones** the left menu is a slide-in panel opened by the burger; choosing a page closes it.
+
+A **panel page** (every admin page except `Admin` and `AdminLogin`):
+
+- HTML: `<div class="xx-site" data-page="AdminRooms">` holding `<main class="xx-main" id="xx-main">`, its modal, picker and toast. No header, no menu.
+- CSS: the page's variables and content styles; no `min-height: 100vh`, no shell rules.
+- JS: `api()` sends `AdminJs.tok()` as `tok`; `expired()` calls `AdminJs.expired()`; it exposes `shown()`; the last lines open the shell when someone opens the page directly:
+
+```js
+if (!window.AdminJs) {
+    location.replace('Admin?p=AdminRooms');
+} else if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', AdminRoomsJs.reveal);
+} else {
+    AdminRoomsJs.reveal();
+}
+```
+
+- C#: no `Shell()`; `Load` fills `xx-main` only.
 
 ## Areas and rights
 
@@ -41,6 +85,8 @@ public static readonly Area[] Areas =
 };
 ```
 
+`Access.cs` in [code/core/](code/core/) holds these classes; the snippet above shows the shape.
+
 - A person's right in an area is a string of letters: `V` view, `E` edit, `X` the area's extra right (cancel, publish, time off). `X` needs `E`; `NoEdit` areas stop at `V`; `AdminOnly` areas are for managers only. A manager (`Staff.Admin`) has `VEX` everywhere.
 - `Access.Level(user, area)` returns the letters; `Access.Can(user, area, 'E')` answers yes or no. Clean the posted grid with the same rules before saving it.
 - **Own records only:** link a user to a record (`Staff.ProviderId`) and tick `Own`. Every query of that area then filters to that record: schedule columns, lists, counts, badges, the dashboard.
@@ -55,7 +101,7 @@ private static async Task<ApiResponse> Refuse(ApiResponse response, Ctx c, strin
 }
 ```
 
-- The menu is built on the server from the rights (`Auth.Menu`), with small count badges (unread messages, people waiting). Areas a person can't see are left out; without the activity right they get **My activity**.
+- The menu is built on the server from the rights (`Auth.Menu`, drawn by the shell), with small count badges (unread messages, people waiting). Areas a person can't see are left out; without the activity right they get **My activity**.
 - Labels that the site lets you rename (Clinician, Room, Patient) come from settings in the menu, the rights grid and the filters alike (pitfalls).
 - A manager can't remove their own manager right or switch themselves off.
 
@@ -94,7 +140,7 @@ function api(method, list) {
 
 ## First sign-in
 
-There are no sample staff and no password in `application.cfg`. The first time the sign-in page opens and no manager has their own password yet, the site creates the user `admin` with a random password, writes it to `appConfig/initial-admin.txt`, and shows it in a box on the sign-in page, but **only to a request from the computer the site runs on** (the developer pressing F5). The first sign-in asks for a new password; then the file is deleted and the box never shows again.
+There is no manager account in the delivery and no password in `application.cfg` (sample staff, if any, are removed by Initialize data). The first time the sign-in page opens and no manager has their own password yet, the site creates the user `admin` with a random password, writes it to `appConfig/initial-admin.txt`, and shows it in a box on the sign-in page, but **only to a request from the computer the site runs on** (the developer pressing F5). The first sign-in asks for a new password; then the file is deleted and the box never shows again.
 
 ```
 Staff sign in
@@ -110,7 +156,7 @@ User name [admin        ]  Password [**********]
                 [ Sign in ]
 ```
 
-`Program.cs` hands the request accessor to `Core/Local.cs` (the starter already registers it):
+The starter registers the request accessor with `AddHttpContextAccessor()`; a staff site's `Program.cs` ([code/core/Program.cs.txt](code/core/Program.cs.txt)) also hands it to `Core/Local.cs`:
 
 ```csharp
 var app = builder.Build();
@@ -208,7 +254,7 @@ public override async Task OnInitialized()
 - `SetPassword`: check the user name and current password again, then the new one: 8 characters or more, different from the current one, both fields equal. Save the hash, clear `MustChange`, delete `initial-admin.txt`, log it, open the session.
 - Lost the initial password before the first sign-in: delete `appConfig/initial-admin.txt` and open the sign-in page; a new one is made. Locked out of every manager account later: remove the managers from `data/staff.json` (or set `"admin": false`) and open the sign-in page.
 - After deploying, open `https://<site>/appConfig/initial-admin.txt` and `https://<site>/data/staff.json` in a browser: both must answer 404. If a host serves those folders, block them in the server settings.
-- `application.cfg` has no admin keys. Never commit `initial-admin.txt`, `data/staff.json` or `temp/` from a developer machine; add them to `.gitignore`.
+- `application.cfg` has no admin keys. Never commit `initial-admin.txt`, a `data/staff.json` with real accounts, or `temp/` from a developer machine; add them to `.gitignore`.
 
 ## Run mode: Demo and Production
 
@@ -247,14 +293,22 @@ Test both: in Demo, an empty form and a random pair both reach the dashboard as 
 - Write JSON to a temp file, then `File.Move(tmp, file, true)`.
 - Log every change: `Store.Log(userId, "cancel", "WC-7G3VCG · Ava Abbott", true)`. Keep the latest 5,000 entries.
 - Keep personal data to what the site needs. A clinic stores contact details and visit history, never medical notes; say so next to every free-text note field.
-- Sample content (teams, services, people, products) can ship in `data/site.json` for the owner to replace. Ship no sample staff, patients, customers, orders or bookings: the site starts empty and fills with real use.
+- Sample content (teams, services, people, products) ships in `data/site.json` for the owner to replace. Sample records (orders, bookings, messages) and sample staff ship too, for the Demo, and Initialize data removes them before real use ([initialize.md](initialize.md)).
 
 ## Admin page skeleton
+
+A panel page's server side (the four files of a full example are `AdminHome` and `AdminAccount` in [code/shell/](code/shell/)):
 
 ```csharp
 public class AdminRooms : WebPage
 {
     private const string AreaKey = "rooms";
+
+    public override async Task OnInitialized()
+    {
+        HtmlDoc.SetTitle("Rooms | Staff");
+        HtmlDoc.AddMetaElement("robots", "noindex, nofollow");
+    }
 
     public async Task<ApiResponse> Load()
     {
@@ -266,8 +320,6 @@ public class AdminRooms : WebPage
             return response;
         }
         SiteData site = await Store.LoadSite();
-        response.SetElementContents("rm-menu", Auth.Menu("rm", "AdminRooms", c, site));
-        response.SetElementContents("rm-who", Auth.Who("rm", c));
         response.SetElementContents("rm-main", Access.Can(c.U, AreaKey, 'V') ? MainHtml(c, site) : NoAccess("Rooms"));
         return response;
     }
@@ -297,7 +349,7 @@ public class AdminRooms : WebPage
 }
 ```
 
-Every admin page: `robots noindex, nofollow`, the same header (site name, signed-in person, View site, Sign out), the menu as a side rail that becomes a slide-in panel on tablets and phones, a toast, and one modal for editing.
+Every panel page: `robots noindex, nofollow`, a toast, one modal for editing. The header and the menu belong to the shell.
 
 ## Confirm dialog
 
@@ -418,13 +470,13 @@ ask({ title: 'Cancel this appointment?', text: 'The time becomes free for others
 
 - First sign-in from the developer's computer: the box shows `admin` and the password; the first sign-in asks for a new one; then the box and `appConfig/initial-admin.txt` are gone and the new password works.
 - A request with a public host name (or through a proxy) never shows the box.
-- Every role signs in and sees only its menu; a View user has no change buttons; a refused request appears in the log as Refused.
+- Every role signs in and sees only its menu; a View user has no change buttons; a refused request appears in the log as Refused. In one-admin mode the menu has no Users or Activity log.
 - Every confirm dialog: OK goes ahead; Cancel, Esc and the backdrop step back.
-- After testing, delete `data/staff.json`, `data/activity.json`, `appConfig/initial-admin.txt` and `temp/admin`, so the delivered project starts clean and makes its own first password.
+- After testing, put back the `data/` folder copied before the tests (sample staff and records ship) and delete `appConfig/initial-admin.txt`, `data/initialized.txt` and `temp/admin`, so the delivered project makes its own first password.
 - The README has the permission table, the run-mode line and the first sign-in steps.
-- "View site" in the admin header opens in a new tab; at 390 the header shows the brand and Sign out only.
+- "View site" in the admin header opens in a new tab; at 390 the header shows the burger, the brand and Sign out only (design.md).
 - Sample data is in place for the Demo, and `Core/Init.cs` with the Settings button exist and were tested both ways ([initialize.md](initialize.md)).
 - The users list shows rights in words, not letters.
 - Every public footer has **Staff sign in**; in Demo both sign-in forms are pre-filled and list the sample logins; in Production both start empty.
-- The admin header is built the same way on every admin page: at 390 the brand text is hidden and the signed-in name fits (`check_sources.py` compares the phone rules of every admin stylesheet and fails when one page differs).
+- The shell: a menu click changes only the right panel (a value set on `window` survives), the address follows, Back and refresh open the same panel, `/AdminRooms` opened directly lands in the shell, a refused page goes back to the dashboard.
 - The project root holds the starter's `LICENSE`; `app.app.releasedate` is the delivery date; the csproj carries `TheSkyLite.SkyNet` and nothing else (no pinned `System.Security.Cryptography.Pkcs`: SkyNet 1.0.10 brings the patched version itself).

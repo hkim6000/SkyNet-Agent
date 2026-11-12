@@ -1,0 +1,31 @@
+// Add these classes to codes/Models/<Project>Model.cs (namespace MySite.Models).
+// SiteData needs at least: public string Brand { get; set; } = string.Empty;
+
+    public class Staff
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Login { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Hash { get; set; } = string.Empty;
+        public bool Admin { get; set; }
+        public bool Active { get; set; } = true;
+        public bool MustChange { get; set; }
+        public Dictionary<string, string> Perms { get; set; } = new Dictionary<string, string>();
+    }
+
+    public class Session
+    {
+        public string Token { get; set; } = string.Empty;
+        public string User { get; set; } = string.Empty;
+        public DateTime Expires { get; set; }
+    }
+
+    public class ActivityEntry
+    {
+        public DateTime When { get; set; }
+        public string User { get; set; } = string.Empty;
+        public string Action { get; set; } = string.Empty;
+        public string Target { get; set; } = string.Empty;
+        public bool Ok { get; set; } = true;
+    }

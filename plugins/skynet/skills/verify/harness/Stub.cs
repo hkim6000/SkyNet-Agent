@@ -15,11 +15,17 @@ namespace SkyNet
         public void ExecuteScript(string jsScripts) => Ops.Add(("js", "", jsScripts));
         public void ModalWindow(string title, string message) => Ops.Add(("js", "", "alert(" + System.Text.Json.JsonSerializer.Serialize(title + "\n" + message) + ");"));
         public void SetVariableData<T>(string name, T data) => Ops.Add(("var", name, System.Text.Json.JsonSerializer.Serialize(data)));
+        public void SetElementContents(string elementId, HtmlDocument doc)
+        {
+            Ops.Add(("set", elementId, "<link rel=\"stylesheet\" href=\"styles/" + doc.Page + ".css\">" + doc.HtmlBodyText));
+            Ops.Add(("js", "", "(function(){var s=document.createElement('script');s.src='scripts/" + doc.Page + ".js';document.body.appendChild(s);})();"));
+        }
     }
 
     public class HtmlDocument
     {
         public string HtmlBodyText { get; set; } = string.Empty;
+        public string Page = "";
         public string Title = "";
         public List<string> Meta = new();
         public void SetTitle(string pageTitle) => Title = pageTitle;
@@ -36,6 +42,23 @@ namespace SkyNet
         public string QueryValue(string key, bool decode = false) => Query.TryGetValue(key, out var v) ? v : string.Empty;
         public string GetDataValue(string key) => Data.TryGetValue(key, out var v) ? v : string.Empty;
         public static string HtmlEncode(string value) => System.Net.WebUtility.HtmlEncode(value);
+
+        public async Task<HtmlDocument> PartialDocument(string typeName, string param = "")
+        {
+            Type? t = (Assembly.GetEntryAssembly() ?? typeof(WebCore).Assembly).GetTypes().FirstOrDefault(x => x.Name == typeName && typeof(WebPage).IsAssignableFrom(x));
+            HtmlDocument doc = new HtmlDocument { Page = typeName };
+            if (t == null)
+            {
+                return doc;
+            }
+            WebPage p = (WebPage)Activator.CreateInstance(t)!;
+            p.DataPath = DataPath;
+            string file = Path.Combine(Directory.GetCurrentDirectory(), "htmls", typeName + ".html");
+            p.HtmlDoc.HtmlBodyText = File.Exists(file) ? File.ReadAllText(file) : string.Empty;
+            p.HtmlDoc.Page = typeName;
+            await p.OnInitialized();
+            return p.HtmlDoc;
+        }
 
         public List<T> DataTableListT<T>(DataTable dt)
         {

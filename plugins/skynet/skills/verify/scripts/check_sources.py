@@ -41,8 +41,16 @@ for name in os.listdir(ROOT):
             if sm and [int(x) for x in m.group(1).split(".")] < [int(x) for x in sm.group(1).split(".")]:
                 warnings.append(f"{name} references TheSkyLite.SkyNet {m.group(1)}; the starter uses {sm.group(1)}")
 
+def bundled(path, text):
+    name = os.path.basename(path)
+    head = text[:600]
+    return (name.endswith(".min.js") or name.endswith(".min.css")) and re.match(r"^\s*/\*[!*]?[\s\S]*?(@license|license|License|LICENSE|SPDX-License-Identifier)", head) is not None
+
+
 for path in files("codes", ".cs") + files("scripts", ".js") + files("styles", ".css"):
     text = read(path)
+    if bundled(path, text):
+        continue
     for i, line in enumerate(text.split("\n"), 1):
         if re.match(r"^\s*//", line) or "/*" in line:
             problems.append(f"{rel(path)}:{i} comment found")

@@ -6,7 +6,8 @@
 MySite/
 ├── appConfig/application.cfg      settings (startup page, folders, placeholder secrets)
 ├── codes/                         page classes (C#); subfolders allowed
-│   └── Models/MySiteModel.cs      DTOs shared by pages
+│   ├── Models/MySiteModel.cs      DTOs shared by pages
+│   └── Core/                      staff sign-in, rights, storage, shared calculations (admin.md)
 ├── htmls/                         page markup
 ├── scripts/                       page JavaScript
 ├── styles/                        page CSS
@@ -64,12 +65,25 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
+string[] closed = { "appconfig", "data", "temp", "logs", "htmls", "codes", "bin", "obj" };
+app.Use((context, next) =>
+{
+    string first = (context.Request.Path.Value ?? string.Empty).TrimStart('/').Split('/')[0].ToLowerInvariant();
+    if (closed.Contains(first))
+    {
+        context.Response.StatusCode = 404;
+        return context.Response.WriteAsync("Not found");
+    }
+    return next(context);
+});
 app.UseMiddleware<IHandler>();
 
 app.UseStaticHttpCurrent();
 
 app.Run();
 ```
+
+`AddHttpContextAccessor()` registers the request accessor; a site with a staff area also hands it to `Core/Local.cs` and raises the upload limits, as in [code/core/Program.cs.txt](code/core/Program.cs.txt). The `closed` list answers 404 for the folders that hold settings, data, run-time files and sources, so they stay private on any host, not only behind the IIS rules in `web.config`. Keep it before `IHandler`.
 
 ## appConfig/application.cfg
 
@@ -127,8 +141,9 @@ Give each project its own ports and turn hot reload off:
 
 - One JSON file holds all content: brand facts, lists of items, people, FAQs, plans.
 - One model file (`codes/Models/MySiteModel.cs`) mirrors it with plain classes; property names match the JSON keys (case-insensitive deserialization).
-- Every page has its own `LoadSite()` that reads and deserializes the file.
-- Things that should always look current (dates, "new" badges, schedules) are stored as day offsets and computed from `DateTime.Today`.
+- Every public page has its own `LoadSite()` that reads and deserializes the file; staff pages use `Store.LoadSite()` in `Core`.
+- A number that several pages show (a price from options, a total, a fee) is computed in one place, `Core/<Name>.cs`, so the pages can never disagree.
+- Public content that must always look current (an event calendar, class times, "new" badges) is stored as day offsets and computed from `DateTime.Today`. Sample records in the staff area (orders, bookings, messages) use real dates around the build day ([initialize.md](initialize.md)).
 - Records with a deadline (a seat held for payment at the desk, an offer to pay within 24 hours) are checked on every load: expired ones are closed and the place goes to the next person in line. Sample records of that kind store their deadline as an offset from now, or they have expired before anyone sees them.
 - Actions that matter (messages, newsletter sign-ups, orders, bookings, accounts) are validated and saved on the server in their own file, for example `data/messages.json`, under one lock, through a temp file and `File.Move`. Only per-visitor conveniences that need no server (a cart before checkout, favourites) live in `localStorage`.
 - Files the site writes at run time (`data/messages.json`, `data/staff.json`, orders) are not part of the project: keep them out of git, and download the live `data/` folder before you publish so the live files are not overwritten.

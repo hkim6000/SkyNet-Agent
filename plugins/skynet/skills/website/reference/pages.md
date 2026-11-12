@@ -11,13 +11,23 @@ Block    { Id, Type, Source, Hidden, Kicker, Title, Text (sanitized html), Media
 BlockItem{ Icon, Media, Title, Text, Link, Label }
 ```
 
-`Core/Blocks.cs` is the one shared file: the page list, the block types, the data parts, the sanitizer, the save-time check (`Clean`), `Ensure` (creates missing pages and required data blocks on every load, and seeds pages from any older per-field content the first time) and `Uses` (which pages use a media file).
+`Core/Blocks.cs` holds the page list, the block types, the data parts, the sanitizer, the save-time check (`Clean`), `Ensure` (creates missing pages with their seed blocks and adds missing data blocks; `Store.LoadSite()` in `Core/Store.cs` calls it on every load, see below) and `Uses` (which pages use a media file).
+
+With block pages, change `LoadSite` in `Core/Store.cs` to:
+
+```csharp
+public static async Task<SiteData> LoadSite()
+{
+    SiteData site = await Read(FileOf("site"), () => new SiteData());
+    Blocks.Ensure(site);
+    return site;
+}
+```
 
 ### Page list and data parts
 
 ```csharp
-Pages: home → Home [favourites, occasions, delivery]   shop → Shop [bouquetlist]   about → About []
-       track → Track an order [trackform]              contact → Contact [contactform]
+Pages: home → Home [favourites]   shop → Shop [itemlist]   about → About []   contact → Contact [contactform]
 ```
 
 Pages are a fixed list in code (transactional pages such as Product, Cart and Pay are not block-edited). A **data part** (`Type = "data"`, `Source = key`) is the piece of a page that comes from the site's own data or is a form: the product list, the contact form, the booking box. Data parts must appear exactly once on their page; staff can move, hide and retitle them, not remove them. `Ensure` adds any that are missing.
@@ -61,7 +71,7 @@ Things to carry over from the old per-field pages when you switch a site to bloc
 - Shop details (name, tagline, phone, email, address, hours) move to **Settings**.
 - Catalogue groupings with photos (occasions, categories) move to a tab on the catalogue admin page, with the single-choice picker.
 - Contact messages get their own admin page, **Messages**, with its own menu item and unread badge.
-- Write a `Legacy` seed that maps the old fields and blocks (hero text, promises, about paragraphs, care tips, FAQ) into blocks the first time, so an existing site loses nothing.
+- Extend `Seed` in `Blocks.cs` so it maps the old fields (hero text, promises, about paragraphs, FAQ) into blocks the first time, so an existing site loses nothing. For a new site `Seed` gives each page a hero or a text block plus its data parts; replace that text with the site's real words before delivering.
 
 ## Before delivering
 

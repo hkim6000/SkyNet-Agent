@@ -27,10 +27,9 @@ namespace MySite.Core
     {
         public static readonly PageSpec[] Pages =
         {
-            new PageSpec { Key = "home", Name = "Home", Href = "Home", Data = new[] { "favourites", "occasions", "delivery" } },
-            new PageSpec { Key = "shop", Name = "Shop", Href = "Shop", Data = new[] { "bouquetlist" } },
+            new PageSpec { Key = "home", Name = "Home", Href = "Home", Data = new[] { "favourites" } },
+            new PageSpec { Key = "shop", Name = "Shop", Href = "Shop", Data = new[] { "itemlist" } },
             new PageSpec { Key = "about", Name = "About", Href = "About", Data = Array.Empty<string>() },
-            new PageSpec { Key = "track", Name = "Track an order", Href = "Track", Data = new[] { "trackform" } },
             new PageSpec { Key = "contact", Name = "Contact", Href = "Contact", Data = new[] { "contactform" } }
         };
 
@@ -52,11 +51,8 @@ namespace MySite.Core
 
         public static readonly PartSpec[] Parts =
         {
-            new PartSpec { Key = "favourites", Name = "Favourite bouquets", Desc = "Bouquets marked Show on the home page, with a link to the shop.", Fields = "kicker,title" },
-            new PartSpec { Key = "occasions", Name = "Shop by occasion", Desc = "Every occasion with its photo. Change them on the Bouquets page.", Fields = "kicker,title" },
-            new PartSpec { Key = "delivery", Name = "Delivery", Desc = "Zones, fees and the cut-off hour from Settings, with the three ordering steps.", Fields = "kicker,title,text" },
-            new PartSpec { Key = "bouquetlist", Name = "Bouquet list", Desc = "Filters by occasion, price and sort, then every published bouquet.", Fields = "kicker,title,text" },
-            new PartSpec { Key = "trackform", Name = "Track form", Desc = "Order number and email, then the order status.", Fields = "kicker,title,text" },
+            new PartSpec { Key = "favourites", Name = "Featured items", Desc = "Items marked Show on the home page, with a link to the full list.", Fields = "kicker,title" },
+            new PartSpec { Key = "itemlist", Name = "Item list", Desc = "Filters and every published item.", Fields = "kicker,title,text" },
             new PartSpec { Key = "contactform", Name = "Contact details and form", Desc = "Address, phone, email and hours from Settings, beside the message form.", Fields = "kicker,title,text" }
         };
 
@@ -323,69 +319,14 @@ namespace MySite.Core
             return new Block { Id = NewId(), Type = "data", Source = key, Kicker = kicker, Title = title, Text = text };
         }
 
-        private static string Paras(IEnumerable<string> lines)
-        {
-            return string.Concat(lines.Where(l => l.Trim().Length > 0).Select(l => "<p>" + Ui.Esc(l.Trim()) + "</p>"));
-        }
-
-        private static string HeroImage(SiteData site)
-        {
-            return site.Hero.Image.Length > 0 ? site.Hero.Image : "images/hero.webp";
-        }
-
-        private static List<Block> Legacy(SiteData site)
-        {
-            List<Block> list = new List<Block>();
-            IEnumerable<Block> old = site.Blocks.Count > 0 ? site.Blocks : new List<Block> { new Block { Type = "hero" }, new Block { Type = "promises" }, new Block { Type = "favourites", Title = "Our favourites" }, new Block { Type = "occasions", Title = "Shop by occasion" }, new Block { Type = "delivery", Eyebrow = "Delivery", Title = "We deliver across the city" } };
-            foreach (Block o in old)
-            {
-                switch (o.Type)
-                {
-                    case "hero":
-                        list.Add(new Block { Id = NewId(), Type = "hero", Hidden = !o.Visible, Kicker = site.Hero.Eyebrow, Title = site.Hero.Title.Length > 0 ? site.Hero.Title : "Fresh flowers, every morning", Text = site.Hero.Text.Length > 0 ? "<p>" + Ui.Esc(site.Hero.Text) + "</p>" : string.Empty, Media = HeroImage(site), Label = site.Hero.Button.Length > 0 ? site.Hero.Button : "Shop bouquets", Link = "Shop", Label2 = "Track an order", Link2 = "Track" });
-                        break;
-                    case "promises":
-                        list.Add(new Block { Id = NewId(), Type = "cards", Hidden = !o.Visible, Items = site.Promises.Select(p => new BlockItem { Title = p.Title, Text = p.Text }).ToList() });
-                        break;
-                    case "favourites":
-                        list.Add(new Block { Id = NewId(), Type = "data", Source = "favourites", Hidden = !o.Visible, Title = o.Title.Length > 0 ? o.Title : "Our favourites" });
-                        break;
-                    case "occasions":
-                        list.Add(new Block { Id = NewId(), Type = "data", Source = "occasions", Hidden = !o.Visible, Title = o.Title.Length > 0 ? o.Title : "Shop by occasion" });
-                        break;
-                    case "delivery":
-                        list.Add(new Block { Id = NewId(), Type = "data", Source = "delivery", Hidden = !o.Visible, Kicker = o.Eyebrow, Title = o.Title.Length > 0 ? o.Title : "We deliver across the city" });
-                        break;
-                    case "text":
-                        list.Add(new Block { Id = NewId(), Type = "text", Hidden = !o.Visible, Kicker = o.Eyebrow, Title = o.Title, Text = Paras(o.Text.Replace("\r", string.Empty).Split("\n\n")) });
-                        break;
-                    case "photo":
-                        list.Add(new Block { Id = NewId(), Type = "media", Hidden = !o.Visible, Media = o.Media, Text = o.Caption.Length > 0 ? o.Caption : o.Title });
-                        break;
-                    case "phototext":
-                        list.Add(new Block { Id = NewId(), Type = "split", Hidden = !o.Visible, Kicker = o.Eyebrow, Title = o.Title, Text = Paras(o.Text.Replace("\r", string.Empty).Split("\n\n")), Media = o.Media, Flip = o.Side == "right" });
-                        break;
-                    case "video":
-                        list.Add(new Block { Id = NewId(), Type = "media", Hidden = !o.Visible, Media = o.Media, Text = o.Caption.Length > 0 ? o.Caption : o.Title });
-                        break;
-                }
-            }
-            return list;
-        }
-
         public static void Ensure(SiteData site)
         {
-            bool fresh = site.Pages.Count == 0;
             foreach (PageSpec p in Pages)
             {
                 if (!site.Pages.TryGetValue(p.Key, out PageDoc? doc) || doc == null)
                 {
-                    doc = new PageDoc();
+                    doc = new PageDoc { Blocks = Seed(site, p) };
                     site.Pages[p.Key] = doc;
-                    if (fresh)
-                    {
-                        doc.Blocks = Seed(site, p.Key);
-                    }
                 }
                 foreach (string k in p.Data)
                 {
@@ -395,45 +336,24 @@ namespace MySite.Core
                     }
                 }
             }
-            if (fresh)
-            {
-                site.Blocks.Clear();
-            }
         }
 
-        private static List<Block> Seed(SiteData site, string key)
+        private static List<Block> Seed(SiteData site, PageSpec page)
         {
-            switch (key)
+            List<Block> list = new List<Block>();
+            if (page.Key == "home")
             {
-                case "home":
-                    return Legacy(site);
-                case "shop":
-                    return new List<Block> { Data("bouquetlist", "Shop", "Bouquets", "<p>Hand-tied from what is fresh today. Pick a size, add a vase or chocolates, choose your day.</p>") };
-                case "about":
-                    {
-                        List<Block> list = new List<Block>();
-                        list.Add(new Block { Id = NewId(), Type = "split", Kicker = "About us", Title = site.AboutTitle.Length > 0 ? site.AboutTitle : "A small studio with a big love of flowers", Text = (site.AboutLead.Length > 0 ? "<p><b>" + Ui.Esc(site.AboutLead) + "</b></p>" : string.Empty) + Paras(site.AboutParagraphs), Media = "images/about/workshop.webp", Label = "Shop bouquets", Link = "Shop" });
-                        if (site.Care.Count > 0)
-                        {
-                            list.Add(new Block { Id = NewId(), Type = "steps", Title = "Making your flowers last", Items = site.Care.Select(c => new BlockItem { Title = c.Title, Text = c.Text }).ToList() });
-                        }
-                        list.Add(new Block { Id = NewId(), Type = "cta", Title = "Ready to order?", Text = "<p>Pick a day and a time slot, and we will have it ready.</p>", Label = "Shop bouquets", Link = "Shop", Label2 = "Get in touch", Link2 = "Contact" });
-                        return list;
-                    }
-                case "track":
-                    return new List<Block> { Data("trackform", "Track an order", "Where are my flowers?", "<p>Enter the order number from your confirmation and the email you used.</p>") };
-                case "contact":
-                    {
-                        List<Block> list = new List<Block> { Data("contactform", "Contact", "Say hello", "<p>Questions about an order, a wedding or a big delivery? Send us a note and we will reply by email.</p>") };
-                        if (site.Faqs.Count > 0)
-                        {
-                            list.Add(new Block { Id = NewId(), Type = "faq", Title = "Good to know", Items = site.Faqs.Select(f => new BlockItem { Title = f.Q, Text = f.A }).ToList() });
-                        }
-                        return list;
-                    }
-                default:
-                    return new List<Block>();
+                list.Add(new Block { Id = NewId(), Type = "hero", Title = "{name}", Text = "<p>Change this text on the Pages page.</p>", Label = page.Data.Length > 0 ? "See more" : string.Empty, Link = string.Empty });
             }
+            foreach (string k in page.Data)
+            {
+                list.Add(Data(k, string.Empty, Parts.First(x => x.Key == k).Name));
+            }
+            if (page.Data.Length == 0 && page.Key != "home")
+            {
+                list.Add(new Block { Id = NewId(), Type = "text", Title = page.Name, Text = "<p>Change this text on the Pages page.</p>" });
+            }
+            return list;
         }
 
         public static List<string> Uses(SiteData site, string src)

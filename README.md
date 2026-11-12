@@ -130,7 +130,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.11
+    Version: 1.0.12
     Scope: user
     Status: √ enabled
 ```
@@ -263,6 +263,17 @@ Every command shows a plan first and waits for **go**.
 | `/skynet` shows nothing | Run `claude plugin list` in PowerShell; if `skynet` is missing, repeat Part 1 step 4 |
 | Lost the first admin password before using it | Delete `appConfig\initial-admin.txt` and open the sign-in page again; a new one is made |
 | Locked out of every manager account | Remove the managers from `data\staff.json` and open the sign-in page; a new first password is made |
+
+## What's new in 1.0.12
+
+- **Admin shell:** the staff area is one page with a top bar, a left menu and a content panel. A menu click loads only the right panel (no full-screen flash); the address follows (`Admin?p=AdminRooms`), so Back, refresh and bookmarks work.
+- **One admin or several staff:** the plan asks which. Several staff with roles stays the default; one admin (`Access.OneAdmin = true`) hides Users and Activity log and gives the admin every right.
+- **Working Core code ships:** `Store`, `Access`, `Auth`, `Local`, `Ui`, the staff `Program.cs`, and the `Admin`, `AdminHome`, `AdminLogin`, `AdminAccount` pages, tested together on the real framework. The media library and Pages editor are generic panel pages.
+- **Private folders on any host:** `Program.cs` answers 404 for `appConfig`, `data`, `temp`, `logs`, `htmls`, `codes`, `bin`, `obj`, also without IIS.
+- **Self-hosted fonts:** fonts come from `styles/fonts/`, not Google Fonts.
+- **Shared calculations:** a price or total shown on several pages lives in one `Core` file.
+- **Fixes:** contradictions about sample records, sample dates and the admin header at phone width; upload limits that compile on Kestrel and IIS; the starter no longer lists a `photos` folder; the source check accepts licence notes in bundled `.min.js` files.
+- **Pitfalls:** two requests at once, a full-screen viewer taller than the screen, a link colour reset that wipes card colours, admin menus as separate pages.
 
 ## What's new in 1.0.11
 

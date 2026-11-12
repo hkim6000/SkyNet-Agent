@@ -9,7 +9,7 @@ Agree on these before writing code:
 - **Data:** what goes into `data/site.json` (or which SQL tables).
 - **What is stored:** every form and action saves for real (messages, sign-ups, orders, bookings) in `data/*.json` or SQL; say where each one goes.
 - **Images:** how many and in what style (the `art` skill).
-- **Admin (if any):** staff roles and the areas each one manages. Read [admin.md](admin.md).
+- **Admin (if any):** one admin or several staff with roles, and the areas each one manages. Read [admin.md](admin.md).
 
 ## Layout
 
@@ -20,6 +20,20 @@ Agree on these before writing code:
 - Cards: image, small eyebrow label, title, one or two lines of detail, actions.
 - Footer: brand line, newsletter field, three link columns, a copyright line.
 - A toast element for short confirmations.
+
+## Fonts
+
+Serve the fonts from the site itself, not from Google Fonts or another CDN: no visitor data goes to a third party, a strict Content-Security-Policy does not block them, and the site still looks right on an intranet with no outside access.
+
+- Get the `woff2` files from npm (`npm pack @fontsource/<font-name>`, then take `package/files/<font-name>-latin-<weight>-normal.woff2` for the weights you use, usually 400, 600 and 700) and put them in `styles/fonts/` with the package's `LICENSE` saved as `<font-name>-LICENSE.txt`. The `styles\**` rule in the csproj already publishes them.
+- Declare each weight once, in every page stylesheet that uses it (pages are self-contained), with `font-display: swap`:
+
+```css
+@font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+```
+
+- Keep a solid fallback stack after the name (`"Fraunces", Georgia, "Times New Roman", serif`); when the files cannot be fetched, the fallback stack alone is the font and the plan says so.
+- No `@import url(https://fonts.googleapis.com/...)` and no `<link>` to a font CDN.
 
 ## Responsive breakpoints
 
@@ -41,6 +55,7 @@ On phones, put the most important action near the top (for example the booking b
 - **Viewer or modal:** open by id (`?w=key` deep link), Esc closes, arrow keys step, swipe on touch.
 - **Carts and bookings:** the browser keeps the list; the server recalculates every price and checks every rule each time.
 - **Confirm before changing data:** an in-page dialog, never `window.confirm` (browsers can suppress it and it looks foreign). The title is the question (*Cancel this appointment?*), one line says what happens, the buttons are verbs (*Keep it* / *Cancel appointment*) with the risky one in red. Enter confirms; Esc, the backdrop and the left button step back; focus stays in the dialog and returns afterwards. An optional text field takes a reason, checked before closing. Ask for every action that changes data from a list, card or detail window (check in, move, cancel, delete, publish). A form with a Save button needs no extra question, but closing it or leaving the page with unsaved changes asks *Leave without saving?*. Code: [admin.md](admin.md#confirm-dialog).
+- **Admin menu click changes only the right panel.** The staff area is one shell page (top bar, left menu, content panel); a menu entry loads its page into the panel and never reloads the whole screen ([admin.md](admin.md#admin-shell)).
 - **Menu labels are nouns.** A top-menu or admin-menu entry names the thing the page is about (*Certificate*, *Orders*, *Service area*), never the action (*Verify*, *Book*, *Check*). Actions belong on buttons inside the page (*Check the code*). The page heading may be the action.
 - **Text follows the record's current state.** Every sentence the page writes about a record must be true now, not when the event happened. An order refunded in full says "access ended" only while the enrollment is locked; once the student pays again it says so. A cancelled booking does not keep "we will call you". Build the sentence from the current records, not from the event alone.
 - **Frame classes stay on the frame.** `xx-head`, `xx-nav`, `xx-foot` and `xx-site` belong to the page header, menu, footer and wrapper only. A card's own top or bottom is `xx-chead` or `xx-cfoot`; C# and JavaScript that write content never emit a frame class, or the content takes the frame's dark band and spacing. `check_sources.py` fails this.
