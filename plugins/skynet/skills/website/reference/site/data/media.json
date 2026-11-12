@@ -1,0 +1,110 @@
+[
+  {
+    "id": "m-001",
+    "path": "images/hero.webp",
+    "thumb": "",
+    "kind": "photo",
+    "name": "hero.webp",
+    "alt": "Gallery wall with three framed prints",
+    "caption": "",
+    "bytes": 12946,
+    "added": "2026-11-01T09:00:00Z",
+    "by": "Sample"
+  },
+  {
+    "id": "m-002",
+    "path": "images/items/blue-jug-with-lemons.webp",
+    "thumb": "",
+    "kind": "photo",
+    "name": "items/blue-jug-with-lemons.webp",
+    "alt": "Still life print of a blue jug with lemons",
+    "caption": "",
+    "bytes": 28310,
+    "added": "2026-11-01T09:00:00Z",
+    "by": "Sample"
+  },
+  {
+    "id": "m-003",
+    "path": "images/items/fern-unfurling.webp",
+    "thumb": "",
+    "kind": "photo",
+    "name": "items/fern-unfurling.webp",
+    "alt": "Botanical print of an unfurling fern",
+    "caption": "",
+    "bytes": 27746,
+    "added": "2026-11-01T09:00:00Z",
+    "by": "Sample"
+  },
+  {
+    "id": "m-004",
+    "path": "images/items/field-with-low-sun.webp",
+    "thumb": "",
+    "kind": "photo",
+    "name": "items/field-with-low-sun.webp",
+    "alt": "Abstract print of a field under a low sun",
+    "caption": "",
+    "bytes": 12902,
+    "added": "2026-11-01T09:00:00Z",
+    "by": "Sample"
+  },
+  {
+    "id": "m-005",
+    "path": "images/items/half-moons.webp",
+    "thumb": "",
+    "kind": "photo",
+    "name": "items/half-moons.webp",
+    "alt": "Abstract print of coloured half moons",
+    "caption": "",
+    "bytes": 23478,
+    "added": "2026-11-01T09:00:00Z",
+    "by": "Sample"
+  },
+  {
+    "id": "m-006",
+    "path": "images/items/last-light-carrow-fell.webp",
+    "thumb": "",
+    "kind": "photo",
+    "name": "items/last-light-carrow-fell.webp",
+    "alt": "Landscape print of last light on Carrow Fell",
+    "caption": "",
+    "bytes": 12310,
+    "added": "2026-11-01T09:00:00Z",
+    "by": "Sample"
+  },
+  {
+    "id": "m-007",
+    "path": "images/items/seed-heads.webp",
+    "thumb": "",
+    "kind": "photo",
+    "name": "items/seed-heads.webp",
+    "alt": "Botanical print of seed heads on tall stems",
+    "caption": "",
+    "bytes": 18402,
+    "added": "2026-11-01T09:00:00Z",
+    "by": "Sample"
+  },
+  {
+    "id": "m-008",
+    "path": "images/items/six-ridges-november.webp",
+    "thumb": "",
+    "kind": "photo",
+    "name": "items/six-ridges-november.webp",
+    "alt": "Landscape print of six ridges in November mist",
+    "caption": "",
+    "bytes": 17422,
+    "added": "2026-11-01T09:00:00Z",
+    "by": "Sample"
+  },
+  {
+    "id": "m-009",
+    "path": "images/items/swell.webp",
+    "thumb": "",
+    "kind": "photo",
+    "name": "items/swell.webp",
+    "alt": "Linocut print of a sea swell",
+    "caption": "",
+    "bytes": 106834,
+    "added": "2026-11-01T09:00:00Z",
+    "by": "Sample"
+  }
+]

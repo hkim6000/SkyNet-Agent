@@ -1,6 +1,6 @@
 # Sample data and Initialize data
 
-Read this when the site has a staff area. Every such site ships with sample records so the Demo looks like a working business, and with one way to wipe them when the owner goes live. Worked example (namespace `MySite`): [code/init/](code/init/) holds `Init.cs`; the Initialize data button is already in `AdminSettings` ([code/shell/](code/shell/)), and `AdminLogin`, `Program.cs` and `Store` in code/core and code/shell already call `Init`.
+Read this when the site has a staff area. Every such site ships with sample records so the Demo looks like a working business, and with one way to wipe them when the owner goes live. Worked example in [site/](site/REFERENCE.md): `codes/Core/Init.cs`; the Initialize data button is already in `AdminSettings`, and `AdminLogin`, `Program.cs` and `Store` already call `Init`.
 
 ## Sample data
 

@@ -83,7 +83,7 @@ app.UseStaticHttpCurrent();
 app.Run();
 ```
 
-`AddHttpContextAccessor()` registers the request accessor; a site with a staff area also hands it to `Core/Local.cs` and raises the upload limits, as in [code/core/Program.cs.txt](code/core/Program.cs.txt). The `closed` list answers 404 for the folders that hold settings, data, run-time files and sources, so they stay private on any host, not only behind the IIS rules in `web.config`. Keep it before `IHandler`.
+`AddHttpContextAccessor()` registers the request accessor; a site with a staff area also hands it to `Core/Local.cs` and raises the upload limits, as in [site/Program.cs](site/Program.cs). The `closed` list answers 404 for the folders that hold settings, data, run-time files and sources, so they stay private on any host, not only behind the IIS rules in `web.config`. Keep it before `IHandler`.
 
 ## appConfig/application.cfg
 

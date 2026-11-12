@@ -16,9 +16,9 @@ Read this when a site has a staff area: bookings, orders, articles, a schedule, 
 | Data | `data/site.json`, `data/staff.json`, `data/activity.json` |
 | Run-time files | `temp/admin/sessions.json`; `appConfig/initial-admin.txt` until the first sign-in |
 
-**Copy the working code, do not rewrite it.** [code/core/](code/core/) holds `Store.cs`, `Access.cs`, `Auth.cs`, `Ui.cs`, `Local.cs`, the classes to add to the model file (`Models.core.txt`) and the full `Program.cs` for a site with a staff area (`Program.cs.txt`). [code/shell/](code/shell/) holds the four files each of `Admin` (shell), `AdminHome` (dashboard), `AdminLogin`, `AdminAccount`, `AdminSettings`, `AdminMessages`, `AdminUsers` and `AdminActivity`. All of them are tested together on the real framework. Rename the namespace `MySite`, the cookie name `ms_tok` (in `Admin.js` and `AdminLogin.js`), the colours, the fonts and the logo; change `Access.Areas` to the site's areas, and drop the Media part of Settings when there is no media library.
+**Copy the working code, do not rewrite it.** [site/](site/REFERENCE.md) is a complete project that builds and runs as it is. `codes/Core/` holds `Store.cs`, `Access.cs`, `Auth.cs`, `Ui.cs`, `Local.cs` (and `Media.cs`, `Blocks.cs`, `Init.cs`); `codes/Models/MySiteModel.cs` holds every class the staff area needs; `Program.cs` is the full one for a site with a staff area; and there are the four files each of `Admin` (shell), `AdminHome` (dashboard), `AdminLogin`, `AdminAccount`, `AdminSettings`, `AdminMessages`, `AdminUsers` and `AdminActivity`. Start the new site from a copy of the whole folder and build it once before changing anything. All of it is tested together on the real framework. Rename the namespace `MySite`, the cookie name `ms_tok` (in `Admin.js` and `AdminLogin.js`), the colours, the fonts and the logo; change `Access.Areas` to the site's areas, and drop the Media part of Settings when there is no media library.
 
-**The admin style kit.** Every panel's CSS starts from the same set of rules: `AdminMedia.css` ([code/media/](code/media/)) is the kit (buttons, panels, fields of every input type, tables that become cards below 600px through `data-l` labels, pills, chips, modal, confirm box, toast). Copy it under the new page's prefix and add the page's own rules. The brand of the whole staff area is four lines at the top of `Admin.css`: `--admin-accent`, `--admin-accent-d`, `--admin-head`, `--admin-text`, with the `@font-face` rules for the site's fonts. Every panel reads them (`--xx-accent: var(--admin-accent, ...)`), so rebranding is that one file plus `AdminLogin.css` (a page of its own). Keep the neutral greys of the panels as shipped.
+**The admin style kit.** Every panel's CSS starts from the same set of rules: the four `AdminMessages` files in [site/](site/REFERENCE.md) are the kit: a list with chips, search and a pager, a modal form, the confirm box and the toast, with nothing page-specific beyond the message fields (buttons, panels, fields of every input type, tables that become cards below 600px through `data-l` labels, pills). Copy all four under the new page's name and prefix, then change the fields and add the page's own rules. The brand of the whole staff area is four lines at the top of `Admin.css`: `--admin-accent`, `--admin-accent-d`, `--admin-head`, `--admin-text`, with the `@font-face` rules for the site's fonts. Every panel reads them (`--xx-accent: var(--admin-accent, ...)`), so rebranding is that one file plus `AdminLogin.css` (a page of its own). Keep the neutral greys of the panels as shipped.
 
 `codes/Core/` is the one exception to "pages are self-contained": sign-in, rights and storage must behave the same on every page, so they live in one place. A calculation that several pages must show the same way (a price, a total, a fee) may live there too, as `Core/<Name>.cs` (for example `Core/PriceCalc.cs`). A `Core` class must never have the name of a page (`Pricing` when there is a Pricing page): SkyNet finds pages by class name (pitfalls). Everything else (markup, CSS, JS, page methods) stays per page.
 
@@ -93,7 +93,7 @@ public static readonly Area[] Areas =
 };
 ```
 
-`Access.cs` in [code/core/](code/core/) holds these classes; the snippet above shows the shape. `Group` is the menu heading; `StaffOnly` areas (Users, Activity log) disappear in one-admin mode.
+`Access.cs` in [site/codes/Core/](site/codes/Core/) holds these classes; the snippet above shows the shape. `Group` is the menu heading; `StaffOnly` areas (Users, Activity log) disappear in one-admin mode.
 
 - A person's right in an area is a string of letters: `V` view, `E` edit, `X` the area's extra right (cancel, publish, time off). `X` needs `E`; `NoEdit` areas stop at `V`; `AdminOnly` areas are for managers only. A manager (`Staff.Admin`) has `VEX` everywhere.
 - `Access.Level(user, area)` returns the letters; `Access.Can(user, area, 'E')` answers yes or no. Clean the posted grid with the same rules before saving it.
@@ -136,8 +136,8 @@ public class Staff
 - The browser keeps the token in a cookie (`ms_tok`, renamed per site, `path=` the site's base folder, `samesite=lax`). `AdminJs.tok()` reads it; every panel request sends it as the key `tok`, and an expired session sends the browser back to `AdminLogin` (`AdminJs.expired()`).
 - Changing someone's password, or switching them off, closes all their sessions. Changing your own password in My account closes your other sessions and keeps this one.
 - A user with `MustChange` (the first manager, or anyone whose password a manager reset) gets no session until they choose their own password on the sign-in page.
-- **Users** (managers only, [code/shell/AdminUsers.cs](code/shell/AdminUsers.cs)): add a person (name, user name, job title, Manager, Active, a right per area); the new person gets a one-time password, shown once to the manager, and chooses their own at first sign-in. **New password** does the same for someone who forgot theirs and signs them out everywhere. Untick **Active** to stop someone signing in without losing their account; **Remove** deletes it (their log entries stay, shown as *Former staff member*). Nobody can pause, demote or remove themselves, and the last active manager cannot be paused, demoted or removed.
-- **Activity log** ([code/shell/AdminActivity.cs](code/shell/AdminActivity.cs)): with the activity right, everyone's entries with a person filter, Done/Refused chips and search, 25 per page; without it, the same page as **My activity** with only the person's own entries. `Store.NameOf` shows names (*Demo manager*, *System*, *Unknown user name* for a failed sign-in with a wrong user name).
+- **Users** (managers only, [site/codes/AdminUsers.cs](site/codes/AdminUsers.cs)): add a person (name, user name, job title, Manager, Active, a right per area); the new person gets a one-time password, shown once to the manager, and chooses their own at first sign-in. **New password** does the same for someone who forgot theirs and signs them out everywhere. Untick **Active** to stop someone signing in without losing their account; **Remove** deletes it (their log entries stay, shown as *Former staff member*). Nobody can pause, demote or remove themselves, and the last active manager cannot be paused, demoted or removed.
+- **Activity log** ([site/codes/AdminActivity.cs](site/codes/AdminActivity.cs)): with the activity right, everyone's entries with a person filter, Done/Refused chips and search, 25 per page; without it, the same page as **My activity** with only the person's own entries. `Store.NameOf` shows names (*Demo manager*, *System*, *Unknown user name* for a failed sign-in with a wrong user name).
 - **Staff sign-in is reachable from the public site.** Every public page's footer links to **Staff sign in** (`/AdminLogin`). When the site also has customer accounts, the header's **Sign in** opens a gateway page with a customer card and a staff card ([accounts.md](accounts.md)); without customer accounts the header needs no sign-in button and the footer link is enough.
 
 ```js
@@ -166,11 +166,11 @@ User name [admin        ]  Password [**********]
                 [ Sign in ]
 ```
 
-The starter registers the request accessor with `AddHttpContextAccessor()`; a staff site's `Program.cs` ([code/core/Program.cs.txt](code/core/Program.cs.txt)) also hands it to `Core/Local.cs`:
+The starter registers the request accessor with `AddHttpContextAccessor()`; a staff site's `Program.cs` ([site/Program.cs](site/Program.cs)) also hands it to `Core/Local.cs`:
 
 `Local.Request()` in `Core/Local.cs` answers whether the request comes from the computer the site runs on. The address **and** the host name must both be local: behind a reverse proxy on the same machine every visitor arrives from `127.0.0.1`, but with the site's public host name, so they never see the box.
 
-`Store.EnsureFirstManager()` makes the `admin` user with a new password and writes `initial-admin.txt` when no manager has a password of their own yet; `Store.InitialPassword()` reads it back. `Access.NewPassword()` makes 12 characters in three groups of four from letters and digits that cannot be misread (no 0/O or 1/l/I). `AdminLogin.OnInitialized` runs `Init.OnStart()`, then `EnsureFirstManager()`, and fills the box only for `Local.Request()`. The code is in [code/core/Store.cs](code/core/Store.cs) and [code/shell/AdminLogin.cs](code/shell/AdminLogin.cs).
+`Store.EnsureFirstManager()` makes the `admin` user with a new password and writes `initial-admin.txt` when no manager has a password of their own yet; `Store.InitialPassword()` reads it back. `Access.NewPassword()` makes 12 characters in three groups of four from letters and digits that cannot be misread (no 0/O or 1/l/I). `AdminLogin.OnInitialized` runs `Init.OnStart()`, then `EnsureFirstManager()`, and fills the box only for `Local.Request()`. The code is in [site/codes/Core/Store.cs](site/codes/Core/Store.cs) and [site/codes/AdminLogin.cs](site/codes/AdminLogin.cs).
 
 - `SignIn`: check user name and password (with the 6-in-5-minutes pause). If the user has `MustChange`, open no session; reveal two fields *New password* and *New password again* and turn the button into **Save and sign in** (`AdminLoginJs.choose()`).
 - `SetPassword`: check the user name and current password again, then the new one: 8 characters or more, different from the current one, both fields equal. Save the hash, clear `MustChange`, delete `initial-admin.txt`, log it, open the session.
@@ -192,7 +192,7 @@ Templates ship with `0` (Demo) so a public showcase works without a password; th
 - **Demo:** the sign-in form is pre-filled (`demo` / `demo1234`) with a note *Any user name and password signs in as a demo manager with every right* that also lists the sample staff logins by role (*instructors maya and luis, registrar rosa … password demo1234*). A customer sign-in form is pre-filled the same way with the first sample customer and lists the others. `SignIn` accepts anything and opens a session for a built-in `u-demo` manager (`Store.DemoManager()` creates it on first use: Admin, Active, no forced password change). A real account with its correct password still signs in as itself, so the owner can test roles. The first-password box and `initial-admin.txt` are never made in Demo. Nothing is blocked: visitors can upload, edit and delete like a manager.
 - **Production:** exactly the first-sign-in flow above. `Auth.Check` also refuses a session whose user is `u-demo` while the mode is `1`, so switching the file ends every demo session at once.
 
-`Store.Demo()` in [code/core/Store.cs](code/core/Store.cs) reads `app.app.runmode` and caches it by the file's write time, so a change to the file takes effect at the next request.
+`Store.Demo()` in [site/codes/Core/Store.cs](site/codes/Core/Store.cs) reads `app.app.runmode` and caches it by the file's write time, so a change to the file takes effect at the next request.
 
 Test both: in Demo, an empty form and a random pair both reach the dashboard as *Demo manager*; in Production, both are refused and `demo`/`demo1234` is refused too.
 
@@ -206,7 +206,7 @@ Test both: in Demo, an empty form and a random pair both reach the dashboard as 
 
 ## Admin page skeleton
 
-A panel page's server side (the four files of a full example are `AdminHome` and `AdminAccount` in [code/shell/](code/shell/)):
+A panel page's server side (full examples: `AdminHome`, `AdminAccount` and `AdminMessages` in [site/](site/REFERENCE.md)):
 
 ```csharp
 public class AdminRooms : WebPage

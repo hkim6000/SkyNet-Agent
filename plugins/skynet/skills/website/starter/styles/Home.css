@@ -23,7 +23,7 @@
 .hm-site *, .hm-site *::before, .hm-site *::after { box-sizing: border-box; }
 :where(.hm-site) a { color: inherit; text-decoration: none; }
 .hm-site img { display: block; max-width: 100%; }
-.hm-site button, .hm-site input, .hm-site select, .hm-site textarea { font: inherit; color: inherit; }
+:where(.hm-site) :where(button, input, select, textarea) { font: inherit; color: inherit; }
 .hm-site h1, .hm-site h2, .hm-site h3 { font-family: var(--hm-head); font-weight: 600; line-height: 1.15; margin: 0; }
 .hm-site h1 { font-size: 46px; }
 .hm-site h2 { font-size: 28px; }
@@ -120,12 +120,6 @@ body { margin: 0; }
 .hm-foot-in { max-width: 1200px; margin: 0 auto; padding: 48px 28px 32px; display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
 .hm-foot .hm-logo { color: #fff; }
 .hm-fbrand p { margin-top: 12px; color: #B9C1C8; }
-.hm-nl label { display: block; font-weight: 700; margin-bottom: 8px; color: #fff; }
-.hm-nl-row { display: flex; gap: 8px; }
-.hm-nl input { height: 46px; width: 260px; max-width: 100%; border: 1px solid #44525E; border-radius: 6px; background: #2C3B48; color: #fff; padding: 0 12px; }
-.hm-nl .hm-btn { background: var(--hm-accent); }
-.hm-nl-msg { font-size: 14px; margin-top: 8px; max-width: 360px; }
-.hm-nl-msg .hm-err { color: #F2A08F; }
 .hm-foot-b { max-width: 1200px; margin: 0 auto; padding: 16px 28px 24px; border-top: 1px solid #3A4854; font-size: 13px; color: #94A0AA; }
 .hm-toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 30px); background: var(--hm-ink); color: #fff; padding: 12px 20px; border-radius: 6px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; z-index: 200; max-width: calc(100vw - 32px); }
 .hm-toast.hm-open { opacity: 1; transform: translate(-50%, 0); }
@@ -155,6 +149,4 @@ body { margin: 0; }
     .hm-chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
     .hm-chip { flex: none; }
     .hm-form { padding: 20px; }
-    .hm-nl-row { flex-direction: column; }
-    .hm-nl input { width: 100%; }
 }

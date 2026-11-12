@@ -28,7 +28,7 @@ Then stop and wait for the user to say "go". Apply any changes they ask for firs
 
 ## Step 2 - Build (after "go")
 
-1. Copy `${CLAUDE_SKILL_DIR}/../website/starter/` into the new project folder (named after the project, PascalCase). Rename `Starter.csproj`, `RootNamespace`, every `Starter.` namespace, the app name in `appConfig/application.cfg`, and pick new ports in `Properties/launchSettings.json`. Remove the starter's pages and images you do not reuse.
+1. Copy `${CLAUDE_SKILL_DIR}/../website/starter/` into the new project folder (named after the project, PascalCase); for a site with a staff area copy `${CLAUDE_SKILL_DIR}/../website/reference/site/` instead (read its REFERENCE.md, build the copy once before changing it). Rename the `.csproj`, `RootNamespace`, every `Starter.` or `MySite.` namespace, the app name in `appConfig/application.cfg`, and pick new ports in `Properties/launchSettings.json`. Remove the starter's pages and images you do not reuse.
 2. Write `data/site.json` and `codes/Models/<Project>Model.cs`.
 3. Build each page: `htmls/X.html`, `styles/X.css`, `codes/X.cs`, `scripts/X.js`, following `reference/page-model.md` and `reference/pitfalls.md` of the `website` skill.
 4. Paint the images with the `art` skill; check a contact sheet and fix weak ones.

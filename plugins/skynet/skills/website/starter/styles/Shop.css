@@ -23,7 +23,7 @@
 .sh-site *, .sh-site *::before, .sh-site *::after { box-sizing: border-box; }
 :where(.sh-site) a { color: inherit; text-decoration: none; }
 .sh-site img { display: block; max-width: 100%; }
-.sh-site button, .sh-site input, .sh-site select, .sh-site textarea { font: inherit; color: inherit; }
+:where(.sh-site) :where(button, input, select, textarea) { font: inherit; color: inherit; }
 .sh-site h1, .sh-site h2, .sh-site h3 { font-family: var(--sh-head); font-weight: 600; line-height: 1.15; margin: 0; }
 .sh-site h1 { font-size: 46px; }
 .sh-site h2 { font-size: 28px; }
@@ -120,12 +120,6 @@ body { margin: 0; }
 .sh-foot-in { max-width: 1200px; margin: 0 auto; padding: 48px 28px 32px; display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
 .sh-foot .sh-logo { color: #fff; }
 .sh-fbrand p { margin-top: 12px; color: #B9C1C8; }
-.sh-nl label { display: block; font-weight: 700; margin-bottom: 8px; color: #fff; }
-.sh-nl-row { display: flex; gap: 8px; }
-.sh-nl input { height: 46px; width: 260px; max-width: 100%; border: 1px solid #44525E; border-radius: 6px; background: #2C3B48; color: #fff; padding: 0 12px; }
-.sh-nl .sh-btn { background: var(--sh-accent); }
-.sh-nl-msg { font-size: 14px; margin-top: 8px; max-width: 360px; }
-.sh-nl-msg .sh-err { color: #F2A08F; }
 .sh-foot-b { max-width: 1200px; margin: 0 auto; padding: 16px 28px 24px; border-top: 1px solid #3A4854; font-size: 13px; color: #94A0AA; }
 .sh-toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 30px); background: var(--sh-ink); color: #fff; padding: 12px 20px; border-radius: 6px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; z-index: 200; max-width: calc(100vw - 32px); }
 .sh-toast.sh-open { opacity: 1; transform: translate(-50%, 0); }
@@ -155,6 +149,4 @@ body { margin: 0; }
     .sh-chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
     .sh-chip { flex: none; }
     .sh-form { padding: 20px; }
-    .sh-nl-row { flex-direction: column; }
-    .sh-nl input { width: 100%; }
 }

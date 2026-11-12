@@ -52,16 +52,6 @@ var ShopJs = (function () {
         el('sh-sugg').classList.add('sh-open');
     }
 
-    function newsletter() {
-        call('Newsletter', [{ key: 'email', vlu: val('sh-nl-email') }]);
-        return false;
-    }
-
-    function newsletterDone() {
-        el('sh-nl-email').value = '';
-        toast('Thanks for signing up');
-    }
-
     function cat(c) {
         el('sh-cat').value = c;
         filter();
@@ -120,8 +110,6 @@ var ShopJs = (function () {
         closeNav: closeNav,
         search: search,
         openSugg: openSugg,
-        newsletter: newsletter,
-        newsletterDone: newsletterDone,
         cat: cat,
         filter: filter,
         filtered: filtered,

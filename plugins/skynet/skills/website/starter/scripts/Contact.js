@@ -52,16 +52,6 @@ var ContactJs = (function () {
         el('ct-sugg').classList.add('ct-open');
     }
 
-    function newsletter() {
-        call('Newsletter', [{ key: 'email', vlu: val('ct-nl-email') }]);
-        return false;
-    }
-
-    function newsletterDone() {
-        el('ct-nl-email').value = '';
-        toast('Thanks for signing up');
-    }
-
     function cat(c) {
         el('ct-cat').value = c;
         filter();
@@ -120,8 +110,6 @@ var ContactJs = (function () {
         closeNav: closeNav,
         search: search,
         openSugg: openSugg,
-        newsletter: newsletter,
-        newsletterDone: newsletterDone,
         cat: cat,
         filter: filter,
         filtered: filtered,

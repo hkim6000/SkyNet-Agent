@@ -1,0 +1,120 @@
+[
+  {
+    "id": "t-1",
+    "name": "Example: garden studio",
+    "photos": [
+      "images/items/field-with-low-sun.webp",
+      "images/items/seed-heads.webp"
+    ],
+    "plan": {
+      "floors": [
+        {
+          "name": "Main floor",
+          "rooms": [
+            {
+              "name": "Living",
+              "kind": "living",
+              "x": 0,
+              "y": 0,
+              "w": 20,
+              "h": 16
+            },
+            {
+              "name": "Kitchen",
+              "kind": "kitchen",
+              "x": 20,
+              "y": 0,
+              "w": 14,
+              "h": 16
+            },
+            {
+              "name": "Hall",
+              "kind": "hall",
+              "x": 0,
+              "y": 16,
+              "w": 34,
+              "h": 5
+            },
+            {
+              "name": "Bedroom",
+              "kind": "bed",
+              "x": 0,
+              "y": 21,
+              "w": 16,
+              "h": 14
+            },
+            {
+              "name": "Bath",
+              "kind": "bath",
+              "x": 16,
+              "y": 21,
+              "w": 8,
+              "h": 14
+            },
+            {
+              "name": "Stairs",
+              "kind": "stairs",
+              "x": 24,
+              "y": 21,
+              "w": 10,
+              "h": 14
+            }
+          ],
+          "openings": [
+            {
+              "kind": "door",
+              "x": 8,
+              "y": 35,
+              "len": 3,
+              "dir": "h"
+            },
+            {
+              "kind": "window",
+              "x": 4,
+              "y": 0,
+              "len": 10,
+              "dir": "h"
+            },
+            {
+              "kind": "open",
+              "x": 20,
+              "y": 4,
+              "len": 6,
+              "dir": "v"
+            }
+          ]
+        },
+        {
+          "name": "Upper floor",
+          "rooms": [
+            {
+              "name": "Suite",
+              "kind": "bed",
+              "x": 0,
+              "y": 0,
+              "w": 20,
+              "h": 18
+            },
+            {
+              "name": "Bath 2",
+              "kind": "bath",
+              "x": 20,
+              "y": 0,
+              "w": 14,
+              "h": 10
+            },
+            {
+              "name": "Balcony",
+              "kind": "balcony",
+              "x": 0,
+              "y": 18,
+              "w": 20,
+              "h": 6
+            }
+          ],
+          "openings": []
+        }
+      ]
+    }
+  }
+]

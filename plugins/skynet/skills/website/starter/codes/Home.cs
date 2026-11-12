@@ -41,21 +41,6 @@ namespace Starter.codes
             return response;
         }
 
-        public async Task<ApiResponse> Newsletter()
-        {
-            ApiResponse response = new ApiResponse();
-            string email = (GetDataValue("email") ?? string.Empty).Trim();
-            if (!IsEmail(email))
-            {
-                response.SetElementContents("hm-nl-msg", "<span class=\"hm-err\">Please enter a valid email address.</span>");
-                return response;
-            }
-            bool added = await AddRecord("subscribers", new Subscriber { Email = email, From = "home", When = DateTime.UtcNow }, x => x.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
-            response.SetElementContents("hm-nl-msg", added ? "You&rsquo;re on the list: " + HtmlEncode(email) + "." : HtmlEncode(email) + " is already on the list.");
-            response.ExecuteScript("HomeJs.newsletterDone();");
-            return response;
-        }
-
         private static string Cards(IEnumerable<Item> items)
         {
             StringBuilder sb = new StringBuilder();
@@ -75,34 +60,6 @@ namespace Starter.codes
         private static string Money(decimal v)
         {
             return "$" + v.ToString("#,0.##", CultureInfo.InvariantCulture);
-        }
-
-        private static readonly SemaphoreSlim SaveGate = new SemaphoreSlim(1, 1);
-
-        private static async Task<bool> AddRecord<T>(string name, T entry, Func<T, bool>? duplicate = null)
-        {
-            JsonSerializerOptions opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase, WriteIndented = true };
-            string dir = Path.Combine(Directory.GetCurrentDirectory(), "data");
-            string file = Path.Combine(dir, name + ".json");
-            await SaveGate.WaitAsync();
-            try
-            {
-                Directory.CreateDirectory(dir);
-                List<T> list = File.Exists(file) ? JsonSerializer.Deserialize<List<T>>(await File.ReadAllTextAsync(file), opts) ?? new List<T>() : new List<T>();
-                if (duplicate != null && list.Any(duplicate))
-                {
-                    return false;
-                }
-                list.Add(entry);
-                string tmp = file + "." + Guid.NewGuid().ToString("N") + ".tmp";
-                await File.WriteAllTextAsync(tmp, JsonSerializer.Serialize(list, opts));
-                File.Move(tmp, file, true);
-                return true;
-            }
-            finally
-            {
-                SaveGate.Release();
-            }
         }
 
         private async Task<SiteData> LoadSite()
@@ -131,17 +88,6 @@ namespace Starter.codes
         private static bool Has(string text, string q)
         {
             return q.Length > 0 && (text ?? string.Empty).Contains(q, StringComparison.OrdinalIgnoreCase);
-        }
-
-        private static bool IsEmail(string v)
-        {
-            if (v.Length < 5 || v.Length > 80 || v.Contains(' '))
-            {
-                return false;
-            }
-            int at = v.IndexOf('@');
-            int dot = v.LastIndexOf('.');
-            return at > 0 && at == v.LastIndexOf('@') && dot > at + 1 && dot < v.Length - 1;
         }
     }
 }

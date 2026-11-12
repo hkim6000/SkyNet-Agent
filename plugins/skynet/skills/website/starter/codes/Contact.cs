@@ -65,21 +65,6 @@ namespace Starter.codes
             return response;
         }
 
-        public async Task<ApiResponse> Newsletter()
-        {
-            ApiResponse response = new ApiResponse();
-            string email = (GetDataValue("email") ?? string.Empty).Trim();
-            if (!IsEmail(email))
-            {
-                response.SetElementContents("ct-nl-msg", "<span class=\"ct-err\">Please enter a valid email address.</span>");
-                return response;
-            }
-            bool added = await AddRecord("subscribers", new Subscriber { Email = email, From = "contact", When = DateTime.UtcNow }, x => x.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
-            response.SetElementContents("ct-nl-msg", added ? "You&rsquo;re on the list: " + HtmlEncode(email) + "." : HtmlEncode(email) + " is already on the list.");
-            response.ExecuteScript("ContactJs.newsletterDone();");
-            return response;
-        }
-
         private static string Cards(IEnumerable<Item> items)
         {
             StringBuilder sb = new StringBuilder();

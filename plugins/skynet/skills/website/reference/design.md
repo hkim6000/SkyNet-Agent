@@ -14,11 +14,11 @@ Agree on these before writing code:
 ## Layout
 
 - Content width about 1240px with 28px side padding (16px on phones).
-- Sticky header: logo, menu, search, account; on tablets and phones a burger opens a slide-in menu with a scrim. The brand name stays visible and whole at 390px (public and admin); drop secondary items first. In the admin header at phone width hide the signed-in name and role (they are in the slide-in menu) and keep only the burger, the brand and Sign out.
+- Sticky header: logo, menu, search, account; on tablets and phones a burger opens a slide-in menu with a scrim. The brand name stays visible and whole at 390px (public and admin); drop secondary items first. In the admin header at phone width hide the signed-in name and role (the person finds them on My account) and keep only the burger, the brand and Sign out.
 - Admin "View site" links open in a new tab (`target="_blank" rel="noopener"`), so staff keep their place.
 - Sections spaced 44 to 56px apart; one clear heading per section with a "See all" link where it helps.
 - Cards: image, small eyebrow label, title, one or two lines of detail, actions.
-- Footer: brand line, three link columns, a copyright line. A newsletter field only when the brief asks for one: it needs somewhere to keep the addresses (a `subscribers` file, a staff panel to read and export them, a line in `Init.cs` `Records`). The starter's footer has one as a sample: remove it unless the brief asks for it.
+- Footer: brand line, three link columns, a copyright line. A newsletter field only when the brief asks for one: it needs somewhere to keep the addresses (a `subscribers` file, a staff panel to read and export them, a line in `Init.cs` `Records`).
 - A toast element for short confirmations.
 
 ## Fonts

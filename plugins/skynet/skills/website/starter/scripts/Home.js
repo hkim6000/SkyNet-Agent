@@ -52,16 +52,6 @@ var HomeJs = (function () {
         el('hm-sugg').classList.add('hm-open');
     }
 
-    function newsletter() {
-        call('Newsletter', [{ key: 'email', vlu: val('hm-nl-email') }]);
-        return false;
-    }
-
-    function newsletterDone() {
-        el('hm-nl-email').value = '';
-        toast('Thanks for signing up');
-    }
-
     function cat(c) {
         el('hm-cat').value = c;
         filter();
@@ -120,8 +110,6 @@ var HomeJs = (function () {
         closeNav: closeNav,
         search: search,
         openSugg: openSugg,
-        newsletter: newsletter,
-        newsletterDone: newsletterDone,
         cat: cat,
         filter: filter,
         filtered: filtered,

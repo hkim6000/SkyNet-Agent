@@ -17,7 +17,7 @@ SkyNet is a server-driven web framework for ASP.NET Core. The browser calls a C#
 | [reference/project.md](reference/project.md) | Creating a project: folders, csproj, Program.cs, application.cfg, data/site.json |
 | [reference/design.md](reference/design.md) | Designing pages: layout, responsive breakpoints, confirm dialogs, admin lists, content rules |
 | [reference/admin.md](reference/admin.md) | The site has a staff area: the admin shell, one admin or several staff, sign-in, rights by area, activity log, the first admin password, Demo and Production run mode |
-| [reference/code/core/](reference/code/core/) and [reference/code/shell/](reference/code/shell/) | Any staff area: copy `Store`, `Access`, `Auth`, `Local`, `Ui`, the staff `Program.cs`, and the `Admin` shell, `AdminHome`, `AdminLogin`, `AdminAccount`, `AdminSettings`, `AdminMessages`, `AdminUsers`, `AdminActivity` pages, then rename |
+| [reference/site/](reference/site/REFERENCE.md) | Any site with a staff area: a complete project that compiles and runs as it is (public pages, staff shell and every shipped panel, media library, Pages editor, photo picker, floor plan). Start from a copy of it; every file is real code, tested together |
 | [reference/media.md](reference/media.md) | Staff upload photos or videos and pick them for products, pages or people: the media library page, the shared picker, size and type checks |
 | [reference/floorplan.md](reference/floorplan.md) | A page shows the layout of a building: 2D plan and 3D view per floor, the plan data, the staff-side check |
 | [reference/pages.md](reference/pages.md) | The owner edits the public pages themselves: block-edited pages (Pages admin), data parts, versions, the per-page renderer |
@@ -25,7 +25,7 @@ SkyNet is a server-driven web framework for ASP.NET Core. The browser calls a C#
 | [reference/accounts.md](reference/accounts.md) | Customers sign in (students, members, patients): the sign-in gateway, sign-up with a phone number, the account page with a password change, and the emailed reset link |
 | [reference/code/slideshow/](reference/code/slideshow/README.txt) | The developer chose a Home slideshow: the page-top renderer, script, styles and the Slides list in the Pages editor |
 | [reference/readme-template.md](reference/readme-template.md) | Writing the README for a finished site |
-| [starter/](starter/) | A working three-page SkyNet project to copy and extend |
+| [starter/](starter/) | A working three-page SkyNet project to copy and extend, for a site with no staff area |
 
 For database pages, use the `sql` skill. For artwork painted in code, use the `art` skill. To check your work, use the `verify` skill.
 
@@ -47,6 +47,6 @@ For database pages, use the `sql` skill. For artwork painted in code, use the `a
 3. Write `data/site.json` and the model classes.
 4. Build pages one at a time: HTML, then CSS, then C# (`OnInitialized` plus methods), then JS.
 5. Add images (the `art` skill paints them in code; WebP, lazy loaded).
-6. For a staff area, copy `codes/Core/` and the shell pages from `reference/code/core` and `reference/code/shell` first, then one panel page per area ([reference/admin.md](reference/admin.md)). A site whose content the owner will edit gets a **Media library** ([reference/media.md](reference/media.md)), a **Pages** editor ([reference/pages.md](reference/pages.md)) and a **Messages** page rather than a form-per-field "Content" page.
+6. For a staff area, start from a copy of `reference/site/` instead of `starter/` (its [REFERENCE.md](reference/site/REFERENCE.md) says what each file is and what to delete), check that the copy builds before changing anything, then rename and add one panel page per area ([reference/admin.md](reference/admin.md)). A site whose content the owner will edit gets a **Media library** ([reference/media.md](reference/media.md)), a **Pages** editor ([reference/pages.md](reference/pages.md)) and a **Messages** page rather than a form-per-field "Content" page.
 7. Verify, fix, verify again.
 8. Write the README from [reference/readme-template.md](reference/readme-template.md) with real counts.

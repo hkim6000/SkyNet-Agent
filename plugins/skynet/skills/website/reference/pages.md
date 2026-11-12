@@ -1,6 +1,6 @@
 # Pages: block-edited page content
 
-Read this when the owner must change the words and pictures of the public pages themselves. Instead of one admin form per text field, every public page is a **list of blocks** that staff edit in place on one admin page, **Pages**. This is the pattern of the sport-center template and the flower shop. Worked example (namespace `MySite`): [code/pages/](code/pages/) holds `Blocks.cs`, the four `AdminPages` files, `Renderer.cs.txt` (the renderer every public page carries, with `PX` for its prefix) and `blocks.css.txt` (the matching styles). Copy them and change the page list, the data parts, the icons and the seed.
+Read this when the owner must change the words and pictures of the public pages themselves. Instead of one admin form per text field, every public page is a **list of blocks** that staff edit in place on one admin page, **Pages**. This is the pattern of the sport-center template and the flower shop. Worked example in [site/](site/REFERENCE.md): `codes/Core/Blocks.cs`, the four `AdminPages` files, and two block-rendered public pages. `About` (prefix `ab-`) is the plain case: copy its four files to start any block-rendered page; in `About.cs` everything from `Tok` to the end of the class is the renderer, and in `About.css` everything from `.ab-bhero` to the end is the block styles. `Home` adds a data part (`DataPart` with `favourites`). Change the page list, the data parts, the icons and the seed. `Shop` and `Contact` in the example are ordinary pages, not in the Pages editor.
 
 ## Data
 
@@ -15,21 +15,13 @@ BlockItem{ Icon, Media, Title, Text, Link, Label }
 
 Seeded blocks get fixed ids (`bhhome`, `bditemlist`, `btabout`), so a page that has never been saved looks the same on every load, and the first save of anything writes the seeded pages into `site.json` unchanged. Write the site's real page text into the seed (or into `data/site.json`) before delivering; *Change this text on the Pages page* must never reach the owner.
 
-With block pages, change `LoadSite` in `Core/Store.cs` to:
-
-```csharp
-public static async Task<SiteData> LoadSite()
-{
-    SiteData site = await Read(FileOf("site"), () => new SiteData());
-    Blocks.Ensure(site);
-    return site;
-}
-```
+`Store.LoadSite()` in the reference site already calls `Blocks.Ensure(site)` after reading the file. A site without the Pages editor deletes that line, `Core/Blocks.cs`, the `AdminPages` files, the `pages` area in `Access.Areas` and the `Blocks.Uses` line in `Media.UsedBy`.
 
 ### Page list and data parts
 
 ```csharp
-Pages: home → Home [favourites]   shop → Shop [itemlist]   about → About []   contact → Contact [contactform]
+Pages: home → Home [favourites]   about → About []
+(a shop page with an item list part would be: shop → Shop [itemlist])
 ```
 
 Pages are a fixed list in code (transactional pages such as Product, Cart and Pay are not block-edited). A **data part** (`Type = "data"`, `Source = key`) is the piece of a page that comes from the site's own data or is a form: the product list, the contact form, the booking box. Data parts must appear exactly once on their page; staff can move, hide and retitle them, not remove them. `Ensure` adds any that are missing.
@@ -66,9 +58,9 @@ One canvas, every block an inline editor (`.pg-blk`): header with a drag grip, t
 
 ## The public pages
 
-Each public page keeps its own copy of the renderer (per-page prefix, as always): `PageHtml(site, media, key)` walks the visible blocks and switches on type. The renderer calls one method the page writes itself, `private string DataPart(SiteData site, Block b, bool first)`: it switches on `b.Source` and renders that page's own data parts (the item list, the contact form), with the block's kicker, title and text as the part's heading (`Head(site, b, lead, tag)`: `lead` shows the block's text under the title, `tag` is `"h1"` for the first part on the page and `"h2"` otherwise), and returns an empty string for a source it does not know. Only the first hero or data part on a page gets an `<h1>`. The HTML of such a page is just the header, `{plhd_blocks}` inside `<main>`, and the footer.
+Each public page keeps its own copy of the renderer (per-page prefix, as always): `PageHtml(site, media, key)` walks the visible blocks and switches on type. The renderer calls one method the page writes itself, `private string DataPart(SiteData site, List<MediaItem> media, Block b, bool first)`: it switches on `b.Source` and renders that page's own data parts (the item list, the contact form), with the block's kicker, title and text as the part's heading (`Head(site, b, lead, tag)`: `lead` shows the block's text under the title, `tag` is `"h1"` for the first part on the page and `"h2"` otherwise), and returns an empty string for a source it does not know. The first hero, data part or text block on a page gets the `<h1>`. The HTML of such a page is just the header, `{plhd_blocks}` inside `<main>`, and the footer.
 
-The block classes live in the page's CSS (`blocks.css.txt` with `PX` replaced by the prefix). They define these classes, and the page must not define them again: `PX-bbox`, `PX-bboxes`, `PX-bbtns`, `PX-bcard`, `PX-bcards`, `PX-bcta`, `PX-bfaq`, `PX-bfaqs`, `PX-bflip`, `PX-bh2`, `PX-bhead`, `PX-bhero`, `PX-bhero-in`, `PX-bhero-p`, `PX-bhero-t`, `PX-blead`, `PX-bmedia`, `PX-bmore`, `PX-bnoface`, `PX-bnomedia`, `PX-bpeople`, `PX-bperson`, `PX-bplain`, `PX-bq`, `PX-bquote`, `PX-bsm`, `PX-bsplit`, `PX-bst`, `PX-bstats`, `PX-bsteps`, `PX-btext`, `PX-bticks`, `PX-btitle`, `PX-n1`, `PX-n2`, `PX-n3`, `PX-n4`, `PX-n5`, `PX-n6`, `PX-rich`, `PX-wico`. Name the page's own classes otherwise (`PX-card`, not `PX-bcard`). They rely on the page's own base styles: the variables `--PX-ink`, `--PX-ink2`, `--PX-line`, `--PX-paper`, `--PX-soft`, `--PX-accent`, `--PX-head`, and the classes `PX-wrap` (content width), `PX-sec` (section spacing), `PX-btn`, `PX-btn-ghost` and `PX-eyebrow`. The hero takes `--PX-soft` as its background.
+The block classes live in the page's CSS (the block styles of `About.css`, with the prefix replaced; `PX` below stands for the prefix). They define these classes, and the page must not define them again: `PX-bbox`, `PX-bboxes`, `PX-bbtns`, `PX-bcard`, `PX-bcards`, `PX-bcta`, `PX-bfaq`, `PX-bfaqs`, `PX-bflip`, `PX-bh2`, `PX-bhead`, `PX-bhero`, `PX-bhero-in`, `PX-bhero-p`, `PX-bhero-t`, `PX-blead`, `PX-bmedia`, `PX-bmore`, `PX-bnoface`, `PX-bnomedia`, `PX-bpeople`, `PX-bperson`, `PX-bplain`, `PX-bq`, `PX-bquote`, `PX-bsm`, `PX-bsplit`, `PX-bst`, `PX-bstats`, `PX-bsteps`, `PX-btext`, `PX-bticks`, `PX-btitle`, `PX-n1`, `PX-n2`, `PX-n3`, `PX-n4`, `PX-n5`, `PX-n6`, `PX-rich`, `PX-wico`. Name the page's own classes otherwise (`PX-card`, not `PX-bcard`). They rely on the page's own base styles: the variables `--PX-ink`, `--PX-ink2`, `--PX-line`, `--PX-paper`, `--PX-soft`, `--PX-accent`, `--PX-head`, and the classes `PX-wrap` (content width), `PX-sec` (section spacing), `PX-btn`, `PX-btn-ghost` and `PX-eyebrow`. The hero takes `--PX-soft` as its background.
 
 Icons are listed twice: `Blocks.Icons` (the names staff pick from) and the `Icon` switch in each page's renderer (the drawings). Add or remove an icon in both.
 

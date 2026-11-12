@@ -130,7 +130,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.15
+    Version: 1.0.16
     Scope: user
     Status: √ enabled
 ```
@@ -263,6 +263,17 @@ Every command shows a plan first and waits for **go**.
 | `/skynet` shows nothing | Run `claude plugin list` in PowerShell; if `skynet` is missing, repeat Part 1 step 4 |
 | Lost the first admin password before using it | Delete `appConfig\initial-admin.txt` and open the sign-in page again; a new one is made |
 | Locked out of every manager account | Remove the managers from `data\staff.json` and open the sign-in page; a new first password is made |
+
+## What's new in 1.0.16
+
+No new features. This release changes how the staff-area code ships, so untested code can no longer get in.
+
+- **One reference site instead of code snippets:** `website/reference/site/` is a complete project (public pages, staff shell and panels, media library, Pages editor, photo picker, floor plan) that builds with no warnings and runs as it is. Sites with a staff area start from a copy of it. The folders `reference/code/core`, `shell`, `media`, `pages`, `init` and `floorplan`, and their pasted `.txt` code files, are gone.
+- **Fixed from the fourth HomeBuilder build:** the missing `ReadJson` in the plan check, duplicate floor plan styles, a room label that did not stop the slow turn, block headers and file names cut with "…", one-admin wording, data parts now receive the media list, media use-tracking for shop items.
+- **Starter:** the newsletter field is removed and the reset rule follows the pitfalls list.
+- **Docs:** follow the real files; openings and the plan editor explained; wheel zoom no longer promised.
+- **Release rule:** a release is done when a from-scratch build needs no change to shipped code. Wording notes are collected separately and do not trigger a new release.
+- Not converted yet: `reference/code/accounts` and `reference/code/slideshow` still hold pasted code files.
 
 ## What's new in 1.0.15
 

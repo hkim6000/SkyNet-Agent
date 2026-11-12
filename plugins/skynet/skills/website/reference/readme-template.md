@@ -76,7 +76,7 @@ To wipe the data while still in Demo, a manager opens **Settings**, **Initialize
 2. Sign in and choose your own password. The box and the file disappear.
 3. Open **Users** and add an account for each person. [One-admin site: leave this step out.]
 
-Forgot the first password before using it? Delete `appConfig/initial-admin.txt` and open the sign-in page again. Locked out of every manager account? Remove the managers from `data/staff.json` and open the sign-in page.
+Forgot the first password before using it? Delete `appConfig/initial-admin.txt` and open the sign-in page again. Locked out of every manager account? Remove the managers from `data/staff.json` and open the sign-in page. [One-admin site: *Locked out? Delete `data/staff.json` and open the sign-in page; it shows a new first password.*]
 
 ## Deploying
 

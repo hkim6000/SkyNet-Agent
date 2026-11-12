@@ -1,0 +1,213 @@
+{
+  "brand": "Paperhouse Prints",
+  "tagline": "Small-batch art prints, printed by hand.",
+  "phone": "(555) 014-2200",
+  "email": "hello@paperhouse.example",
+  "address": "12 Mill Lane, Springfield",
+  "hours": "Mon to Fri, 9am to 5pm",
+  "categories": [
+    {
+      "key": "landscape",
+      "label": "Landscape"
+    },
+    {
+      "key": "abstract",
+      "label": "Abstract"
+    },
+    {
+      "key": "botanical",
+      "label": "Botanical"
+    },
+    {
+      "key": "stilllife",
+      "label": "Still life"
+    }
+  ],
+  "items": [
+    {
+      "key": "six-ridges",
+      "title": "Six Ridges",
+      "category": "landscape",
+      "price": 48,
+      "size": "30 × 40 cm",
+      "image": "six-ridges-november",
+      "isNew": true,
+      "text": "Six misty hills, each paler than the last."
+    },
+    {
+      "key": "last-light",
+      "title": "Last Light",
+      "category": "landscape",
+      "price": 52,
+      "size": "30 × 40 cm",
+      "image": "last-light-carrow-fell",
+      "isNew": false,
+      "text": "A violet sky as the sun drops behind the fell."
+    },
+    {
+      "key": "swell",
+      "title": "Swell",
+      "category": "abstract",
+      "price": 44,
+      "size": "40 × 40 cm",
+      "image": "swell",
+      "isNew": true,
+      "text": "One big wave cut as long curling lines."
+    },
+    {
+      "key": "low-sun",
+      "title": "Field with Low Sun",
+      "category": "abstract",
+      "price": 56,
+      "size": "30 × 40 cm",
+      "image": "field-with-low-sun",
+      "isNew": false,
+      "text": "Three soft bands of ochre, rose and deep red."
+    },
+    {
+      "key": "half-moons",
+      "title": "Half Moons",
+      "category": "abstract",
+      "price": 40,
+      "size": "40 × 40 cm",
+      "image": "half-moons",
+      "isNew": true,
+      "text": "Half circles turning in four bright colours."
+    },
+    {
+      "key": "fern",
+      "title": "Fern Unfurling",
+      "category": "botanical",
+      "price": 38,
+      "size": "30 × 40 cm",
+      "image": "fern-unfurling",
+      "isNew": false,
+      "text": "Fern fronds from tight curl to open leaf."
+    },
+    {
+      "key": "seed-heads",
+      "title": "Seed Heads",
+      "category": "botanical",
+      "price": 42,
+      "size": "40 × 40 cm",
+      "image": "seed-heads",
+      "isNew": true,
+      "text": "Dried seed heads drawn life size."
+    },
+    {
+      "key": "blue-jug",
+      "title": "Blue Jug with Lemons",
+      "category": "stilllife",
+      "price": 50,
+      "size": "30 × 40 cm",
+      "image": "blue-jug-with-lemons",
+      "isNew": false,
+      "text": "A blue jug and three lemons on a white cloth."
+    }
+  ],
+  "faqs": [
+    {
+      "q": "How are the prints made?",
+      "a": "Each print is made on archival paper in an edition of 50 and signed on the back."
+    },
+    {
+      "q": "How long does delivery take?",
+      "a": "Prints ship rolled in a tube within three working days."
+    },
+    {
+      "q": "Can I return a print?",
+      "a": "Yes, within 30 days, in its original tube."
+    }
+  ],
+  "maxVideoMb": 30,
+  "pages": {
+    "home": {
+      "blocks": [
+        {
+          "id": "bhhome",
+          "type": "hero",
+          "kicker": "Editions of 50",
+          "title": "Small-batch art prints, printed by hand.",
+          "text": "<p>Every print is made in an edition of 50, on archival paper, in our studio.</p>",
+          "media": "images/hero.webp",
+          "label": "Shop all prints",
+          "link": "Shop",
+          "label2": "About the studio",
+          "link2": "About"
+        },
+        {
+          "id": "bdfavourit",
+          "type": "data",
+          "source": "favourites",
+          "kicker": "Just printed",
+          "title": "New prints",
+          "text": ""
+        },
+        {
+          "id": "bsteps1",
+          "type": "steps",
+          "kicker": "How it works",
+          "title": "From our press to your wall",
+          "text": "",
+          "items": [
+            {
+              "title": "Choose a print",
+              "text": "Every print is signed and numbered."
+            },
+            {
+              "title": "We pack it flat",
+              "text": "Between boards, in a rigid mailer."
+            },
+            {
+              "title": "It ships in two days",
+              "text": "Tracked delivery, worldwide."
+            }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "blocks": [
+        {
+          "id": "btabout",
+          "type": "text",
+          "kicker": "About {name}",
+          "title": "A two-person print studio",
+          "text": "<p>We draw, carve and print every edition ourselves, fifty at a time. When an edition sells out, it is gone.</p>"
+        },
+        {
+          "id": "bstats1",
+          "type": "stats",
+          "kicker": "In numbers",
+          "title": "The studio so far",
+          "items": [
+            {
+              "title": "8",
+              "text": "prints in the shop"
+            },
+            {
+              "title": "50",
+              "text": "copies per edition"
+            },
+            {
+              "title": "2",
+              "text": "people at the press"
+            },
+            {
+              "title": "2 days",
+              "text": "to ship an order"
+            }
+          ]
+        },
+        {
+          "id": "bcta1",
+          "type": "cta",
+          "title": "A question about a print?",
+          "text": "<p>Write to us and we reply within a day.</p>",
+          "label": "Contact us",
+          "link": "Contact"
+        }
+      ]
+    }
+  }
+}
