@@ -11,7 +11,6 @@ namespace Starter.codes
         public override async Task OnInitialized()
         {
             HtmlDoc.SetTitle("Shop | Paperhouse Prints");
-            HtmlDoc.AddMetaElement("viewport", "width=device-width, initial-scale=1");
             HtmlDoc.AddMetaElement("description", "Browse every Paperhouse print by category and price.");
 
             SiteData site = await LoadSite();

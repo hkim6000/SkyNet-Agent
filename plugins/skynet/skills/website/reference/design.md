@@ -34,7 +34,7 @@ Serve the fonts from the site itself, not from Google Fonts or another CDN: no v
 
 - Keep a solid fallback stack after the name (`"Fraunces", Georgia, "Times New Roman", serif`); when the files cannot be fetched, the fallback stack alone is the font and the plan says so.
 - No `@import url(https://fonts.googleapis.com/...)` and no `<link>` to a font CDN.
-- The admin panels share one document, so their fonts are declared once, in `Admin.css`; `AdminLogin.css` declares its own (it is a page of its own).
+- The admin panels share one document, so their fonts are declared once, in `Admin.css` (`@font-face` plus `--admin-head` and `--admin-text`); `AdminLogin.css` declares its own (it is a page of its own).
 
 ## Responsive breakpoints
 
@@ -62,7 +62,7 @@ On phones, put the most important action near the top (for example the booking b
 - **Frame classes stay on the frame.** `xx-head`, `xx-nav`, `xx-foot` and `xx-site` belong to the page header, menu, footer and wrapper only. A card's own top or bottom is `xx-chead` or `xx-cfoot`; C# and JavaScript that write content never emit a frame class, or the content takes the frame's dark band and spacing. `check_sources.py` fails this.
 - **Nothing clips.** Names in charts, bars, chips and cards wrap or shrink their box; never `Clip()` or `text-overflow: ellipsis` a name the reader needs. Chart label columns use `minmax(0, 40%)`, not a fixed width.
 - **Admin lists on phones:** below 600px a table with more than three columns becomes a stack of cards (one record per card, label and value per line) instead of a side-scrolling table; nothing is cut off and nothing scrolls sideways.
-- **Admin lists:** a list that can grow past 25 rows (orders, messages, the log) is searched, filtered and paged on the server (`const int Size = 10` to `25`); a short list that stays short (a few models, staff, options) shows every row with no pager. and returns the rows plus a pager (*Page 1 of 11 · 273 appointments*). Search waits 250ms after typing; changing a filter goes back to page 1; saving an edit reloads the current page, not page 1; an empty result says *No services match.* Request keys must not equal query-string names (`term`, not `q`).
+- **Admin lists:** a list that can grow past 25 rows (orders, messages, the log) is searched, filtered and paged on the server (`const int Size = 10` to `25`); a short list that stays short (a few models, staff, options) shows every row with no pager. A paged list returns the rows plus a pager (*Page 1 of 11 · 273 appointments*). Search waits 250ms after typing; changing a filter goes back to page 1; saving an edit reloads the current page, not page 1; an empty result says *No services match.* Request keys must not equal query-string names (`term`, not `q`).
 
 ## Accessibility
 

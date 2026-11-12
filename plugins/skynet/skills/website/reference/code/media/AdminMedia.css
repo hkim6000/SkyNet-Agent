@@ -5,13 +5,13 @@
     --am-bg: #F5F2EC;
     --am-paper: #FFFFFF;
     --am-soft: #EFE9E0;
-    --am-accent: #2F4A3A;
-    --am-accent-d: #233A2E;
+    --am-accent: var(--admin-accent, #2F4A3A);
+    --am-accent-d: var(--admin-accent-d, #233A2E);
     --am-green: #3F6B3B;
     --am-amber: #8A5A00;
     --am-red: #B3261E;
-    --am-head: Georgia, 'Times New Roman', serif;
-    --am-text: 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif;
+    --am-head: var(--admin-head, Georgia, 'Times New Roman', serif);
+    --am-text: var(--admin-text, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif);
     font-family: var(--am-text);
     color: var(--am-ink);
     background: var(--am-bg);

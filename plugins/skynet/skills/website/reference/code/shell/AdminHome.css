@@ -3,8 +3,8 @@
     --hd-ink2: #6A645C;
     --hd-line: #E3DCD2;
     --hd-paper: #FFFFFF;
-    --hd-accent: #2F4A3A;
-    --hd-head: Georgia, 'Times New Roman', serif;
+    --hd-accent: var(--admin-accent, #2F4A3A);
+    --hd-head: var(--admin-head, Georgia, 'Times New Roman', serif);
 }
 
 .hd-site *, .hd-site *::before, .hd-site *::after { box-sizing: border-box; }

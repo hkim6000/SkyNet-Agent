@@ -13,6 +13,8 @@ BlockItem{ Icon, Media, Title, Text, Link, Label }
 
 `Core/Blocks.cs` holds the page list, the block types, the data parts, the sanitizer, the save-time check (`Clean`), `Ensure` (creates missing pages with their seed blocks and adds missing data blocks; `Store.LoadSite()` in `Core/Store.cs` calls it on every load, see below) and `Uses` (which pages use a media file).
 
+Seeded blocks get fixed ids (`bhhome`, `bditemlist`, `btabout`), so a page that has never been saved looks the same on every load, and the first save of anything writes the seeded pages into `site.json` unchanged. Write the site's real page text into the seed (or into `data/site.json`) before delivering; *Change this text on the Pages page* must never reach the owner.
+
 With block pages, change `LoadSite` in `Core/Store.cs` to:
 
 ```csharp
@@ -66,7 +68,7 @@ One canvas, every block an inline editor (`.pg-blk`): header with a drag grip, t
 
 Each public page keeps its own copy of the renderer (per-page prefix, as always): `PageHtml(site, media, key)` walks the visible blocks and switches on type. The renderer calls one method the page writes itself, `private string DataPart(SiteData site, Block b, bool first)`: it switches on `b.Source` and renders that page's own data parts (the item list, the contact form), with the block's kicker, title and text as the part's heading (`Head(site, b, lead, tag)`: `lead` shows the block's text under the title, `tag` is `"h1"` for the first part on the page and `"h2"` otherwise), and returns an empty string for a source it does not know. Only the first hero or data part on a page gets an `<h1>`. The HTML of such a page is just the header, `{plhd_blocks}` inside `<main>`, and the footer.
 
-The block classes live in the page's CSS (`blocks.css.txt` with `PX` replaced by the prefix). They own every class that starts with the prefix and `b` (`PX-bhero`, `PX-bcard`, `PX-bhead`, `PX-bq`, `PX-bsm`) and the count classes `PX-n1` to `PX-n6`, so name the page's own classes otherwise (`PX-card`, not `PX-bcard`). They rely on the page's own base styles: the variables `--PX-ink`, `--PX-ink2`, `--PX-line`, `--PX-paper`, `--PX-soft`, `--PX-accent`, `--PX-head`, and the classes `PX-wrap` (content width), `PX-sec` (section spacing), `PX-btn`, `PX-btn-ghost` and `PX-eyebrow`. The hero takes `--PX-soft` as its background.
+The block classes live in the page's CSS (`blocks.css.txt` with `PX` replaced by the prefix). They define these classes, and the page must not define them again: `PX-bbox`, `PX-bboxes`, `PX-bbtns`, `PX-bcard`, `PX-bcards`, `PX-bcta`, `PX-bfaq`, `PX-bfaqs`, `PX-bflip`, `PX-bh2`, `PX-bhead`, `PX-bhero`, `PX-bhero-in`, `PX-bhero-p`, `PX-bhero-t`, `PX-blead`, `PX-bmedia`, `PX-bmore`, `PX-bnoface`, `PX-bnomedia`, `PX-bpeople`, `PX-bperson`, `PX-bplain`, `PX-bq`, `PX-bquote`, `PX-bsm`, `PX-bsplit`, `PX-bst`, `PX-bstats`, `PX-bsteps`, `PX-btext`, `PX-bticks`, `PX-btitle`, `PX-n1`, `PX-n2`, `PX-n3`, `PX-n4`, `PX-n5`, `PX-n6`, `PX-rich`, `PX-wico`. Name the page's own classes otherwise (`PX-card`, not `PX-bcard`). They rely on the page's own base styles: the variables `--PX-ink`, `--PX-ink2`, `--PX-line`, `--PX-paper`, `--PX-soft`, `--PX-accent`, `--PX-head`, and the classes `PX-wrap` (content width), `PX-sec` (section spacing), `PX-btn`, `PX-btn-ghost` and `PX-eyebrow`. The hero takes `--PX-soft` as its background.
 
 Icons are listed twice: `Blocks.Icons` (the names staff pick from) and the `Icon` switch in each page's renderer (the drawings). Add or remove an icon in both.
 

@@ -12,7 +12,6 @@ namespace MySite.codes
         public override async Task OnInitialized()
         {
             HtmlDoc.SetTitle("Media library | Staff");
-            HtmlDoc.AddMetaElement("viewport", "width=device-width, initial-scale=1");
             HtmlDoc.AddMetaElement("robots", "noindex, nofollow");
         }
 

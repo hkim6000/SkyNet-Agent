@@ -1,0 +1,608 @@
+Floor plan viewer: a 2D plan (SVG) and a 3D view (three.js) of one or more floors, tested on a home builder's Model page.
+Copy the parts into one page (prefix PX, module PageJs: rename both). Data model and checks: floorplan.md.
+
+1. JS, inside the page module. The module also needs these helpers and variable (most pages have them already):
+
+    var BASE = location.pathname.replace(/[^\/]*$/, '');
+
+    function el(id) {
+        return document.getElementById(id);
+    }
+
+    function esc(t) {
+        return String(t == null ? '' : t).replace(/[&<>"']/g, function (ch) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+        });
+    }
+
+   Call fpInit() at the end of reveal(), and export fpView, fpFloor, fpZoom and fpReset.
+
+    var FP_COL = { living: '#C9A27A', dining: '#C9A27A', office: '#B98F66', hall: '#D6BC97', entry: '#C3C6C9', kitchen: '#D9D3C6', bath: '#A9C3CD', laundry: '#C5CBD1', bed: '#CBBDAC', closet: '#CBBDAC', garage: '#A2A6AA', stairs: '#A47A55', balcony: '#8E7258' };
+    var fp = null;
+
+    function fpRooms(f) {
+        return (f && f.rooms) || [];
+    }
+
+    function fpBounds(f) {
+        var b = { x1: 1e9, y1: 1e9, x2: -1e9, y2: -1e9 };
+        fpRooms(f).forEach(function (r) {
+            b.x1 = Math.min(b.x1, r.x);
+            b.y1 = Math.min(b.y1, r.y);
+            b.x2 = Math.max(b.x2, r.x + r.w);
+            b.y2 = Math.max(b.y2, r.y + r.h);
+        });
+        if (b.x1 > b.x2) {
+            b = { x1: 0, y1: 0, x2: 10, y2: 10 };
+        }
+        return b;
+    }
+
+    function fpAt(f, x, y) {
+        var rs = fpRooms(f);
+        for (var i = 0; i < rs.length; i++) {
+            var r = rs[i];
+            if (x > r.x && x < r.x + r.w && y > r.y && y < r.y + r.h) {
+                return r;
+            }
+        }
+        return null;
+    }
+
+    function fpSegs(f) {
+        var m = {};
+        function add(k, low) {
+            var e = m[k] || (m[k] = { n: 0, full: false, t: 'wall' });
+            e.n++;
+            if (!low) {
+                e.full = true;
+            }
+        }
+        fpRooms(f).forEach(function (r) {
+            var low = r.kind === 'balcony';
+            for (var x = r.x; x < r.x + r.w; x++) {
+                add('h|' + r.y + '|' + x, low);
+                add('h|' + (r.y + r.h) + '|' + x, low);
+            }
+            for (var y = r.y; y < r.y + r.h; y++) {
+                add('v|' + r.x + '|' + y, low);
+                add('v|' + (r.x + r.w) + '|' + y, low);
+            }
+        });
+        ((f && f.openings) || []).forEach(function (o) {
+            for (var k = 0; k < o.len; k++) {
+                var key = o.dir === 'v' ? 'v|' + o.x + '|' + (o.y + k) : 'h|' + o.y + '|' + (o.x + k);
+                if (m[key]) {
+                    m[key].t = o.kind;
+                }
+            }
+        });
+        var keys = Object.keys(m).map(function (k) {
+            var p = k.split('|');
+            return { d: p[0], c: +p[1], a: +p[2], e: m[k] };
+        }).sort(function (p, q) {
+            return p.d < q.d ? -1 : p.d > q.d ? 1 : p.c - q.c || p.a - q.a;
+        });
+        var out = [], cur = null;
+        keys.forEach(function (u) {
+            var ext = u.e.n === 1, t = u.e.t;
+            if (cur && cur.d === u.d && cur.c === u.c && cur.b === u.a && cur.t === t && cur.ext === ext && cur.full === u.e.full) {
+                cur.b = u.a + 1;
+            } else {
+                cur = { d: u.d, c: u.c, a: u.a, b: u.a + 1, t: t, ext: ext, full: u.e.full };
+                out.push(cur);
+            }
+        });
+        return out;
+    }
+
+    function fpSize(r) {
+        return r.w + ' × ' + r.h + ' ft';
+    }
+
+    function fpSvg(f, sel) {
+        var b = fpBounds(f), pad = 2.5, s = [];
+        var vb = (b.x1 - pad) + ' ' + (b.y1 - pad) + ' ' + (b.x2 - b.x1 + pad * 2) + ' ' + (b.y2 - b.y1 + pad * 2);
+        s.push('<svg class="PX-fp-svg" viewBox="' + vb + '" role="img" aria-label="Floor plan drawing">');
+        fpRooms(f).forEach(function (r, i) {
+            s.push('<rect class="PX-fp-r' + (i === sel ? ' PX-on' : '') + (r.kind === 'balcony' ? ' PX-fp-bal' : '') + '" data-i="' + i + '" x="' + r.x + '" y="' + r.y + '" width="' + r.w + '" height="' + r.h + '" fill="' + (FP_COL[r.kind] || '#ccc') + '"/>');
+        });
+        fpRooms(f).forEach(function (r) {
+            if (r.kind === 'stairs') {
+                var along = r.h >= r.w, n = along ? r.h : r.w;
+                for (var k = 1; k < n; k++) {
+                    s.push(along ? '<line class="PX-fp-step" x1="' + r.x + '" y1="' + (r.y + k) + '" x2="' + (r.x + r.w) + '" y2="' + (r.y + k) + '"/>' : '<line class="PX-fp-step" x1="' + (r.x + k) + '" y1="' + r.y + '" x2="' + (r.x + k) + '" y2="' + (r.y + r.h) + '"/>');
+                }
+            }
+        });
+        fpSegs(f).forEach(function (g) {
+            var x1 = g.d === 'h' ? g.a : g.c, y1 = g.d === 'h' ? g.c : g.a, x2 = g.d === 'h' ? g.b : g.c, y2 = g.d === 'h' ? g.c : g.b;
+            if (g.t === 'wall') {
+                s.push('<line class="PX-fp-w' + (g.ext ? ' PX-fp-ext' : '') + (g.full ? '' : ' PX-fp-low') + '" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/>');
+            } else if (g.t === 'window') {
+                s.push('<line class="PX-fp-win" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/>');
+            } else if (g.t === 'door') {
+                var len = g.b - g.a, mid = (g.a + g.b) / 2, side = 1;
+                var r1 = g.d === 'h' ? fpAt(f, mid, g.c - 0.5) : fpAt(f, g.c - 0.5, mid);
+                var r2 = g.d === 'h' ? fpAt(f, mid, g.c + 0.5) : fpAt(f, g.c + 0.5, mid);
+                if (r1 && r1.kind !== 'hall' && (!r2 || r2.kind === 'hall')) {
+                    side = -1;
+                }
+                if (!r1) {
+                    side = 1;
+                }
+                if (g.d === 'h') {
+                    s.push('<path class="PX-fp-door" d="M' + g.a + ' ' + g.c + ' L' + g.a + ' ' + (g.c + side * len) + ' A' + len + ' ' + len + ' 0 0 ' + (side > 0 ? 0 : 1) + ' ' + g.b + ' ' + g.c + '"/>');
+                } else {
+                    s.push('<path class="PX-fp-door" d="M' + g.c + ' ' + g.a + ' L' + (g.c + side * len) + ' ' + g.a + ' A' + len + ' ' + len + ' 0 0 ' + (side > 0 ? 1 : 0) + ' ' + g.c + ' ' + g.b + '"/>');
+                }
+            }
+        });
+        fpRooms(f).forEach(function (r, i) {
+            if (r.w >= 5 && r.h >= 4 && r.kind !== 'hall') {
+                var cx = r.x + r.w / 2, cy = r.y + r.h / 2, fs = Math.min(1.25, r.w / (r.name.length * 0.62 + 1));
+                s.push('<text class="PX-fp-t" data-i="' + i + '" x="' + cx + '" y="' + (cy - 0.15) + '" font-size="' + fs.toFixed(2) + '">' + esc(r.name) + '</text>');
+                s.push('<text class="PX-fp-d" data-i="' + i + '" x="' + cx + '" y="' + (cy + fs + 0.15) + '" font-size="' + (fs * 0.8).toFixed(2) + '">' + r.w + '′ × ' + r.h + '′</text>');
+            }
+        });
+        s.push('</svg>');
+        return s.join('');
+    }
+
+    function fpPick(i) {
+        if (!fp) {
+            return;
+        }
+        fp.sel = fp.sel === i ? -1 : i;
+        var f = fp.plan.floors[fp.fl], r = fpRooms(f)[fp.sel];
+        el('PX-fp-info').innerHTML = r ? '<b>' + esc(r.name) + '</b><span>' + fpSize(r) + ' &middot; ' + (r.w * r.h).toLocaleString('en-US') + ' sq ft</span>' : '<span>Tap a room to see its size.</span>';
+        var chips = document.querySelectorAll('#PX-fp-list button');
+        for (var k = 0; k < chips.length; k++) {
+            chips[k].classList.toggle('PX-on', +chips[k].getAttribute('data-i') === fp.sel);
+        }
+        if (fp.view === '2d') {
+            fpDraw2d();
+        } else if (fp.three) {
+            fp3dSel();
+        }
+    }
+
+    function fpDraw2d() {
+        var box = el('PX-fp-2d');
+        box.innerHTML = fpSvg(fp.plan.floors[fp.fl], fp.sel);
+        box.querySelector('svg').addEventListener('click', function (e) {
+            var i = e.target.getAttribute('data-i');
+            if (i !== null) {
+                fpPick(+i);
+            }
+        });
+    }
+
+    function fpList() {
+        var f = fp.plan.floors[fp.fl], h = [], tot = 0;
+        fpRooms(f).forEach(function (r, i) {
+            if (r.kind !== 'balcony' && r.kind !== 'garage') {
+                tot += r.w * r.h;
+            }
+            if (r.kind !== 'hall') {
+                h.push('<button type="button" data-i="' + i + '"><i style="background:' + (FP_COL[r.kind] || '#ccc') + '"></i>' + esc(r.name) + '<small>' + fpSize(r) + '</small></button>');
+            }
+        });
+        el('PX-fp-list').innerHTML = h.join('');
+        el('PX-fp-area').textContent = 'About ' + tot.toLocaleString('en-US') + ' sq ft on this floor';
+    }
+
+    function fpFloor(i) {
+        if (!fp || !fp.plan.floors[i]) {
+            return;
+        }
+        fp.fl = i;
+        fp.sel = -1;
+        var fb = document.querySelectorAll('#PX-fp-floors button');
+        for (var k = 0; k < fb.length; k++) {
+            fb[k].classList.toggle('PX-on', k === i);
+            fb[k].setAttribute('aria-pressed', k === i ? 'true' : 'false');
+        }
+        fpList();
+        fpPick(-1);
+        fp.sel = -1;
+        if (fp.view === '2d') {
+            fpDraw2d();
+        } else if (fp.three) {
+            fp3dBuild();
+        }
+    }
+
+    function fpView(v) {
+        if (!fp) {
+            return;
+        }
+        if (v === '3d' && !fp.gl) {
+            v = '2d';
+        }
+        fp.view = v;
+        el('PX-fp-3d').hidden = v !== '3d';
+        el('PX-fp-2d').hidden = v !== '2d';
+        var vb = document.querySelectorAll('#PX-fp-views button');
+        for (var k = 0; k < vb.length; k++) {
+            var on = vb[k].getAttribute('data-v') === v;
+            vb[k].classList.toggle('PX-on', on);
+            vb[k].setAttribute('aria-pressed', on ? 'true' : 'false');
+        }
+        if (v === '2d') {
+            fpDraw2d();
+        } else if (fp.three) {
+            fp3dBuild();
+        } else {
+            fpLoad();
+        }
+    }
+
+    function fpLoad() {
+        if (fp.loading) {
+            return;
+        }
+        if (window.THREE) {
+            fp3dStart();
+            return;
+        }
+        fp.loading = true;
+        el('PX-fp-wait').hidden = false;
+        var sc = document.createElement('script');
+        sc.src = BASE + 'scripts/three.min.js';
+        sc.onload = function () {
+            fp.loading = false;
+            fp3dStart();
+        };
+        sc.onerror = function () {
+            fp.loading = false;
+            fp.gl = false;
+            el('PX-fp-wait').hidden = true;
+            fpView('2d');
+        };
+        document.head.appendChild(sc);
+    }
+
+    function fpThemeCols() {
+        return { wall: 0xf4f0e9, slab: 0xd9d2c6, glass: 0x8fc3e0, rail: 0x6f777e };
+    }
+
+    function fp3dStart() {
+        var T = window.THREE, box = el('PX-fp-3d'), cv = el('PX-fp-cv');
+        el('PX-fp-wait').hidden = true;
+        var rd;
+        try {
+            rd = new T.WebGLRenderer({ canvas: cv, antialias: true, alpha: true });
+        } catch (e) {
+            fp.gl = false;
+            fpView('2d');
+            return;
+        }
+        rd.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        rd.shadowMap.enabled = true;
+        rd.shadowMap.type = T.PCFSoftShadowMap;
+        var scene = new T.Scene();
+        scene.add(new T.HemisphereLight(0xffffff, 0xa89f90, 0.66));
+        scene.add(new T.AmbientLight(0xffffff, 0.12));
+        var sun = new T.DirectionalLight(0xffffff, 0.5);
+        sun.castShadow = true;
+        sun.shadow.mapSize.set(2048, 2048);
+        sun.shadow.bias = -0.0008;
+        scene.add(sun);
+        scene.add(sun.target);
+        var cam = new T.PerspectiveCamera(38, 1, 1, 3000);
+        fp.three = { T: T, rd: rd, scene: scene, sun: sun, cam: cam, group: null, picks: [], theta: 0.72, phi: 0.82, rad: 80, auto: true, frame: 0, labels: [] };
+        fp3dInput(box);
+        if (window.ResizeObserver) {
+            new ResizeObserver(fp3dSize).observe(box);
+        } else {
+            window.addEventListener('resize', fp3dSize);
+        }
+        fp3dBuild();
+    }
+
+    function fp3dFit() {
+        var t = fp.three, box = el('PX-fp-3d'), asp = box.clientWidth && box.clientHeight ? box.clientWidth / box.clientHeight : 1.6;
+        return (t.span * 1.3 + 8) * Math.max(1, 1.5 / asp);
+    }
+
+    function fp3dSize() {
+        var t = fp && fp.three, box = el('PX-fp-3d');
+        if (!t || !box.clientWidth) {
+            return;
+        }
+        t.rd.setSize(box.clientWidth, box.clientHeight, false);
+        t.cam.aspect = box.clientWidth / box.clientHeight;
+        t.cam.updateProjectionMatrix();
+        fp3dDraw();
+    }
+
+    function fp3dClear() {
+        var t = fp.three;
+        if (t.group) {
+            t.scene.remove(t.group);
+            t.group.traverse(function (o) {
+                if (o.geometry) {
+                    o.geometry.dispose();
+                }
+                if (o.material) {
+                    o.material.dispose();
+                }
+            });
+        }
+        el('PX-fp-lbls').innerHTML = '';
+        t.labels = [];
+        t.picks = [];
+    }
+
+    function fp3dBuild() {
+        var t = fp.three, T = t.T, f = fp.plan.floors[fp.fl], c = fpThemeCols();
+        fp3dClear();
+        var g = new T.Group(), b = fpBounds(f), cx = (b.x1 + b.x2) / 2, cz = (b.y1 + b.y2) / 2, H = 7;
+        var wallM = new T.MeshStandardMaterial({ color: c.wall, roughness: 0.92 });
+        var railM = new T.MeshStandardMaterial({ color: c.rail, roughness: 0.6 });
+        var glassM = new T.MeshStandardMaterial({ color: c.glass, roughness: 0.15, transparent: true, opacity: 0.45 });
+        var slab = new T.Mesh(new T.BoxGeometry(b.x2 - b.x1 + 2, 0.6, b.y2 - b.y1 + 2), new T.MeshStandardMaterial({ color: c.slab, roughness: 1 }));
+        slab.position.set(0, -0.3, 0);
+        slab.receiveShadow = true;
+        g.add(slab);
+        fpRooms(f).forEach(function (r, i) {
+            var m = new T.MeshStandardMaterial({ color: FP_COL[r.kind] || '#cccccc', roughness: 0.85 });
+            var fl = new T.Mesh(new T.PlaneGeometry(r.w, r.h), m);
+            fl.rotation.x = -Math.PI / 2;
+            fl.position.set(r.x + r.w / 2 - cx, 0.03, r.y + r.h / 2 - cz);
+            fl.receiveShadow = true;
+            fl.userData.i = i;
+            fl.userData.base = new T.Color(FP_COL[r.kind] || '#cccccc');
+            g.add(fl);
+            t.picks.push(fl);
+            if (r.kind === 'stairs') {
+                var along = r.h >= r.w, n = Math.max(6, Math.floor((along ? r.h : r.w) / 1)), stepM = new T.MeshStandardMaterial({ color: 0xb58a62, roughness: 0.8 });
+                for (var k = 0; k < n; k++) {
+                    var sh = (k + 1) * (H / (n + 1));
+                    var st = new T.Mesh(new T.BoxGeometry(along ? r.w - 0.4 : 1, sh, along ? 1 : r.h - 0.4), stepM);
+                    st.position.set(along ? r.x + r.w / 2 - cx : r.x + k + 0.5 - cx, sh / 2, along ? r.y + k + 0.5 - cz : r.y + r.h / 2 - cz);
+                    st.castShadow = true;
+                    st.receiveShadow = true;
+                    g.add(st);
+                }
+            }
+            if (r.w >= 5 && r.h >= 4 && r.kind !== 'hall' && (window.innerWidth > 640 || r.w * r.h >= 80)) {
+                var lb = document.createElement('button');
+                lb.type = 'button';
+                lb.className = 'PX-fp-lbl';
+                lb.textContent = r.name;
+                lb.setAttribute('data-i', i);
+                lb.addEventListener('click', function () {
+                    fpPick(i);
+                });
+                el('PX-fp-lbls').appendChild(lb);
+                t.labels.push({ e: lb, v: new T.Vector3(r.x + r.w / 2 - cx, 0.6, r.y + r.h / 2 - cz) });
+            }
+        });
+        function box3(x, y, z, w, h, d, mat, shadow) {
+            var mm = new T.Mesh(new T.BoxGeometry(w, h, d), mat);
+            mm.position.set(x, y, z);
+            if (shadow) {
+                mm.castShadow = true;
+                mm.receiveShadow = true;
+            }
+            g.add(mm);
+        }
+        fpSegs(f).forEach(function (s) {
+            var th = s.ext ? 0.55 : 0.32, len = s.b - s.a, mid = (s.a + s.b) / 2;
+            var hz = s.d === 'h';
+            var px = hz ? mid - cx : s.c - cx, pz = hz ? s.c - cz : mid - cz;
+            var w = hz ? len + th : th, d = hz ? th : len + th;
+            if (!s.full) {
+                box3(px, 1.6, pz, w, 0.12, d, railM, false);
+                box3(px, 0.8, pz, hz ? w : 0.06, 1.6, hz ? 0.06 : d, glassM, false);
+                return;
+            }
+            if (s.t === 'wall') {
+                box3(px, H / 2, pz, w, H, d, wallM, true);
+            } else if (s.t === 'window') {
+                box3(px, 1.5, pz, hz ? len : th, 3, hz ? th : len, wallM, true);
+                box3(px, (H + 6.2) / 2, pz, hz ? len : th, H - 6.2, hz ? th : len, wallM, true);
+                box3(px, 4.6, pz, hz ? len : 0.08, 3.2, hz ? 0.08 : len, glassM, false);
+            }
+        });
+        t.group = g;
+        t.scene.add(g);
+        var span = Math.max(b.x2 - b.x1, b.y2 - b.y1);
+        t.span = span;
+        t.rad = fp3dFit();
+        t.sun.position.set(-span * 0.6, span * 1.4, span * 0.9);
+        var sc = t.sun.shadow.camera;
+        sc.left = -span;
+        sc.right = span;
+        sc.top = span;
+        sc.bottom = -span;
+        sc.near = 1;
+        sc.far = span * 4;
+        sc.updateProjectionMatrix();
+        fp3dSize();
+        fp3dSel();
+        fp3dLoop();
+    }
+
+    function fp3dSel() {
+        var t = fp.three;
+        t.picks.forEach(function (m) {
+            var on = m.userData.i === fp.sel;
+            m.material.color.copy(m.userData.base);
+            if (on) {
+                m.material.color.lerp(new t.T.Color(0xffffff), 0.45);
+            }
+            m.material.emissive = new t.T.Color(on ? 0x3a2a10 : 0x000000);
+        });
+        t.labels.forEach(function (l) {
+            l.e.classList.toggle('PX-on', +l.e.getAttribute('data-i') === fp.sel);
+        });
+        fp3dDraw();
+    }
+
+    function fp3dDraw() {
+        var t = fp && fp.three, box = el('PX-fp-3d');
+        if (!t || !t.group || !box.clientWidth) {
+            return;
+        }
+        t.cam.position.set(t.rad * Math.sin(t.phi) * Math.sin(t.theta), t.rad * Math.cos(t.phi), t.rad * Math.sin(t.phi) * Math.cos(t.theta));
+        t.cam.lookAt(0, 0, 0);
+        t.rd.render(t.scene, t.cam);
+        var w = box.clientWidth, h = box.clientHeight;
+        t.labels.forEach(function (l) {
+            var p = l.v.clone().project(t.cam);
+            l.e.style.transform = 'translate(-50%,-50%) translate(' + ((p.x + 1) / 2 * w).toFixed(1) + 'px,' + ((1 - p.y) / 2 * h).toFixed(1) + 'px)';
+        });
+    }
+
+    function fp3dLoop() {
+        var t = fp.three;
+        cancelAnimationFrame(t.frame);
+        var tick = function () {
+            if (!fp || fp.view !== '3d') {
+                return;
+            }
+            if (t.auto && !document.hidden) {
+                t.theta += 0.0025;
+                fp3dDraw();
+                t.frame = requestAnimationFrame(tick);
+            }
+        };
+        if (t.auto) {
+            t.frame = requestAnimationFrame(tick);
+        }
+    }
+
+    function fp3dStop() {
+        var t = fp.three;
+        if (t && t.auto) {
+            t.auto = false;
+            cancelAnimationFrame(t.frame);
+        }
+    }
+
+    function fp3dInput(box) {
+        var pts = {}, last = null, moved = 0, pinch = 0;
+        box.addEventListener('pointerdown', function (e) {
+            if (e.target.closest('.PX-fp-ctl') || e.target.closest('.PX-fp-lbl')) {
+                return;
+            }
+            fp3dStop();
+            pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+            last = { x: e.clientX, y: e.clientY };
+            moved = 0;
+            pinch = 0;
+            box.setPointerCapture(e.pointerId);
+        });
+        box.addEventListener('pointermove', function (e) {
+            if (!pts[e.pointerId]) {
+                return;
+            }
+            var t = fp.three;
+            pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+            var ids = Object.keys(pts);
+            if (ids.length === 2) {
+                var a = pts[ids[0]], b = pts[ids[1]], dd = Math.hypot(a.x - b.x, a.y - b.y);
+                if (pinch) {
+                    fp3dZoom(pinch / dd);
+                }
+                pinch = dd;
+                moved = 99;
+                return;
+            }
+            var dx = e.clientX - last.x, dy = e.clientY - last.y;
+            last = { x: e.clientX, y: e.clientY };
+            moved += Math.abs(dx) + Math.abs(dy);
+            t.theta -= dx * 0.008;
+            t.phi = Math.max(0.18, Math.min(1.35, t.phi - dy * 0.006));
+            fp3dDraw();
+        });
+        var up = function (e) {
+            if (!pts[e.pointerId]) {
+                return;
+            }
+            delete pts[e.pointerId];
+            pinch = 0;
+            if (moved < 6 && e.type === 'pointerup') {
+                fp3dHit(e);
+            }
+        };
+        box.addEventListener('pointerup', up);
+        box.addEventListener('pointercancel', up);
+    }
+
+    function fp3dHit(e) {
+        var t = fp.three, T = t.T, r = el('PX-fp-cv').getBoundingClientRect();
+        var v = new T.Vector2((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+        var rc = new T.Raycaster();
+        rc.setFromCamera(v, t.cam);
+        var hit = rc.intersectObjects(t.picks)[0];
+        if (hit) {
+            fpPick(hit.object.userData.i);
+        }
+    }
+
+    function fp3dZoom(k) {
+        var t = fp && fp.three;
+        if (!t) {
+            return;
+        }
+        fp3dStop();
+        t.rad = Math.max(t.span * 0.6, Math.min(t.span * 3.2 + 20, t.rad * k));
+        fp3dDraw();
+    }
+
+    function fpZoom(dir) {
+        fp3dZoom(dir > 0 ? 0.82 : 1.22);
+    }
+
+    function fpReset() {
+        var t = fp && fp.three;
+        if (!t) {
+            return;
+        }
+        t.theta = 0.72;
+        t.phi = 0.82;
+        t.rad = fp3dFit();
+        t.auto = true;
+        fp3dLoop();
+        fp3dDraw();
+    }
+
+    function fpInit() {
+        var sec = el('PX-fp');
+        if (!sec) {
+            return;
+        }
+        var plan;
+        try {
+            plan = JSON.parse(sec.getAttribute('data-plan') || 'null');
+        } catch (e) {
+            plan = null;
+        }
+        if (!plan || !plan.floors || !plan.floors.length) {
+            sec.hidden = true;
+            return;
+        }
+        var test = document.createElement('canvas'), gl = false;
+        try {
+            gl = !!(window.WebGLRenderingContext && (test.getContext('webgl') || test.getContext('experimental-webgl')));
+        } catch (e) {
+            gl = false;
+        }
+        fp = { plan: plan, fl: 0, sel: -1, view: '2d', gl: gl, three: null, loading: false };
+        if (!gl) {
+            el('PX-fp-views').hidden = true;
+        }
+        fpList();
+        fpPick(-1);
+        el('PX-fp-list').addEventListener('click', function (e) {
+            var bt = e.target.closest('button');
+            if (bt) {
+                fpPick(+bt.getAttribute('data-i'));
+            }
+        });
+        fpView('2d');
+    }

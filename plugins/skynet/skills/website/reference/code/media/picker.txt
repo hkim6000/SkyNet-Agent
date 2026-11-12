@@ -28,6 +28,12 @@ The page keeps its own copy (pages are self-contained). It needs the media libra
 
         private const int Max = 12;
 
+        private static string Thumb(List<MediaItem> media, string path)
+        {
+            MediaItem? x = media.FirstOrDefault(i => i.Path == path);
+            return x != null && x.Thumb != string.Empty ? x.Thumb : path;
+        }
+
 
         private static string StripItem(List<MediaItem> media, string path, bool canE)
         {
@@ -116,7 +122,22 @@ The page keeps its own copy (pages are self-contained). It needs the media libra
             return response;
         }
 
-3. JS: inside the page module (add var MAX = 12, pkSel = [], pkTimer = null; to the module variables, esc() from the page's helpers, touch() marks the form changed).
+3. JS: inside the page module. Add to the module variables:
+
+    var MAX = 12, pkSel = [], pkTimer = null;
+
+   and these two helpers (touch marks the open form as changed, so closing it asks first):
+
+    function esc(t) {
+        return String(t == null ? '' : t).replace(/[&<>"']/g, function (ch) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+        });
+    }
+
+    function touch() {
+        markDirty();
+    }
+
    Send the list with the form: list.push({ key: 'photos', vlu: JSON.stringify(stripPaths()) });
 
     function stripPaths() {
@@ -244,7 +265,18 @@ The page keeps its own copy (pages are self-contained). It needs the media libra
         pkMark();
     }
 
-   Escape closes the picker first: in reveal(), if (pkOpen()) { pkClose(); } else { closeModal(); }
+   Escape closes the picker first. In reveal(), the page's keydown handler becomes:
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key !== 'Escape' || !here() || (askBox && askBox.classList.contains('xx-open'))) {
+                return;
+            }
+            if (pkOpen()) {
+                pkClose();
+            } else {
+                closeModal();
+            }
+        });
    Export: pickPhotos, pkSearch, pkToggle, pkUse, pkClose, pkUpload, pkListed, pkUploaded, sMove, sDrop.
 
 4. CSS (the page's stylesheet):
@@ -275,8 +307,6 @@ The page keeps its own copy (pages are self-contained). It needs the media libra
 .xx-pki span { font-size: 12px; color: var(--xx-ink2); overflow-wrap: anywhere; }
 .xx-pkn { position: absolute; left: 12px; top: 12px; min-width: 26px; height: 26px; border-radius: 999px; background: var(--xx-accent); color: #fff; font-style: normal; font-weight: 800; font-size: 13px; display: none; align-items: center; justify-content: center; }
 .xx-pki.xx-on .xx-pkn { display: inline-flex; }
-    .xx-pkgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-height: 50vh; }
-    .xx-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 @media (max-width: 600px) {
     .xx-pkgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-height: 50vh; }

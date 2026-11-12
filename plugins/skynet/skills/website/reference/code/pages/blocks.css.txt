@@ -10,7 +10,7 @@
 .PX-bhero { position: relative; min-height: 500px; display: flex; align-items: center; background: var(--PX-soft); overflow: hidden; }
 .PX-bhero-p { position: absolute; inset: 0; }
 .PX-bhero-p img, .PX-bhero-p video { width: 100%; height: 100%; object-fit: cover; object-position: 70% center; display: block; }
-.PX-bhero::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, color-mix(in srgb, var(--PX-soft) 92%, transparent) 0%, color-mix(in srgb, var(--PX-soft) 60%, transparent) 38%, transparent 64%); pointer-events: none; }
+.PX-bhero::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, color-mix(in srgb, var(--PX-soft) 96%, transparent) 0%, color-mix(in srgb, var(--PX-soft) 88%, transparent) 34%, color-mix(in srgb, var(--PX-soft) 40%, transparent) 54%, transparent 70%); pointer-events: none; }
 .PX-bplain::before { display: none; }
 .PX-bhero-in { position: relative; z-index: 2; width: 100%; padding-top: 48px; padding-bottom: 48px; }
 .PX-bhero-t { max-width: 520px; }
@@ -93,6 +93,7 @@ a.PX-bcard:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(43,
 .PX-bcta .PX-bbtns { margin-top: 0; }
 
 @media (max-width: 980px) {
+    .PX-bhero::before { background: linear-gradient(90deg, color-mix(in srgb, var(--PX-soft) 96%, transparent) 0%, color-mix(in srgb, var(--PX-soft) 90%, transparent) 50%, color-mix(in srgb, var(--PX-soft) 55%, transparent) 72%, color-mix(in srgb, var(--PX-soft) 20%, transparent) 100%); }
     .PX-bh2 { font-size: 28px; }
     .PX-site .PX-btitle { font-size: 46px; }
     .PX-bcards.PX-n4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }

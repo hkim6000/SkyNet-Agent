@@ -25,9 +25,16 @@ const launch = (() => {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     page.on('console', m => { if (m.type() === 'error' && !m.text().startsWith('Failed to load resource')) errors.push(m.text()); });
-    page.on('response', r => { if (r.status() >= 400 && !r.url().endsWith('favicon.ico')) errors.push(r.status() + ' ' + r.url()); });
+    page.on('response', r => {
+      if (r.status() >= 400 && !r.url().endsWith('favicon.ico')) errors.push(r.status() + ' ' + r.url());
+      const t = (r.headers()['content-type'] || '').toLowerCase();
+      if (r.request().resourceType() === 'script' && t.includes('text/html')) errors.push('script answered with a web page (missing file?) ' + r.url());
+    });
     for (const name of pages) {
       await page.goto(base + name, { waitUntil: 'networkidle' });
+      const want = name.split(/[?#]/)[0].toLowerCase();
+      const got = new URL(page.url()).pathname.split('/').pop().toLowerCase();
+      const moved = want !== '' && got !== want ? got : '';
       await page.evaluate(async () => {
         for (let y = 0; y < document.body.scrollHeight; y += 600) { window.scrollTo(0, y); await new Promise(r => setTimeout(r, 40)); }
         window.scrollTo(0, 0);
@@ -88,9 +95,9 @@ const launch = (() => {
       });
       const file = `${out}/${name.replace(/[^A-Za-z0-9_-]+/g, '_')}_${w}.png`;
       await page.screenshot({ path: file, fullPage: true });
-      const bad = r.broken.length || r.overflow > 0 || r.holes.length || r.clipped.length || r.dups.length || r.unseen.length;
+      const bad = r.broken.length || r.overflow > 0 || r.holes.length || r.clipped.length || r.dups.length || r.unseen.length || moved;
       if (bad) problems++;
-      console.log(`${bad ? 'FAIL' : 'ok  '} ${w} ${name}  images ${r.images}  broken ${r.broken.length} ${r.broken.slice(0, 2).join(' ')}  overflow ${r.overflow} ${r.wide.join(' ')}  placeholders ${r.holes.join(' ')}  clipped ${r.clipped.length} ${r.clipped.slice(0, 2).join(', ')}  duplicate ids ${r.dups.join(' ')}  unreadable ${r.unseen.join(', ')}  height ${r.height}  -> ${file}`);
+      console.log(`${bad ? 'FAIL' : 'ok  '} ${w} ${name}${moved ? '  LANDED ON ' + moved + (moved.startsWith('adminlogin') ? ' (signed out: check STATE)' : '') : ''}  images ${r.images}  broken ${r.broken.length} ${r.broken.slice(0, 2).join(' ')}  overflow ${r.overflow} ${r.wide.join(' ')}  placeholders ${r.holes.join(' ')}  clipped ${r.clipped.length} ${r.clipped.slice(0, 2).join(', ')}  duplicate ids ${r.dups.join(' ')}  unreadable ${r.unseen.join(', ')}  height ${r.height}  -> ${file}`);
     }
     if (errors.length) {
       problems++;

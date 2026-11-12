@@ -16,7 +16,6 @@ namespace MyApp.codes
         public override async Task OnInitialized()
         {
             HtmlDoc.SetTitle("Items");
-            HtmlDoc.AddMetaElement("viewport", "width=device-width, initial-scale=1");
 
             var (rows, emsg) = await Helper.GetListT<ItemRow>(ListSql);
             HtmlDoc.HtmlBodyText = HtmlDoc.HtmlBodyText

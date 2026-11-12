@@ -5,13 +5,13 @@
     --pg-bg: #F5F2EC;
     --pg-paper: #FFFFFF;
     --pg-soft: #EFE9E0;
-    --pg-accent: #2F4A3A;
-    --pg-accent-d: #233A2E;
+    --pg-accent: var(--admin-accent, #2F4A3A);
+    --pg-accent-d: var(--admin-accent-d, #233A2E);
     --pg-green: #3F6B3B;
     --pg-amber: #8A5A00;
     --pg-red: #B3261E;
-    --pg-head: Georgia, 'Times New Roman', serif;
-    --pg-text: 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif;
+    --pg-head: var(--admin-head, Georgia, 'Times New Roman', serif);
+    --pg-text: var(--admin-text, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif);
     font-family: var(--pg-text);
     color: var(--pg-ink);
     background: var(--pg-bg);

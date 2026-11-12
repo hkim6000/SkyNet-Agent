@@ -19,6 +19,7 @@ SkyNet is a server-driven web framework for ASP.NET Core. The browser calls a C#
 | [reference/admin.md](reference/admin.md) | The site has a staff area: the admin shell, one admin or several staff, sign-in, rights by area, activity log, the first admin password, Demo and Production run mode |
 | [reference/code/core/](reference/code/core/) and [reference/code/shell/](reference/code/shell/) | Any staff area: copy `Store`, `Access`, `Auth`, `Local`, `Ui`, the staff `Program.cs`, and the `Admin` shell, `AdminHome`, `AdminLogin`, `AdminAccount`, `AdminSettings`, `AdminMessages`, `AdminUsers`, `AdminActivity` pages, then rename |
 | [reference/media.md](reference/media.md) | Staff upload photos or videos and pick them for products, pages or people: the media library page, the shared picker, size and type checks |
+| [reference/floorplan.md](reference/floorplan.md) | A page shows the layout of a building: 2D plan and 3D view per floor, the plan data, the staff-side check |
 | [reference/pages.md](reference/pages.md) | The owner edits the public pages themselves: block-edited pages (Pages admin), data parts, versions, the per-page renderer |
 | [reference/initialize.md](reference/initialize.md) | Any site with a staff area: the sample data it ships with, and Initialize data (once on the first Production start, or from Settings) |
 | [reference/accounts.md](reference/accounts.md) | Customers sign in (students, members, patients): the sign-in gateway, sign-up with a phone number, the account page with a password change, and the emailed reset link |

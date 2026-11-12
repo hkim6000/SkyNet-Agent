@@ -130,7 +130,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.14
+    Version: 1.0.15
     Scope: user
     Status: √ enabled
 ```
@@ -263,6 +263,18 @@ Every command shows a plan first and waits for **go**.
 | `/skynet` shows nothing | Run `claude plugin list` in PowerShell; if `skynet` is missing, repeat Part 1 step 4 |
 | Lost the first admin password before using it | Delete `appConfig\initial-admin.txt` and open the sign-in page again; a new one is made |
 | Locked out of every manager account | Remove the managers from `data\staff.json` and open the sign-in page; a new first password is made |
+
+## What's new in 1.0.15
+
+From the third HomeBuilder build:
+
+- **Floor plans:** new guide and working code for a 2D plan and a 3D view per floor (`reference/floorplan.md`, `code/floorplan/` with `three.min.js`), plus the staff-side plan check.
+- **Photo picker fixed and tested as shipped:** right column counts on every width, the missing `Thumb` helper, `esc`/`touch`, and the Escape handling written out.
+- **Pages:** seeded blocks keep the same ids on every load; the block styles list exactly which class names they own; a stronger page-top overlay on tablets.
+- **One place for the admin brand:** colours and fonts at the top of `Admin.css`; every panel follows.
+- **Checks:** `shots.js` fails a page that lands somewhere else (a lost sign-in shows as `LANDED ON adminlogin`) and a script file that comes back as a web page.
+- **Docs:** what the framework sends with each request (checkboxes, names, browser storage); the framework's own meta tags (no second `viewport`); Media without the Pages editor; a garbled admin-list sentence fixed.
+- **Art:** every room setting documented, `beams=True`, and a real daytime `vantage` house.
 
 ## What's new in 1.0.14
 

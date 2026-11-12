@@ -1,0 +1,57 @@
+Floor plan styles: add to the page stylesheet (prefix PX). They use the page variables --PX-ink, --PX-ink2, --PX-line, --PX-paper, --PX-soft, --PX-bg, --PX-accent.
+
+.PX-fp-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.PX-site .PX-fp-head h2 { margin-bottom: 0; }
+.PX-seg { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--PX-line); border-radius: 10px; background: var(--PX-paper); }
+.PX-seg button { min-height: 36px; padding: 0 14px; border: 0; border-radius: 7px; background: transparent; color: var(--PX-ink2); font-weight: 700; font-size: 14px; cursor: pointer; }
+.PX-seg button:hover { color: var(--PX-ink); }
+.PX-seg button.PX-on { background: var(--PX-ink); color: var(--PX-bg); }
+.PX-fp-floors { margin-bottom: 12px; }
+.PX-fp-stage { position: relative; border: 1px solid var(--PX-line); border-radius: 12px; overflow: hidden; background: radial-gradient(ellipse at 50% 35%, var(--PX-paper), var(--PX-soft)); }
+.PX-fp-3d { position: relative; aspect-ratio: 16 / 10; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+.PX-fp-3d:active { cursor: grabbing; }
+.PX-fp-3d canvas { display: block; width: 100%; height: 100%; }
+.PX-fp-lbls { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.PX-fp-lbl { position: absolute; left: 0; top: 0; pointer-events: auto; border: 0; border-radius: 999px; padding: 3px 9px; font-size: 12px; font-weight: 700; line-height: 1.3; white-space: nowrap; background: color-mix(in srgb, var(--PX-paper) 88%, transparent); color: var(--PX-ink); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18); cursor: pointer; }
+.PX-fp-lbl.PX-on { background: var(--PX-accent); color: #fff; }
+.PX-fp-wait { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 700; color: var(--PX-ink2); }
+.PX-fp-wait[hidden] { display: none; }
+.PX-fp-tip { position: absolute; left: 12px; top: 12px; font-size: 12.5px; font-weight: 700; color: var(--PX-ink2); background: color-mix(in srgb, var(--PX-paper) 85%, transparent); padding: 4px 10px; border-radius: 999px; pointer-events: none; }
+.PX-fp-ctl { position: absolute; right: 12px; bottom: 12px; display: grid; gap: 6px; }
+.PX-fp-ctl button { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--PX-line); border-radius: 10px; background: var(--PX-paper); color: var(--PX-ink); font-size: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); }
+.PX-fp-ctl button:hover { border-color: var(--PX-ink2); }
+.PX-fp-2d { padding: 16px; }
+.PX-fp-2d[hidden], .PX-fp-3d[hidden] { display: none; }
+.PX-fp-svg { display: block; width: 100%; height: auto; max-height: 560px; }
+.PX-fp-r { fill-opacity: 0.42; cursor: pointer; }
+.PX-fp-r.PX-on { fill-opacity: 0.85; }
+.PX-fp-bal { stroke: var(--PX-ink2); stroke-width: 0.12; stroke-dasharray: 0.5 0.4; }
+.PX-fp-w { stroke: var(--PX-ink); stroke-width: 0.32; stroke-linecap: square; }
+.PX-fp-ext { stroke-width: 0.6; }
+.PX-fp-low { stroke-width: 0.18; stroke-dasharray: 0.4 0.3; }
+.PX-fp-win { stroke: #4E9CC8; stroke-width: 0.42; }
+.PX-fp-door { fill: none; stroke: var(--PX-ink2); stroke-width: 0.1; }
+.PX-fp-step { stroke: var(--PX-ink2); stroke-width: 0.08; pointer-events: none; }
+.PX-fp-t, .PX-fp-d { text-anchor: middle; fill: var(--PX-ink); pointer-events: none; font-family: inherit; }
+.PX-fp-t { font-weight: 700; }
+.PX-fp-d { fill: var(--PX-ink2); }
+.PX-fp-info { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; min-height: 28px; margin: 12px 0 10px; }
+.PX-fp-info b { font-size: 17px; }
+.PX-fp-info span { color: var(--PX-ink2); font-weight: 600; }
+.PX-fp-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.PX-fp-list button { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 12px; border: 1px solid var(--PX-line); border-radius: 999px; background: var(--PX-paper); color: var(--PX-ink); font-weight: 600; font-size: 13.5px; cursor: pointer; }
+.PX-fp-list button i { width: 10px; height: 10px; border-radius: 3px; }
+.PX-fp-list button small { color: var(--PX-ink2); font-weight: 600; }
+.PX-fp-list button.PX-on { border-color: var(--PX-accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--PX-accent) 25%, transparent); }
+.PX-fp .PX-hint { margin-top: 12px; }
+@media (max-width: 640px) {
+    .PX-fp-3d { aspect-ratio: 4 / 3.4; }
+    .PX-fp-tip { display: none; }
+    .PX-fp-2d { padding: 8px; }
+    .PX-fp-lbl { font-size: 11px; padding: 2px 7px; }
+}
+.PX-site .PX-fp-head h2 { margin-bottom: 0; }
+.PX-seg { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--PX-line); border-radius: 10px; background: var(--PX-paper); flex-wrap: wrap; }
+.PX-seg button { min-height: 38px; padding: 0 16px; border: 0; border-radius: 7px; background: transparent; color: var(--PX-ink2); font-weight: 700; font-size: 14px; cursor: pointer; }
+.PX-seg button:hover { color: var(--PX-ink); }
+.PX-seg button.PX-on { background: var(--PX-ink); color: #fff; }

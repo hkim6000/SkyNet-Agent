@@ -32,7 +32,6 @@ namespace MySite.codes
         public override async Task OnInitialized()
         {
             HtmlDoc.SetTitle("Menu | Brand");
-            HtmlDoc.AddMetaElement("viewport", "width=device-width, initial-scale=1");
             HtmlDoc.AddMetaElement("description", "One sentence about this page.");
 
             SiteData site = await LoadSite();
@@ -115,13 +114,19 @@ if (document.readyState === 'loading') {
 - Call `$WaitOn()` before a long request if you want SkyNet's wait indicator.
 - Expose only what the HTML and the server call (`onclick="MenuJs.filter('drinks')"`, `ExecuteScript("MenuJs.filtered(...)")`).
 
+## Meta tags SkyNet writes itself
+
+Every page already gets `<meta charset>`, `viewport`, a Content-Security-Policy and `description="skynet framework"` from the framework. Do not add `viewport` again. Add the page's own `description` (search engines need it), knowing the framework's generic one comes first until the framework stops writing it; that is a framework change, not a page change.
+
 ## What the browser sends with every request
 
 `skynet.core.js` sends, with every `$ApiRequest`:
 
 1. the `{ key, vlu }` pairs you pass;
 2. **every query-string parameter of the current URL**;
-3. **every `input`, `select`, `textarea` and `button` on the page, keyed by element id** (file inputs send their files).
+3. **every `input`, `select`, `textarea` and `button` on the page**: keyed by `id` (or `name` when there is no id); an element with neither is skipped; file inputs send their files;
+4. **checkboxes and radio buttons only when checked**, keyed by `name` first (then `id`), with the value `1` when they have no `value` (or `value="on"`); an unchecked box sends nothing, so read a missing key as "no";
+5. **browser storage (`localStorage`) entries** whose key contains `#global.`, and those that start with the page name and a dot (`Contact.draft` is sent as `draft`).
 
 So:
 
@@ -129,6 +134,8 @@ So:
 - Element ids are prefixed (`mn-email`), so they never collide with your short keys (`email`).
 - After reading files from an `<input type="file">` in JS, clear it (`input.value = ''`), or the next request uploads them again.
 - Keep secrets out of hidden inputs: everything on the page is posted.
+- Do not store anything in `localStorage` under `<Page>.` or `#global.` unless the server is meant to receive it with every request.
+- The explicit pairs you pass are the reliable way to send a form: collect them in JS (`data-k` attributes) rather than relying on ids, which also arrive from every other part of the page.
 
 ## Data flow for a typical form
 

@@ -316,19 +316,6 @@ namespace MySite.Core
             return used;
         }
 
-        public static string TypeName(string type)
-        {
-            switch (type)
-            {
-                case "hero": return "Hero";
-                case "text": return "Text";
-                case "photo": return "Photo";
-                case "phototext": return "Photo and text";
-                case "video": return "Video";
-                default: return type;
-            }
-        }
-
         public static void Erase(MediaItem m)
         {
             foreach (string rel in new[] { m.Path, m.Thumb })

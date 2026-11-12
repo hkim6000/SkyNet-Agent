@@ -1,3 +1,10 @@
+:root {
+    --admin-accent: #2F4A3A;
+    --admin-accent-d: #233A2E;
+    --admin-head: Georgia, 'Times New Roman', serif;
+    --admin-text: 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif;
+}
+
 .db-site {
     --db-ink: #24221F;
     --db-ink2: #6A645C;
@@ -5,10 +12,10 @@
     --db-bg: #F5F2EC;
     --db-paper: #FFFFFF;
     --db-soft: #EFE9E0;
-    --db-accent: #2F4A3A;
+    --db-accent: var(--admin-accent);
     --db-badge: #B4532A;
-    --db-head: Georgia, 'Times New Roman', serif;
-    --db-text: 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif;
+    --db-head: var(--admin-head);
+    --db-text: var(--admin-text);
     font-family: var(--db-text);
     color: var(--db-ink);
     background: var(--db-bg);

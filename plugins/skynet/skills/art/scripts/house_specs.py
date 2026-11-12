@@ -67,9 +67,10 @@ def ashcombe(mode="day"):
 
 
 def vantage(mode="dusk"):
-    return dict(seed=53, mode=mode, cx=0.5, ground=0.7,
-                sky0="#2F3B5A", sky1="#F0B486", hills=["#6E7690", "#58617A", "#3F4A5A"], hillh=180, hilla=80,
-                trees="#2F4536", treekind="pine", ntrees=22, lawn0="#5C6E50", lawn1="#34442F",
+    dusk = mode == "dusk"
+    sky = dict(sky0="#2F3B5A", sky1="#F0B486", hills=["#6E7690", "#58617A", "#3F4A5A"], lawn0="#5C6E50", lawn1="#34442F") if dusk else dict(hills=["#A9BAC2", "#8EA39B", "#6E8873"], lawn0="#7FA05F", lawn1="#55773F")
+    return dict(seed=53, mode=mode, cx=0.5, ground=0.7, hillh=180, hilla=80,
+                trees="#2F4536", treekind="pine", ntrees=22, **sky,
                 masses=[
                     dict(x0=-600, x1=180, h=150, roof="flat", ov=30, mat="stucco", col="#4A4E52", rcol="#1F2123",
                          win=[(0.04, 0.08, 0.96, 0.98, 8, 1)], frame="#1C1D1F"),

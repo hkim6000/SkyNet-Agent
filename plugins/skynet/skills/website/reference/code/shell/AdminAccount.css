@@ -3,9 +3,9 @@
     --ac-ink2: #6A645C;
     --ac-line: #E3DCD2;
     --ac-paper: #FFFFFF;
-    --ac-accent: #2F4A3A;
+    --ac-accent: var(--admin-accent, #2F4A3A);
     --ac-red: #A3322A;
-    --ac-head: Georgia, 'Times New Roman', serif;
+    --ac-head: var(--admin-head, Georgia, 'Times New Roman', serif);
 }
 
 .ac-site *, .ac-site *::before, .ac-site *::after { box-sizing: border-box; }

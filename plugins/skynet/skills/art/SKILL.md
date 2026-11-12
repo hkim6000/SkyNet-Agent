@@ -79,7 +79,7 @@ living = rooms.room("living", dict(seed=12, wall="#EEEAE2", floor="#B88E64", vie
 ```
 
 - A house is a list of `masses` (blocks) placed around the centre: `x0`, `x1`, `h`, `roof` (gable, hip, flat), `rh`, `mat` (board, cedar, stucco, shingle, stone), `col`, `rcol`, `win` [(x0, y0, x1, y1, columns, rows) as fractions of the block], `door`, `garage`, `lift` (second storey), `back` (draw behind). `cx` (0 to 1, default 0.5) moves the whole house across the picture and `scale` (default 1) makes it larger or smaller; the pool, path and plinth move with it. Start from a spec in `house_specs.py` and change it; a new style of house is a new spec, not new drawing code.
-- A room takes `wall`, `floor`, `view` (valley, forest, coast, dusk) and the colours of its furniture (`sofa`, `accent`, `island`, `cab`, `head`, `throw`, `table`, `tub`, `vanity`, `frame`). Give each house one palette and paint all its rooms with it, so a model's rooms belong together.
+- A room needs `wall` and `floor`, and takes `view` (valley, forest, coast, dusk). Every other key is a colour: `ceil`, `sofa`, `accent`, `rug`, `chair`, `lamp`, `stone` (fireplace), `beams` (or `True` for oak), `island`, `isltop`, `cab`, `top` (worktops), `stool`, `bed`, `head`, `throw`, `night`, `bench`, `table`, `tub`, `vanity`, `frame`. `planks` and `fire` are on unless set to `False`. Give each house one palette and paint all its rooms with it, so a model's rooms belong together.
 - Run `buildings_example.py` first to see the whole range.
 
 ## Working method

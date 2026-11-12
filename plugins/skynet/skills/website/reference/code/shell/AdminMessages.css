@@ -5,13 +5,13 @@
     --mx-bg: #F5F2EC;
     --mx-paper: #FFFFFF;
     --mx-soft: #EFE9E0;
-    --mx-accent: #2F4A3A;
-    --mx-accent-d: #233A2E;
+    --mx-accent: var(--admin-accent, #2F4A3A);
+    --mx-accent-d: var(--admin-accent-d, #233A2E);
     --mx-green: #3F6B3B;
     --mx-amber: #8A5A00;
     --mx-red: #B3261E;
-    --mx-head: Georgia, 'Times New Roman', serif;
-    --mx-text: 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif;
+    --mx-head: var(--admin-head, Georgia, 'Times New Roman', serif);
+    --mx-text: var(--admin-text, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif);
     font-family: var(--mx-text);
     color: var(--mx-ink);
     background: var(--mx-bg);

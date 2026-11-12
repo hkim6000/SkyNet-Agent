@@ -9,7 +9,6 @@ namespace MySite.codes
         public override async Task OnInitialized()
         {
             HtmlDoc.SetTitle("Sign in | Brightpath Academy");
-            HtmlDoc.AddMetaElement("viewport", "width=device-width, initial-scale=1");
             HtmlDoc.AddMetaElement("robots", "noindex, nofollow");
             bool demo = Store.Demo();
             string note = demo ? "<div class=\"jn-demo\"><b>Demo mode</b><span>The form is filled in with a sample student. Other sample students: ben@, chloe@, dev@, eli@, fay@ and gus@example.com, all with the password <em>demo1234</em>.</span></div>" : string.Empty;

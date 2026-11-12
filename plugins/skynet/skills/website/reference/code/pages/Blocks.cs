@@ -316,7 +316,14 @@ namespace MySite.Core
 
         private static Block Data(string key, string kicker = "", string title = "", string text = "")
         {
-            return new Block { Id = NewId(), Type = "data", Source = key, Kicker = kicker, Title = title, Text = text };
+            return new Block { Id = SeedId("d", key), Type = "data", Source = key, Kicker = kicker, Title = title, Text = text };
+        }
+
+        private static string SeedId(string kind, string key)
+        {
+            string k = Regex.Replace(key.ToLowerInvariant(), "[^a-z0-9]", string.Empty);
+            k = k.Length > 10 ? k.Substring(0, 10) : k;
+            return "b" + kind + (k.Length == 0 ? "x" : k);
         }
 
         public static void Ensure(SiteData site)
@@ -343,7 +350,7 @@ namespace MySite.Core
             List<Block> list = new List<Block>();
             if (page.Key == "home")
             {
-                list.Add(new Block { Id = NewId(), Type = "hero", Title = "{name}", Text = "<p>Change this text on the Pages page.</p>", Label = string.Empty, Link = string.Empty });
+                list.Add(new Block { Id = SeedId("h", page.Key), Type = "hero", Title = "{name}", Text = "<p>Change this text on the Pages page.</p>", Label = string.Empty, Link = string.Empty });
             }
             foreach (string k in page.Data)
             {
@@ -351,7 +358,7 @@ namespace MySite.Core
             }
             if (page.Data.Length == 0 && page.Key != "home")
             {
-                list.Add(new Block { Id = NewId(), Type = "text", Title = page.Name, Text = "<p>Change this text on the Pages page.</p>" });
+                list.Add(new Block { Id = SeedId("t", page.Key), Type = "text", Title = page.Name, Text = "<p>Change this text on the Pages page.</p>" });
             }
             return list;
         }

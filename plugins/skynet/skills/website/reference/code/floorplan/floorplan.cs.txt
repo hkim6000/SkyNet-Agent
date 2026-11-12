@@ -1,0 +1,112 @@
+Floor plan server side (namespace MySite). See floorplan.md.
+
+1. Model classes (codes/Models/<Project>Model.cs). The thing that owns a plan (a home model, a listing) gets:
+
+        public FloorPlan Plan { get; set; } = new FloorPlan();
+
+    public class FloorPlan
+    {
+        public List<PlanFloor> Floors { get; set; } = new List<PlanFloor>();
+    }
+
+    public class PlanFloor
+    {
+        public string Name { get; set; } = string.Empty;
+        public List<PlanRoom> Rooms { get; set; } = new List<PlanRoom>();
+        public List<PlanOpening> Openings { get; set; } = new List<PlanOpening>();
+    }
+
+    public class PlanRoom
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Kind { get; set; } = "living";
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int W { get; set; }
+        public int H { get; set; }
+    }
+
+    public class PlanOpening
+    {
+        public string Kind { get; set; } = "door";
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Len { get; set; }
+        public string Dir { get; set; } = "h";
+    }
+
+2. Public page: the section, inside the page's main HTML builder (m is the thing with the plan). Page member:
+
+        private static readonly JsonSerializerOptions PlanJson = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
+            List<PlanFloor> pf = m.Plan.Floors.Where(f => f.Rooms.Count > 0).ToList();
+            if (pf.Count > 0)
+            {
+                string pdata = JsonSerializer.Serialize(new FloorPlan { Floors = pf }, PlanJson);
+                sb.Append("<section class=\"PX-wrap PX-sec PX-fp\" id=\"PX-fp\" data-plan=\"" + Ui.Esc(pdata) + "\"><div class=\"PX-fp-head\"><h2>Floor plan</h2><div class=\"PX-seg\" id=\"PX-fp-views\"><button type=\"button\" data-v=\"2d\" class=\"PX-on\" aria-pressed=\"true\" onclick=\"PageJs.fpView('2d')\">2D plan</button><button type=\"button\" data-v=\"3d\" aria-pressed=\"false\" onclick=\"PageJs.fpView('3d')\">3D view</button></div></div>");
+                if (pf.Count > 1)
+                {
+                    sb.Append("<div class=\"PX-seg PX-fp-floors\" id=\"PX-fp-floors\">");
+                    for (int i = 0; i < pf.Count; i++)
+                    {
+                        sb.Append("<button type=\"button\"" + (i == 0 ? " class=\"PX-on\" aria-pressed=\"true\"" : " aria-pressed=\"false\"") + " onclick=\"PageJs.fpFloor(" + i + ")\">" + Ui.Esc(pf[i].Name != string.Empty ? pf[i].Name : "Floor " + (i + 1)) + "</button>");
+                    }
+                    sb.Append("</div>");
+                }
+                sb.Append("<div class=\"PX-fp-stage\"><div class=\"PX-fp-3d\" id=\"PX-fp-3d\" hidden><canvas id=\"PX-fp-cv\" aria-label=\"3D floor plan. Drag to turn it, tap a room to see its size.\"></canvas><div class=\"PX-fp-lbls\" id=\"PX-fp-lbls\"></div><div class=\"PX-fp-wait\" id=\"PX-fp-wait\" hidden>Loading the 3D view&hellip;</div><span class=\"PX-fp-tip\">Drag to turn &middot; tap a room</span><div class=\"PX-fp-ctl\"><button type=\"button\" aria-label=\"Zoom in\" onclick=\"PageJs.fpZoom(1)\">+</button><button type=\"button\" aria-label=\"Zoom out\" onclick=\"PageJs.fpZoom(-1)\">&minus;</button><button type=\"button\" aria-label=\"Reset the view\" onclick=\"PageJs.fpReset()\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4.5 12a7.5 7.5 0 1 0 2.2-5.3\"/><path d=\"M4.5 4.5v4h4\"/></svg></button></div></div><div class=\"PX-fp-2d\" id=\"PX-fp-2d\"></div></div><div class=\"PX-fp-info\" id=\"PX-fp-info\" aria-live=\"polite\"></div><div class=\"PX-fp-list\" id=\"PX-fp-list\"></div><p class=\"PX-hint\"><span id=\"PX-fp-area\"></span> &middot; The layout is approximate; our architect adjusts it to your lot.</p></section>");
+            }
+
+3. Staff page: check a plan the editor sends (key plan, the plan as JSON) before saving it.
+
+        private static readonly string[] Kinds = { "living", "dining", "kitchen", "bed", "bath", "office", "entry", "hall", "stairs", "closet", "laundry", "garage", "balcony" };
+        private static readonly string[] OpeningKinds = { "door", "window", "open" };
+
+        private static (FloorPlan? Plan, string Error) CleanPlan(string? raw)
+        {
+            FloorPlan? p;
+            try
+            {
+                p = JsonSerializer.Deserialize<FloorPlan>((raw ?? string.Empty).Length > 200000 || string.IsNullOrWhiteSpace(raw) ? "{}" : raw, ReadJson);
+            }
+            catch (JsonException)
+            {
+                return (null, "The floor plan could not be read. Reload and try again.");
+            }
+            FloorPlan clean = new FloorPlan();
+            foreach (PlanFloor f in (p?.Floors ?? new List<PlanFloor>()).Take(4))
+            {
+                PlanFloor nf = new PlanFloor { Name = Ui.Line(f.Name, 24).Trim() };
+                foreach (PlanRoom r in (f.Rooms ?? new List<PlanRoom>()).Take(40))
+                {
+                    string name = Ui.Line(r.Name, 30).Trim();
+                    nf.Rooms.Add(new PlanRoom { Name = name != string.Empty ? name : "Room", Kind = Kinds.Contains(r.Kind) ? r.Kind : "living", X = Math.Clamp(r.X, -60, 300), Y = Math.Clamp(r.Y, -60, 300), W = Math.Clamp(r.W, 2, 150), H = Math.Clamp(r.H, 2, 150) });
+                }
+                foreach (PlanOpening o in (f.Openings ?? new List<PlanOpening>()).Take(160))
+                {
+                    if (OpeningKinds.Contains(o.Kind))
+                    {
+                        nf.Openings.Add(new PlanOpening { Kind = o.Kind, Dir = o.Dir == "v" ? "v" : "h", X = Math.Clamp(o.X, -60, 300), Y = Math.Clamp(o.Y, -60, 300), Len = Math.Clamp(o.Len, 1, 40) });
+                    }
+                }
+                for (int i = 0; i < nf.Rooms.Count; i++)
+                {
+                    for (int j = i + 1; j < nf.Rooms.Count; j++)
+                    {
+                        PlanRoom a = nf.Rooms[i], b = nf.Rooms[j];
+                        if (a.X < b.X + b.W && b.X < a.X + a.W && a.Y < b.Y + b.H && b.Y < a.Y + a.H)
+                        {
+                            return (null, (nf.Name == string.Empty ? "A floor" : nf.Name) + ": " + a.Name + " and " + b.Name + " overlap. Move one of them.");
+                        }
+                    }
+                }
+                if (nf.Rooms.Count > 0)
+                {
+                    if (nf.Name == string.Empty)
+                    {
+                        nf.Name = "Floor " + (clean.Floors.Count + 1);
+                    }
+                    clean.Floors.Add(nf);
+                }
+            }
+            return (clean, string.Empty);
+        }

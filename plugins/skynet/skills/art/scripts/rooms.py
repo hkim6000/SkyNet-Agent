@@ -103,7 +103,7 @@ def shell(c, p):
             c.line([pr(-1, 0, z), pr(1, 0, z)], Hh.shade(fl, -0.12), 1.0)
     if p.get("beams"):
         for z in [0.12, 0.34, 0.56, 0.78]:
-            box(c, -1, 1, 0.97, 1.0, z, z + 0.05, p["beams"])
+            box(c, -1, 1, 0.97, 1.0, z, z + 0.05, p["beams"] if isinstance(p["beams"], str) else "#8A6A4C")
     c.line([pr(-1, 0, 1), pr(1, 0, 1)], Hh.shade(wall, -0.3), 2)
     c.line([pr(-1, 1, 1), pr(1, 1, 1)], Hh.shade(wall, -0.15), 1.5)
     c.line([pr(-1, 0, 1), pr(-1, 0, 0)], Hh.shade(wall, -0.3), 2)
