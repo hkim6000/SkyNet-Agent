@@ -21,7 +21,7 @@
 }
 
 .ct-site *, .ct-site *::before, .ct-site *::after { box-sizing: border-box; }
-.ct-site a { color: inherit; text-decoration: none; }
+:where(.ct-site) a { color: inherit; text-decoration: none; }
 .ct-site img { display: block; max-width: 100%; }
 .ct-site button, .ct-site input, .ct-site select, .ct-site textarea { font: inherit; color: inherit; }
 .ct-site h1, .ct-site h2, .ct-site h3 { font-family: var(--ct-head); font-weight: 600; line-height: 1.15; margin: 0; }

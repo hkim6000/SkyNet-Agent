@@ -1,4 +1,5 @@
-Additions to AdminSettings (prefix st-) for the Initialize data button.
+New sites: the Initialize data button is already in code/shell/AdminSettings.*; copy that page.
+For a site whose AdminSettings was written without it, these are the additions (prefix st-).
 
 1. FormHtml, after the closing </form>, managers only and Demo mode only:
 
@@ -52,7 +53,7 @@ Additions to AdminSettings (prefix st-) for the Initialize data button.
 4. AdminSettings.css:
 
 .st-danger { border-color: #E3B4AE; }
-.st-btn-danger { background: #B23A2E; }
+.st-btn-danger { background: #B23A2E; border-color: #B23A2E; color: #fff !important; }
 .st-btn-danger:hover { background: #8F2D23; }
 
 5. Two calls to Init.OnStart(), both harmless after the first: in Program.cs before app.Run(), so the data is clean before the first request, and in AdminLogin.OnInitialized before Store.EnsureFirstManager(), which the offline verify harness can exercise:

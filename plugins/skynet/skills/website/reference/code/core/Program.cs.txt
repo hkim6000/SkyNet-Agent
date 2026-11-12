@@ -7,6 +7,12 @@ builder.Services.Configure<FormOptions>(o => o.MultipartBodyLengthLimit = 110L *
 
 var app = builder.Build();
 MySite.Core.Local.Accessor = app.Services.GetRequiredService<IHttpContextAccessor>();
+MySite.Core.Auth.Badges = async c =>
+{
+    List<MySite.Models.ContactMessage> list = await MySite.Core.Store.Rows<MySite.Models.ContactMessage>("messages");
+    return new Dictionary<string, int> { { "messages", list.Count(m => !m.Read) } };
+};
+MySite.Core.Media.AlsoUsedBy = (site, path) => new List<string>();
 string[] closed = { "appconfig", "data", "temp", "logs", "htmls", "codes", "bin", "obj" };
 app.Use((context, next) =>
 {

@@ -32,7 +32,7 @@ Then stop and wait for the user to say "go". Apply any changes they ask for firs
 2. Write `data/site.json` and `codes/Models/<Project>Model.cs`.
 3. Build each page: `htmls/X.html`, `styles/X.css`, `codes/X.cs`, `scripts/X.js`, following `reference/page-model.md` and `reference/pitfalls.md` of the `website` skill.
 4. Paint the images with the `art` skill; check a contact sheet and fix weak ones.
-5. For a staff area, write the sample data and add `Core/Init.cs` with the Settings button (`reference/initialize.md`). For customer accounts, build the gateway, sign-up, reset mail and account page from `reference/accounts.md` and its code.
+5. For a staff area, write the sample data and add `Core/Init.cs` (the Settings button is in the shipped `AdminSettings`; `reference/initialize.md`). For customer accounts, build the gateway, sign-up, reset mail and account page from `reference/accounts.md` and its code.
 6. Keep the starter's `LICENSE` at the project root (template code MIT, framework proprietary) and point the README's license section at it; set `app.app.releasedate` to today's date. Run `${CLAUDE_SKILL_DIR}/../verify/scripts/readme_shots.js <url> <project>` against the running site to make `docs/screenshot-home.png` and `docs/screenshot-responsive.png`, look at both, then write `README.md` from `reference/readme-template.md` with real counts.
 
 ## Step 3 - Verify

@@ -64,7 +64,11 @@ One canvas, every block an inline editor (`.pg-blk`): header with a drag grip, t
 
 ## The public pages
 
-Each public page keeps its own copy of the renderer (per-page prefix, as always): `PageHtml(site, media, key)` walks the visible blocks and switches on type; `DataPart(site, b, first)` renders that page's own data parts, with the block's kicker, title and text as the part's heading. Only the first hero or data part on a page gets an `<h1>`. The HTML of such a page is just the header, `{plhd_blocks}` inside `<main>`, and the footer. The block classes live in the page's CSS (`blocks.css.txt` with `PX` replaced by the prefix).
+Each public page keeps its own copy of the renderer (per-page prefix, as always): `PageHtml(site, media, key)` walks the visible blocks and switches on type. The renderer calls one method the page writes itself, `private string DataPart(SiteData site, Block b, bool first)`: it switches on `b.Source` and renders that page's own data parts (the item list, the contact form), with the block's kicker, title and text as the part's heading (`Head(site, b, first)`), and returns an empty string for a source it does not know. Only the first hero or data part on a page gets an `<h1>`. The HTML of such a page is just the header, `{plhd_blocks}` inside `<main>`, and the footer.
+
+The block classes live in the page's CSS (`blocks.css.txt` with `PX` replaced by the prefix). They rely on the page's own base styles: the variables `--PX-ink`, `--PX-ink2`, `--PX-line`, `--PX-paper`, `--PX-soft`, `--PX-accent`, `--PX-head`, and the classes `PX-wrap` (content width), `PX-sec` (section spacing), `PX-btn`, `PX-btn-ghost` and `PX-eyebrow`. The hero takes `--PX-soft` as its background.
+
+Icons are listed twice: `Blocks.Icons` (the names staff pick from) and the `Icon` switch in each page's renderer (the drawings). Add or remove an icon in both.
 
 Things to carry over from the old per-field pages when you switch a site to blocks:
 

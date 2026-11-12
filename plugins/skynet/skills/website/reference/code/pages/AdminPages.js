@@ -182,8 +182,14 @@ var AdminPagesJs = (function () {
         return new URLSearchParams(location.search).get(k) || '';
     }
 
+    var unloadBound = false;
+
     function loaded() {
-        show(qs('page') || 'home');
+        show(page || qs('page') || 'home');
+        if (unloadBound) {
+            return;
+        }
+        unloadBound = true;
         window.addEventListener('beforeunload', function (e) {
             if (dirty) {
                 e.preventDefault();
@@ -219,17 +225,13 @@ var AdminPagesJs = (function () {
         mark();
     }
 
-    function shown(p, href) {
+    function showed(p, href) {
         page = p;
         dirty = false;
         mark();
         var v = el('pg-viewlink');
         if (v) {
             v.setAttribute('data-href', href);
-        }
-        try {
-            history.replaceState(null, '', 'AdminPages?page=' + p);
-        } catch (e) {
         }
         var c = el('pg-canvas');
         if (!c || c.getAttribute('data-bound')) {
@@ -680,9 +682,14 @@ var AdminPagesJs = (function () {
         }
     }
 
+    function here() {
+        var r = el('pg-site-root');
+        return !!r && r.getClientRects().length > 0;
+    }
+
     function reveal() {
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
+            if (e.key === 'Escape' && here()) {
                 if (askBox && askBox.classList.contains('pg-open')) {
                     return;
                 }
@@ -723,7 +730,7 @@ var AdminPagesJs = (function () {
         clean: clean,
         loaded: loaded,
         tab: tab,
-        shown: shown,
+        showed: showed,
         fmt: fmt,
         grab: grab,
         move: move,

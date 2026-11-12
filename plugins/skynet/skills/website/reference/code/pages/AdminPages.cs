@@ -233,7 +233,7 @@ namespace MySite.codes
             bool canE = Access.Can(c.U, AreaKey, 'E');
             response.SetElementContents("pg-canvas", Canvas(site, media, p, canE));
             response.SetElementContents("pg-ptabs", Tabs(p.Key));
-            response.ExecuteScript("AdminPagesJs.shown('" + p.Key + "','" + p.Href + "');");
+            response.ExecuteScript("AdminPagesJs.showed('" + p.Key + "','" + p.Href + "');");
             return response;
         }
 
@@ -317,7 +317,7 @@ namespace MySite.codes
             }
             await Store.Log(c.U.Id, "save page", p.Name, true);
             response.SetElementContents("pg-canvas", Canvas(done, media, p, true));
-            response.ExecuteScript("AdminPagesJs.shown('" + p.Key + "','" + p.Href + "');AdminPagesJs.saved('" + Ui.Js(p.Name + " saved. It is live on the website.") + "');");
+            response.ExecuteScript("AdminPagesJs.showed('" + p.Key + "','" + p.Href + "');AdminPagesJs.saved('" + Ui.Js(p.Name + " saved. It is live on the website.") + "');");
             return response;
         }
 
@@ -406,7 +406,7 @@ namespace MySite.codes
             await Store.Log(c.U.Id, "restore page", p.Name, true);
             List<MediaItem> media = await Media.Load();
             response.SetElementContents("pg-canvas", Canvas(done, media, p, true));
-            response.ExecuteScript("AdminPagesJs.shown('" + p.Key + "','" + p.Href + "');AdminPagesJs.saved('Version restored. It is live on the website.');");
+            response.ExecuteScript("AdminPagesJs.showed('" + p.Key + "','" + p.Href + "');AdminPagesJs.saved('Version restored. It is live on the website.');");
             return response;
         }
 

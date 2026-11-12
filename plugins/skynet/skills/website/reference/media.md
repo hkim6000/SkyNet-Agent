@@ -1,6 +1,6 @@
 # Media library
 
-Read this when staff need to upload photos or videos and pick them for products, pages or people. It is one admin page plus one shared class, and every other admin page that needs a picture opens the same picker. Worked example (namespace `MySite`): [code/media/](code/media/) holds `Media.cs` and the four `AdminMedia` files (a panel page in the admin shell); copy them, rename the prefix, list the site's fixed images in `Fixed` and set `Media.AlsoUsedBy` in `Program.cs` for the places of the site's own data (products, people).
+Read this when staff need to upload photos or videos and pick them for products, pages or people. It is one admin page plus one shared class, and every other admin page that needs a picture opens the same picker. Worked example (namespace `MySite`): [code/media/](code/media/) holds `Media.cs` and the four `AdminMedia` files (a panel page in the admin shell); copy them, rename the prefix, list the site's fixed images in `Fixed` and set `Media.AlsoUsedBy` in `Program.cs` for the places of the site's own data (products, people), for example `MySite.Core.Media.AlsoUsedBy = (site, path) => site.Items.Where(i => i.Image == path).Select(i => "Item: " + i.Title).ToList();`.
 
 ## Shape
 
@@ -9,7 +9,7 @@ Read this when staff need to upload photos or videos and pick them for products,
 | Shared C# | `codes/Core/Media.cs`: load and save the list, receive uploads, sniff file types, size limits, where a file is used, erase |
 | Admin page | `AdminMedia` (prefix `am-`): upload, All / Photos / Videos chips, search, grid, edit dialog (alt text, note for staff, where used), delete |
 | Data | `data/media.json`, one `MediaItem` per file: `Id, Path, Thumb, Kind (photo/video), Name, Alt, Caption, Bytes, Added, By` |
-| Files | `images/uploads/<id>.<ext>`; existing painted images under `images/` are added to the list on first start (`Seed`), with their `-thumb.webp` when one exists |
+| Files | `images/uploads/<id>.<ext>`; existing painted images under `images/` are added to the list on first start (`Seed`, named by their folder path), with their `-thumb.webp` when one exists. When you paint the images, also write `data/media.json` with a real alt text for each one (*Aster model, front at dusk*), so the library does not start with alt text made from file names |
 | Rights | area `media`: View, Edit (upload, alt text), Extra = delete files |
 | Settings | `MaxVideoMb` on `SiteData` (default 30, 1 to 100); a field in **Settings** changes it |
 

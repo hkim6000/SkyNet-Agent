@@ -1,5 +1,20 @@
-// Add these classes to codes/Models/<Project>Model.cs (namespace MySite.Models).
-// SiteData needs at least: public string Brand { get; set; } = string.Empty;
+Classes the staff area needs, for codes/Models/<Project>Model.cs (namespace MySite.Models).
+Copy the parts the site uses. Every part is tested with the reference code in code/core, code/shell, code/media and code/pages.
+
+1. SiteData: add these properties to the site's own SiteData (keep its other lists).
+
+        public string Brand { get; set; } = string.Empty;
+        public string Tagline { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string Hours { get; set; } = string.Empty;
+        public int MaxVideoMb { get; set; } = 30;
+        public Dictionary<string, PageDoc> Pages { get; set; } = new Dictionary<string, PageDoc>();
+
+   MaxVideoMb only with a media library, Pages only with block-edited pages.
+
+2. Always (sign-in, rights, activity log):
 
     public class Staff
     {
@@ -28,4 +43,82 @@
         public string Action { get; set; } = string.Empty;
         public string Target { get; set; } = string.Empty;
         public bool Ok { get; set; } = true;
+    }
+
+3. Messages page (data/messages.json, written by the contact form):
+
+    public class ContactMessage
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string Topic { get; set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
+        public DateTime When { get; set; }
+        public bool Read { get; set; }
+        public string Status { get; set; } = "new";
+        public string Note { get; set; } = string.Empty;
+        public DateTime Changed { get; set; }
+    }
+
+4. Media library (data/media.json):
+
+    public class MediaItem
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Path { get; set; } = string.Empty;
+        public string Thumb { get; set; } = string.Empty;
+        public string Kind { get; set; } = "photo";
+        public string Name { get; set; } = string.Empty;
+        public string Alt { get; set; } = string.Empty;
+        public string Caption { get; set; } = string.Empty;
+        public long Bytes { get; set; }
+        public DateTime Added { get; set; }
+        public string By { get; set; } = string.Empty;
+    }
+
+5. Block-edited pages (site.json, SiteData.Pages):
+
+    public class PageDoc
+    {
+        public List<Block> Blocks { get; set; } = new List<Block>();
+        public List<PageVersion> Versions { get; set; } = new List<PageVersion>();
+        public DateTime Saved { get; set; }
+        public string By { get; set; } = string.Empty;
+    }
+
+    public class Block
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public string Source { get; set; } = string.Empty;
+        public bool Hidden { get; set; }
+        public string Kicker { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
+        public string Media { get; set; } = string.Empty;
+        public string Label { get; set; } = string.Empty;
+        public string Link { get; set; } = string.Empty;
+        public string Label2 { get; set; } = string.Empty;
+        public string Link2 { get; set; } = string.Empty;
+        public bool Flip { get; set; }
+        public List<BlockItem> Items { get; set; } = new List<BlockItem>();
+    }
+
+    public class BlockItem
+    {
+        public string Icon { get; set; } = string.Empty;
+        public string Media { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
+        public string Link { get; set; } = string.Empty;
+        public string Label { get; set; } = string.Empty;
+    }
+
+    public class PageVersion
+    {
+        public DateTime When { get; set; }
+        public string By { get; set; } = string.Empty;
+        public List<Block> Blocks { get; set; } = new List<Block>();
     }

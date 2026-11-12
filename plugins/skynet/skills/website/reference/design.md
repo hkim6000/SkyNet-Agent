@@ -34,6 +34,7 @@ Serve the fonts from the site itself, not from Google Fonts or another CDN: no v
 
 - Keep a solid fallback stack after the name (`"Fraunces", Georgia, "Times New Roman", serif`); when the files cannot be fetched, the fallback stack alone is the font and the plan says so.
 - No `@import url(https://fonts.googleapis.com/...)` and no `<link>` to a font CDN.
+- The admin panels share one document, so their fonts are declared once, in `Admin.css`; `AdminLogin.css` declares its own (it is a page of its own).
 
 ## Responsive breakpoints
 

@@ -1,6 +1,6 @@
 ---
 name: art
-description: Paint original website artwork in code with Python (Pillow, NumPy, SciPy) - colour fields, misty landscapes, linocut seascapes and night cities, botanical watercolours, ink-wash mountains, still lifes, geometric and gestural abstraction, gallery-room banners and flat portraits - saved as WebP. Use when a SkyNet site needs images and stock photos are not wanted.
+description: Paint original website artwork in code with Python (Pillow, NumPy, SciPy) - colour fields, misty landscapes, linocut seascapes and night cities, botanical watercolours, ink-wash mountains, still lifes, geometric and gestural abstraction, gallery-room banners, flat portraits, house exteriors and room interiors - saved as WebP. Use when a SkyNet site needs images and stock photos are not wanted.
 user-invocable: false
 ---
 
@@ -15,6 +15,10 @@ Every image comes from a seeded Python function, so it is original, repeatable a
 | [scripts/paint.py](scripts/paint.py) | `paint(spec, params)` and ten styles |
 | [scripts/scenes.py](scripts/scenes.py) | `room_banner(works, ...)` gallery-wall banners, `portrait(params)` flat portraits |
 | [scripts/example.py](scripts/example.py) | One working example per style; run it first to see what each style looks like |
+| [scripts/houses.py](scripts/houses.py) | `house_scene(spec)`: a house front in day or dusk light with sky, hills, trees, lawn, path and pool |
+| [scripts/rooms.py](scripts/rooms.py) | `room(kind, params)`: an interior with a window view; `kind` = living, kitchen, suite, bath, dining |
+| [scripts/house_specs.py](scripts/house_specs.py) | Five worked house specs (farmhouse, modern, coastal shingle, stone manor, glass pavilion) and `rear(fn)` for the back view |
+| [scripts/buildings_example.py](scripts/buildings_example.py) | Every house in day and dusk light and every room in two palettes, with a contact sheet |
 
 ```bash
 cd ${CLAUDE_SKILL_DIR}/scripts && python3 example.py /path/to/output
@@ -61,6 +65,22 @@ face = scenes.portrait(dict(bg="#D6E2CC", skin="#D9A985", hair="#2E2420", style=
 
 - `room_banner` hangs two or three images on a gallery wall with light pools, a bench and visitor silhouettes (1600×760). `True` frames a work with a mat (for paper works). Keep the left third empty for headline text.
 - `portrait` draws a faceless editorial portrait. `style`: long, bob, short, bun, crop, fade, curly; optional `beard`, `glasses`, `stripes`, `dots`.
+
+## Houses and rooms
+
+For builders, architects, real estate, hotels and interior designers, when the page shows "the building and its rooms".
+
+```python
+import houses, rooms, house_specs as S
+front = houses.house_scene(S.calder("dusk"))
+back = houses.house_scene(S.rear(S.calder))
+spec = S.linden("day"); spec["masses"][1]["col"] = "#E8E2D6"
+living = rooms.room("living", dict(seed=12, wall="#EEEAE2", floor="#B88E64", view="valley", sofa="#ECE6DA", accent="#6E7F6A"))
+```
+
+- A house is a list of `masses` (blocks) placed around the centre: `x0`, `x1`, `h`, `roof` (gable, hip, flat), `rh`, `mat` (board, cedar, stucco, shingle, stone), `col`, `rcol`, `win` [(x0, y0, x1, y1, columns, rows) as fractions of the block], `door`, `garage`, `lift` (second storey), `back` (draw behind). Start from a spec in `house_specs.py` and change it; a new style of house is a new spec, not new drawing code.
+- A room takes `wall`, `floor`, `view` (valley, forest, coast, dusk) and the colours of its furniture (`sofa`, `accent`, `island`, `cab`, `head`, `throw`, `table`, `tub`, `vanity`, `frame`). Give each house one palette and paint all its rooms with it, so a model's rooms belong together.
+- Run `buildings_example.py` first to see the whole range.
 
 ## Working method
 

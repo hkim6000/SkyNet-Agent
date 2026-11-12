@@ -161,11 +161,7 @@ namespace Starter.codes
 
         private async Task<SiteData> LoadSite()
         {
-            string file = Path.Combine(DataPath ?? string.Empty, "site.json");
-            if (!File.Exists(file))
-            {
-                file = Path.Combine(Directory.GetCurrentDirectory(), "data", "site.json");
-            }
+            string file = Path.Combine(Directory.GetCurrentDirectory(), "data", "site.json");
             if (!File.Exists(file))
             {
                 return new SiteData();

@@ -59,7 +59,7 @@ Install once, in the folder you run the scripts from (the sites folder) or globa
 node ${CLAUDE_SKILL_DIR}/scripts/shots.js http://localhost:5180 Home,Shop,Contact 1440,820,390 shots
 ```
 
-`shots.js` uses Playwright's own Chromium when it is installed and otherwise the one at `CHROMIUM_PATH` or `/opt/pw-browsers/chromium`; it never asks you to run `playwright install`.
+Separate pages with `|` instead of commas when a URL holds commas (`'Models?f=a,b|Home'`). `shots.js` checks the page as it loads; open every edit dialog at 390 in the interaction script, because a closed modal is not measured. `shots.js` uses Playwright's own Chromium when it is installed and otherwise the one at `CHROMIUM_PATH` or `/opt/pw-browsers/chromium`; it never asks you to run `playwright install`.
 
 Every page at every width must report `ok`: no broken images, no horizontal overflow, no clipped text, no duplicate element ids, no leftover `{plhd_*}`, no JavaScript errors and no failed requests. **Clipped text** is text that runs out of its own box or card (for example a `nowrap` email address in a narrow column) or is cut off by an `overflow: hidden` parent; the page itself may not scroll sideways, so check the widths where columns are narrowest, often 1440 and 820, not only 390. Then **look at the screenshots** (open the PNG files): check alignment, spacing, contrast, text wrapping, empty areas and overlaps. Automated checks do not see ugly layouts.
 

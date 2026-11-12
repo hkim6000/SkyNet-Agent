@@ -3,7 +3,7 @@
 body { margin: 0; }
 .lg-site *, .lg-site *::before, .lg-site *::after { box-sizing: border-box; }
 .lg-site [hidden] { display: none !important; }
-.lg-site a { color: inherit; text-decoration: none; }
+:where(.lg-site) a { color: inherit; text-decoration: none; }
 :where(.lg-site) :where(button, input) { font: inherit; color: inherit; }
 .lg-main { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 32px 16px; }
 .lg-logo { display: inline-flex; align-items: center; gap: 10px; }

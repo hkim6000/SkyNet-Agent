@@ -10,15 +10,17 @@ Read this when a site has a staff area: bookings, orders, articles, a schedule, 
 | Shell | `Admin` (prefix `db-`; never `ad-`, see pitfalls): top bar, left menu, right content panel. Loads once |
 | Dashboard | `AdminHome` (prefix `hd-`), the first panel |
 | One page per area | `AdminBookings`, `AdminRooms`, ... Each is a **panel page**: it holds only its content and opens inside the shell |
-| Always | `AdminSettings`, `AdminAccount`; with several staff also `AdminUsers` and `AdminActivity` |
+| Always | `AdminSettings` (with Initialize data), `AdminAccount`; `AdminMessages` when there is a contact form; with several staff also `AdminUsers` and `AdminActivity` (not shipped: write them from the rules below, as panel pages) |
 | Shared C# | `codes/Core/Store.cs`, `Access.cs`, `Auth.cs`, `Local.cs`, `Ui.cs`; `Media.cs` when there is a media library ([media.md](media.md)); `Blocks.cs` when pages are block-edited ([pages.md](pages.md)); `Init.cs` ([initialize.md](initialize.md)) |
 | Usual areas | Orders or bookings, the catalogue, **Pages** (page text and pictures, [pages.md](pages.md)), **Media library** ([media.md](media.md)), **Messages** (the contact form inbox), Activity log, Settings, Users |
 | Data | `data/site.json`, `data/staff.json`, `data/activity.json` |
 | Run-time files | `temp/admin/sessions.json`; `appConfig/initial-admin.txt` until the first sign-in |
 
-**Copy the working code, do not rewrite it.** [code/core/](code/core/) holds `Store.cs`, `Access.cs`, `Auth.cs`, `Ui.cs`, `Local.cs`, the classes to add to the model file (`Models.core.txt`) and the full `Program.cs` for a site with a staff area (`Program.cs.txt`). [code/shell/](code/shell/) holds the four files of `Admin` (shell), `AdminHome` (dashboard), `AdminLogin` and `AdminAccount`. All of them are tested together on the real framework. Rename the namespace `MySite`, the cookie name `ms_tok` (in `Admin.js` and `AdminLogin.js`), the colours and the logo; change `Access.Areas` to the site's areas.
+**Copy the working code, do not rewrite it.** [code/core/](code/core/) holds `Store.cs`, `Access.cs`, `Auth.cs`, `Ui.cs`, `Local.cs`, the classes to add to the model file (`Models.core.txt`) and the full `Program.cs` for a site with a staff area (`Program.cs.txt`). [code/shell/](code/shell/) holds the four files of `Admin` (shell), `AdminHome` (dashboard), `AdminLogin`, `AdminAccount`, `AdminSettings` and `AdminMessages`. All of them are tested together on the real framework. Rename the namespace `MySite`, the cookie name `ms_tok` (in `Admin.js` and `AdminLogin.js`), the colours, the fonts and the logo; change `Access.Areas` to the site's areas, and drop the Media part of Settings when there is no media library.
 
-`codes/Core/` is the one exception to "pages are self-contained": sign-in, rights and storage must behave the same on every page, so they live in one place. A calculation that several pages must show the same way (a price, a total, a fee) may live there too, as `Core/<Name>.cs` (for example `Core/Pricing.cs`). Everything else (markup, CSS, JS, page methods) stays per page.
+**The admin style kit.** Every panel's CSS starts from the same set of rules: `AdminMedia.css` ([code/media/](code/media/)) is the kit (buttons, panels, fields of every input type, tables that become cards below 600px through `data-l` labels, pills, chips, modal, confirm box, toast). Copy it under the new page's prefix and add the page's own rules. All admin stylesheets use the shell's colours and fonts (the `--xx-*` variables at the top of each file): change them together.
+
+`codes/Core/` is the one exception to "pages are self-contained": sign-in, rights and storage must behave the same on every page, so they live in one place. A calculation that several pages must show the same way (a price, a total, a fee) may live there too, as `Core/<Name>.cs` (for example `Core/PriceCalc.cs`). A `Core` class must never have the name of a page (`Pricing` when there is a Pricing page): SkyNet finds pages by class name (pitfalls). Everything else (markup, CSS, JS, page methods) stays per page.
 
 ## One admin or several staff
 
@@ -43,6 +45,10 @@ The staff area is **one page that never reloads**. `Admin` draws the top bar (br
 - **Badges** (unread messages, people waiting) come from `Auth.Badges`, a function the site sets in `Program.cs`; after a change a panel calls `AdminJs.refresh()` to update them.
 - **Refused or expired:** a page the person may not open is refused, logged and the dashboard shows instead; an expired session sends the browser to `AdminLogin`.
 - **On tablets and phones** the left menu is a slide-in panel opened by the burger; choosing a page closes it.
+- **All panels share one document.** Three things follow:
+  - SkyNet sends every input on the page with every request, so a request from one panel carries the inputs of every panel already loaded. Give every input a prefixed id (`rm-f-name`), read only your own keys, and clear file inputs after an upload, or another panel's next request uploads the files again.
+  - Every panel's `keydown` handler sees every key. Act on Escape only when your panel is on screen: `function here() { var r = el('xx-site-root'); return !!r && r.getClientRects().length > 0; }`.
+  - Fonts are declared once, in `Admin.css` (`@font-face`, design.md); panels use the same font names through their variables.
 
 A **panel page** (every admin page except `Admin` and `AdminLogin`):
 
@@ -125,7 +131,7 @@ public class Staff
 - Passwords: PBKDF2-SHA256, 100,000 rounds, 16-byte salt, stored as `pbkdf2$100000$<salt>$<hash>`; compare with `CryptographicOperations.FixedTimeEquals`. At least 8 characters.
 - Sign-in pauses after 6 wrong passwords for one user name in 5 minutes.
 - A session is a random 16-byte hex token in `temp/admin/sessions.json` (written under a `SemaphoreSlim`, through a temp file and `File.Move`). Sessions last 8 hours and renew while the person works.
-- The browser keeps the token in a cookie (`xx_tok`, `path=` the site's base folder, `samesite=lax`). Every admin request sends it as the key `tok`; `Load` answers with the menu and the signed-in person, or `expired()` sends the browser back to `AdminLogin`.
+- The browser keeps the token in a cookie (`ms_tok`, renamed per site, `path=` the site's base folder, `samesite=lax`). `AdminJs.tok()` reads it; every panel request sends it as the key `tok`, and an expired session sends the browser back to `AdminLogin` (`AdminJs.expired()`).
 - Changing someone's password, or switching them off, closes all their sessions. Changing your own password in My account closes your other sessions and keeps this one.
 - A user with `MustChange` (the first manager, or anyone whose password a manager reset) gets no session until they choose their own password on the sign-in page.
 - **Staff sign-in is reachable from the public site.** Every public page's footer links to **Staff sign in** (`/AdminLogin`). When the site also has customer accounts, the header's **Sign in** opens a gateway page with a customer card and a staff card ([accounts.md](accounts.md)); without customer accounts the header needs no sign-in button and the footer link is enough.
@@ -133,7 +139,7 @@ public class Staff
 ```js
 function api(method, list) {
     list = list || [];
-    list.push({ key: 'tok', vlu: getCookie('xx_tok') });
+    list.push({ key: 'tok', vlu: AdminJs.tok() });
     $ApiRequest('AdminRooms/' + method, JSON.stringify(list));
 }
 ```
@@ -158,97 +164,9 @@ User name [admin        ]  Password [**********]
 
 The starter registers the request accessor with `AddHttpContextAccessor()`; a staff site's `Program.cs` ([code/core/Program.cs.txt](code/core/Program.cs.txt)) also hands it to `Core/Local.cs`:
 
-```csharp
-var app = builder.Build();
-MySite.Core.Local.Accessor = app.Services.GetRequiredService<IHttpContextAccessor>();
-```
+`Local.Request()` in `Core/Local.cs` answers whether the request comes from the computer the site runs on. The address **and** the host name must both be local: behind a reverse proxy on the same machine every visitor arrives from `127.0.0.1`, but with the site's public host name, so they never see the box.
 
-```csharp
-using System.Net;
-using Microsoft.AspNetCore.Http;
-
-namespace MySite.Core
-{
-    public static class Local
-    {
-        public static IHttpContextAccessor? Accessor { get; set; }
-
-        public static bool Request()
-        {
-            HttpContext? h = Accessor?.HttpContext;
-            if (h == null)
-            {
-                return false;
-            }
-            IPAddress? ip = h.Connection.RemoteIpAddress;
-            string host = h.Request.Host.Host;
-            bool named = host is "localhost" or "127.0.0.1" or "[::1]" or "::1";
-            return ip != null && IPAddress.IsLoopback(ip) && named && !h.Request.Headers.ContainsKey("X-Forwarded-For");
-        }
-    }
-}
-```
-
-The address **and** the host name must both be local: behind a reverse proxy on the same machine every visitor arrives from `127.0.0.1`, but with the site's public host name, so they never see the box.
-
-`Store`:
-
-```csharp
-public static string InitialFile => Path.Combine(Root, "appConfig", "initial-admin.txt");
-
-public static async Task EnsureFirstManager()
-{
-    using (await Hold())
-    {
-        List<Staff> staff = await LoadStaff();
-        if (staff.Any(u => u.Admin && u.Active && !u.MustChange && u.Hash != string.Empty))
-        {
-            return;
-        }
-        if (File.Exists(InitialFile) && staff.Any(u => u.Admin && u.Active && u.MustChange))
-        {
-            return;
-        }
-        string pass = Access.NewPassword();
-        Staff? u = staff.FirstOrDefault(x => x.Login == "admin");
-        if (u == null)
-        {
-            u = new Staff { Id = "u-admin", Login = "admin", Name = "Administrator", Title = "Manager" };
-            staff.Insert(0, u);
-        }
-        u.Admin = true;
-        u.Active = true;
-        u.MustChange = true;
-        u.Hash = Access.HashPassword(pass);
-        await SaveStaff(staff);
-        Directory.CreateDirectory(Path.GetDirectoryName(InitialFile) ?? Root);
-        await File.WriteAllTextAsync(InitialFile, "user: admin" + Environment.NewLine + "password: " + pass + Environment.NewLine);
-    }
-}
-
-public static string InitialPassword()
-{
-    if (!File.Exists(InitialFile))
-    {
-        return string.Empty;
-    }
-    string line = File.ReadAllLines(InitialFile).FirstOrDefault(l => l.StartsWith("password: ", StringComparison.Ordinal)) ?? string.Empty;
-    return line.Length > 10 ? line.Substring(10).Trim() : string.Empty;
-}
-```
-
-`Access.NewPassword()` makes 12 characters in three groups of four from `ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789` with `RandomNumberGenerator.GetInt32` (no 0/O or 1/l/I to misread).
-
-`AdminLogin`:
-
-```csharp
-public override async Task OnInitialized()
-{
-    HtmlDoc.AddMetaElement("robots", "noindex, nofollow");
-    await Store.EnsureFirstManager();
-    HtmlDoc.HtmlBodyText = HtmlDoc.HtmlBodyText.Replace("{plhd_first}", Local.Request() ? FirstBox(Store.InitialPassword()) : string.Empty);
-}
-```
+`Store.EnsureFirstManager()` makes the `admin` user with a new password and writes `initial-admin.txt` when no manager has a password of their own yet; `Store.InitialPassword()` reads it back. `Access.NewPassword()` makes 12 characters in three groups of four from letters and digits that cannot be misread (no 0/O or 1/l/I). `AdminLogin.OnInitialized` runs `Init.OnStart()`, then `EnsureFirstManager()`, and fills the box only for `Local.Request()`. The code is in [code/core/Store.cs](code/core/Store.cs) and [code/shell/AdminLogin.cs](code/shell/AdminLogin.cs).
 
 - `SignIn`: check user name and password (with the 6-in-5-minutes pause). If the user has `MustChange`, open no session; reveal two fields *New password* and *New password again* and turn the button into **Save and sign in** (`AdminLoginJs.choose()`).
 - `SetPassword`: check the user name and current password again, then the new one: 8 characters or more, different from the current one, both fields equal. Save the hash, clear `MustChange`, delete `initial-admin.txt`, log it, open the session.
@@ -270,20 +188,7 @@ Templates ship with `0` (Demo) so a public showcase works without a password; th
 - **Demo:** the sign-in form is pre-filled (`demo` / `demo1234`) with a note *Any user name and password signs in as a demo manager with every right* that also lists the sample staff logins by role (*instructors maya and luis, registrar rosa … password demo1234*). A customer sign-in form is pre-filled the same way with the first sample customer and lists the others. `SignIn` accepts anything and opens a session for a built-in `u-demo` manager (`Store.DemoManager()` creates it on first use: Admin, Active, no forced password change). A real account with its correct password still signs in as itself, so the owner can test roles. The first-password box and `initial-admin.txt` are never made in Demo. Nothing is blocked: visitors can upload, edit and delete like a manager.
 - **Production:** exactly the first-sign-in flow above. `Auth.Check` also refuses a session whose user is `u-demo` while the mode is `1`, so switching the file ends every demo session at once.
 
-```csharp
-public static bool Demo()
-{
-    DateTime stamp = File.GetLastWriteTimeUtc(ConfigFile);
-    if (stamp != configStamp)
-    {
-        string line = File.ReadLines(ConfigFile).Select(l => l.Trim()).FirstOrDefault(l => l.StartsWith("app.app.runmode", StringComparison.Ordinal)) ?? string.Empty;
-        string[] part = line.Split('|', 2);
-        demoMode = part.Length == 2 && part[1].Trim() == "0";
-        configStamp = stamp;
-    }
-    return demoMode;
-}
-```
+`Store.Demo()` in [code/core/Store.cs](code/core/Store.cs) reads `app.app.runmode` and caches it by the file's write time, so a change to the file takes effect at the next request.
 
 Test both: in Demo, an empty form and a random pair both reach the dashboard as *Demo manager*; in Production, both are refused and `demo`/`demo1234` is refused too.
 
@@ -475,7 +380,7 @@ ask({ title: 'Cancel this appointment?', text: 'The time becomes free for others
 - After testing, put back the `data/` folder copied before the tests (sample staff and records ship) and delete `appConfig/initial-admin.txt`, `data/initialized.txt` and `temp/admin`, so the delivered project makes its own first password.
 - The README has the permission table, the run-mode line and the first sign-in steps.
 - "View site" in the admin header opens in a new tab; at 390 the header shows the burger, the brand and Sign out only (design.md).
-- Sample data is in place for the Demo, and `Core/Init.cs` with the Settings button exist and were tested both ways ([initialize.md](initialize.md)).
+- Sample data is in place for the Demo, and `Core/Init.cs` with the Settings button (shipped in `AdminSettings`) exist and were tested both ways ([initialize.md](initialize.md)).
 - The users list shows rights in words, not letters.
 - Every public footer has **Staff sign in**; in Demo both sign-in forms are pre-filled and list the sample logins; in Production both start empty.
 - The shell: a menu click changes only the right panel (a value set on `window` survives), the address follows, Back and refresh open the same panel, `/AdminRooms` opened directly lands in the shell, a refused page goes back to the dashboard.

@@ -25,6 +25,7 @@ namespace MySite.Core
 
         public static readonly Area[] Areas =
         {
+            new Area { Key = "messages", Name = "Messages", Page = "AdminMessages", Group = "Customers", Extra = "Delete messages" },
             new Area { Key = "media", Name = "Media library", Page = "AdminMedia", Group = "Website", Extra = "Delete files" },
             new Area { Key = "pages", Name = "Pages", Page = "AdminPages", Group = "Website" },
             new Area { Key = "activity", Name = "Activity log", Page = "AdminActivity", Group = "Account", NoEdit = true, StaffOnly = true },

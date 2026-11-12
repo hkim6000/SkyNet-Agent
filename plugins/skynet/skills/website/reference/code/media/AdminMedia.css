@@ -1,12 +1,12 @@
 .am-site {
-    --am-ink: #2B2523;
-    --am-ink2: #6B5F5A;
-    --am-line: #E5DBD0;
-    --am-bg: #F6F2EC;
+    --am-ink: #24221F;
+    --am-ink2: #6A645C;
+    --am-line: #E3DCD2;
+    --am-bg: #F5F2EC;
     --am-paper: #FFFFFF;
-    --am-soft: #F1E9DF;
-    --am-accent: #B8445F;
-    --am-accent-d: #98324B;
+    --am-soft: #EFE9E0;
+    --am-accent: #2F4A3A;
+    --am-accent-d: #233A2E;
     --am-green: #3F6B3B;
     --am-amber: #8A5A00;
     --am-red: #B3261E;
@@ -21,7 +21,7 @@
 
 .am-site *, .am-site *::before, .am-site *::after { box-sizing: border-box; }
 .am-site [hidden] { display: none !important; }
-.am-site a { color: inherit; text-decoration: none; }
+:where(.am-site) a { color: inherit; text-decoration: none; }
 :where(.am-site) :where(button, input, select, textarea) { font: inherit; color: inherit; }
 .am-site h1, .am-site h2, .am-site h3 { font-family: var(--am-head); font-weight: 600; line-height: 1.2; margin: 0; }
 .am-site h1 { font-size: 30px; }
@@ -63,7 +63,7 @@
 .am-pager div { display: flex; gap: 8px; }
 .am-empty { padding: 36px 16px; text-align: center; color: var(--am-ink2); }
 .am-pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 700; white-space: nowrap; background: var(--am-soft); color: var(--am-ink); }
-.am-pill-new { background: #FBE3E8; color: #8A2142; }
+.am-pill-new { background: #E1EAF5; color: #1F4E79; }
 .am-pill-go { background: #E3EEDD; color: #2E5A2A; }
 .am-pill-wait { background: #FBF0D2; color: #7A5200; }
 .am-pill-bad { background: #F2DAD7; color: #8A2A22; }
@@ -71,7 +71,7 @@
 
 .am-field { display: flex; flex-direction: column; gap: 6px; }
 .am-field > span { font-size: 13px; font-weight: 700; color: var(--am-ink2); }
-.am-field input[type="text"], .am-field input[type="number"], .am-field input[type="password"], .am-field input[type="email"], .am-field input[type="date"], .am-field select, .am-field textarea { width: 100%; min-height: 42px; border: 1px solid #D6CBBE; border-radius: 8px; padding: 9px 12px; background: #fff; outline: none; }
+.am-field input[type="text"], .am-field input[type="tel"], .am-field input[type="url"], .am-field input[type="number"], .am-field input[type="password"], .am-field input[type="email"], .am-field input[type="date"], .am-field select, .am-field textarea { width: 100%; min-height: 42px; border: 1px solid #D6CBBE; border-radius: 8px; padding: 9px 12px; background: #fff; outline: none; }
 .am-field input:focus, .am-field select:focus, .am-field textarea:focus { border-color: var(--am-ink); }
 .am-field small { color: var(--am-ink2); font-size: 13px; }
 .am-err { display: block; font-style: normal; font-size: 13px; color: var(--am-red); font-weight: 600; }
@@ -79,6 +79,7 @@
 .am-grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .am-grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 .am-stack { display: grid; gap: 14px; }
+.am-stack > *, .am-grid2 > *, .am-grid3 > * { min-width: 0; }
 .am-check { display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; }
 .am-check input { width: 18px; height: 18px; accent-color: var(--am-accent); }
 .am-acts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
@@ -149,4 +150,15 @@
 @media (max-width: 680px) {
     .am-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
     .am-push { margin-left: 0; }
+}
+
+@media (max-width: 600px) {
+    .am-wrapt { overflow: visible; border: 0; background: none; }
+    .am-table { min-width: 0; }
+    .am-table thead { display: none; }
+    .am-table, .am-table tbody, .am-table tr, .am-table td { display: block; width: 100%; }
+    .am-table tr { background: var(--am-paper); border: 1px solid var(--am-line); border-radius: 12px; margin-bottom: 10px; padding: 6px 0; }
+    .am-table td { border: 0; padding: 6px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: right; }
+    .am-table td[data-l]::before { content: attr(data-l); color: var(--am-ink2); font-weight: 600; text-align: left; flex: none; }
+    .am-table td.am-first { display: block; text-align: left; }
 }

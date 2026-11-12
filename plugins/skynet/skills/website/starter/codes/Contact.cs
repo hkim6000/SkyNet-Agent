@@ -45,7 +45,7 @@ namespace Starter.codes
                 response.SetElementContents("ct-sent", string.Empty);
                 return response;
             }
-            await AddRecord("messages", new ContactMessage { Name = name, Email = email, Topic = topic, Text = msg, When = DateTime.UtcNow });
+            await AddRecord("messages", new ContactMessage { Id = "M" + Guid.NewGuid().ToString("N").Substring(0, 7).ToUpperInvariant(), Name = name, Email = email, Topic = topic, Text = msg, When = DateTime.UtcNow });
             response.SetElementContents("ct-sent", "<b>Thank you, " + HtmlEncode(name) + ".</b> We have your message and will reply by email.");
             response.ExecuteScript("ContactJs.sent();");
             return response;
@@ -132,11 +132,7 @@ namespace Starter.codes
 
         private async Task<SiteData> LoadSite()
         {
-            string file = Path.Combine(DataPath ?? string.Empty, "site.json");
-            if (!File.Exists(file))
-            {
-                file = Path.Combine(Directory.GetCurrentDirectory(), "data", "site.json");
-            }
+            string file = Path.Combine(Directory.GetCurrentDirectory(), "data", "site.json");
             if (!File.Exists(file))
             {
                 return new SiteData();

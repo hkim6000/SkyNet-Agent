@@ -1,0 +1,9 @@
+bin/
+obj/
+.vs/
+*.user
+logs/*.log
+temp/admin/
+appConfig/initial-admin.txt
+data/initialized.txt
+images/uploads/

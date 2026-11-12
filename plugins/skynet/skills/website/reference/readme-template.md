@@ -49,6 +49,8 @@ The SkyNet package (`TheSkyLite.SkyNet`) restores from NuGet. The app opens on *
 | [area] | View, Edit | [extra right, or blank] |
 | Users, Settings | managers only | |
 
+[One-admin site: replace this table with one line: *One admin account manages every area.*]
+
 ## Run mode
 
 `appConfig/application.cfg` has `app.app.runmode`:
@@ -58,7 +60,7 @@ The SkyNet package (`TheSkyLite.SkyNet`) restores from NuGet. The app opens on *
 
 ## Sample data
 
-The site ships with invented records so the Demo looks like a working business: staff for each role (all with the password `demo1234`), [customers, quotes, jobs, invoices, messages] around the day it was built, and an activity log. Sign in as `[office login]` or `[technician login]` to see each role. The sample files are `data/[staff].json`, `data/[records].json` ...; Initialize data removes them.
+The site ships with invented records so the Demo looks like a working business: staff for each role (all with the password `demo1234`; leave staff out on a one-admin site), [customers, quotes, jobs, invoices, messages] around the day it was built, and an activity log. Sign in as `[office login]` or `[technician login]` to see each role. The sample files are `data/[staff].json`, `data/[records].json` ...; Initialize data removes them.
 
 ## Going live
 
@@ -72,7 +74,7 @@ To wipe the data while still in Demo, a manager opens **Settings**, **Initialize
 
 1. Run the site on your computer and open **/AdminLogin**. The page shows the first user name (`admin`) and a password made just for this site. It is shown only on the computer the site runs on, and is also in `appConfig/initial-admin.txt`.
 2. Sign in and choose your own password. The box and the file disappear.
-3. Open **Users** and add an account for each person.
+3. Open **Users** and add an account for each person. [One-admin site: leave this step out.]
 
 Forgot the first password before using it? Delete `appConfig/initial-admin.txt` and open the sign-in page again. Locked out of every manager account? Remove the managers from `data/staff.json` and open the sign-in page.
 

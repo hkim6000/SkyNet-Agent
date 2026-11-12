@@ -255,9 +255,14 @@ var AdminMediaJs = (function () {
         api('Load');
     }
 
+    function here() {
+        var r = el('am-site-root');
+        return !!r && r.getClientRects().length > 0;
+    }
+
     function reveal() {
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
+            if (e.key === 'Escape' && here()) {
                 if (askBox && askBox.classList.contains('am-open')) {
                     return;
                 }

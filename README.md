@@ -130,7 +130,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.12
+    Version: 1.0.13
     Scope: user
     Status: √ enabled
 ```
@@ -263,6 +263,17 @@ Every command shows a plan first and waits for **go**.
 | `/skynet` shows nothing | Run `claude plugin list` in PowerShell; if `skynet` is missing, repeat Part 1 step 4 |
 | Lost the first admin password before using it | Delete `appConfig\initial-admin.txt` and open the sign-in page again; a new one is made |
 | Locked out of every manager account | Remove the managers from `data\staff.json` and open the sign-in page; a new first password is made |
+
+## What's new in 1.0.13
+
+From a full HomeBuilder build by the agent itself:
+
+- **Fixed:** the Pages editor no longer reloads itself in a loop and keeps the shell address; Escape only reaches the panel on screen; the Initialize data button is readable; the starter reads `site.json` from the app folder only.
+- **Ready-made pages:** `AdminSettings` (with Initialize data) and `AdminMessages` (contact form inbox with unread badge) ship with the shell; the badge and media hooks are set in `Program.cs`; every model class the staff area needs is in `Models.core.txt`.
+- **One look:** all admin pages share the shell's colours; `AdminMedia.css` is the documented admin style kit (all input types, tables that turn into cards on phones).
+- **Clearer docs:** Core classes must not share a page name; how data loads; what sample data goes in git (starter `.gitignore`); what the block styles and renderer need; one-admin README wording.
+- **Checks:** the source check fails link-colour resets and font CDNs; the screenshot check flags unreadable buttons and accepts `|` between pages.
+- **Art:** house exteriors (day and dusk) and room interiors for builders, architects and hotels.
 
 ## What's new in 1.0.12
 

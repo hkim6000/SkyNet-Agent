@@ -2,7 +2,8 @@ const { chromium } = require(require.resolve('playwright', { paths: [process.cwd
 const fs = require('fs');
 
 const base = (process.argv[2] || 'http://localhost:5180/').replace(/\/?$/, '/');
-const pages = (process.argv[3] || 'Home').split(',');
+const pageArg = process.argv[3] || 'Home';
+const pages = pageArg.split(pageArg.includes('|') ? '|' : ',').map(s => s.trim()).filter(Boolean);
 const widths = (process.argv[4] || '1440,820,390').split(',').map(Number);
 const out = process.argv[5] || 'shots';
 const launch = (() => {
@@ -65,13 +66,31 @@ const launch = (() => {
           const end = cs.display !== 'inline' && cs.overflowX === 'visible' && cs.textOverflow !== 'ellipsis' ? Math.max(r.right, r.left + e.scrollWidth) : r.right;
           if (end > pr.right - pad + 3 && end <= window.innerWidth + 1 && (end > r.right + 2 || (getComputedStyle(p).overflowX === 'visible' && p.scrollWidth > p.clientWidth + 2))) clipped.push(name(e) + ' runs out of ' + name(p));
         }
-        return { images: imgs.length, broken, overflow, wide, holes, clipped, dups, height: document.body.scrollHeight };
+        const rgb = c => { const m = c.match(/[\d.]+/g); return m ? m.map(Number) : [0, 0, 0, 0]; };
+        const lum = c => { const v = c.slice(0, 3).map(x => { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); }); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+        const unseen = [];
+        for (const e of document.querySelectorAll('button, a, [role="button"]')) {
+          if (unseen.length >= 4) break;
+          if (!shown(e) || !e.textContent.trim()) continue;
+          let bg = null;
+          for (let p = e; p; p = p.parentElement) {
+            const cs = getComputedStyle(p);
+            if (cs.backgroundImage !== 'none') break;
+            const c = rgb(cs.backgroundColor);
+            if ((c.length < 4 || c[3] > 0.5) && cs.backgroundColor !== 'transparent') { bg = c; break; }
+          }
+          if (!bg) continue;
+          const fg = rgb(getComputedStyle(e).color);
+          const a1 = lum(fg), a2 = lum(bg);
+          if ((Math.max(a1, a2) + 0.05) / (Math.min(a1, a2) + 0.05) < 1.6) unseen.push(name(e) + ' "' + e.textContent.trim().slice(0, 24) + '"');
+        }
+        return { images: imgs.length, broken, overflow, wide, holes, clipped, dups, unseen, height: document.body.scrollHeight };
       });
       const file = `${out}/${name.replace(/[^A-Za-z0-9_-]+/g, '_')}_${w}.png`;
       await page.screenshot({ path: file, fullPage: true });
-      const bad = r.broken.length || r.overflow > 0 || r.holes.length || r.clipped.length || r.dups.length;
+      const bad = r.broken.length || r.overflow > 0 || r.holes.length || r.clipped.length || r.dups.length || r.unseen.length;
       if (bad) problems++;
-      console.log(`${bad ? 'FAIL' : 'ok  '} ${w} ${name}  images ${r.images}  broken ${r.broken.length} ${r.broken.slice(0, 2).join(' ')}  overflow ${r.overflow} ${r.wide.join(' ')}  placeholders ${r.holes.join(' ')}  clipped ${r.clipped.length} ${r.clipped.slice(0, 2).join(', ')}  duplicate ids ${r.dups.join(' ')}  height ${r.height}  -> ${file}`);
+      console.log(`${bad ? 'FAIL' : 'ok  '} ${w} ${name}  images ${r.images}  broken ${r.broken.length} ${r.broken.slice(0, 2).join(' ')}  overflow ${r.overflow} ${r.wide.join(' ')}  placeholders ${r.holes.join(' ')}  clipped ${r.clipped.length} ${r.clipped.slice(0, 2).join(', ')}  duplicate ids ${r.dups.join(' ')}  unreadable ${r.unseen.join(', ')}  height ${r.height}  -> ${file}`);
     }
     if (errors.length) {
       problems++;

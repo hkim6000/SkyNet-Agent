@@ -59,14 +59,15 @@ namespace MySite.Core
                 }
                 string rel = Path.GetRelativePath(Store.Root, file).Replace('\\', '/');
                 string thumb = Path.Combine(Path.GetDirectoryName(file) ?? root, name + "-thumb.webp");
+                string inside = Path.GetRelativePath(root, file).Replace('\\', '/');
                 list.Add(new MediaItem
                 {
                     Id = NewId(),
                     Path = rel,
                     Thumb = File.Exists(thumb) ? Path.GetRelativePath(Store.Root, thumb).Replace('\\', '/') : string.Empty,
                     Kind = ext == ".mp4" ? "video" : "photo",
-                    Name = Path.GetFileName(file),
-                    Alt = Words(name),
+                    Name = inside,
+                    Alt = Words(Path.ChangeExtension(inside, null).Replace('/', ' ')),
                     Bytes = new FileInfo(file).Length,
                     Added = File.GetLastWriteTimeUtc(file),
                     By = "system"

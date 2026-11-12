@@ -146,7 +146,7 @@ Give each project its own ports and turn hot reload off:
 - Public content that must always look current (an event calendar, class times, "new" badges) is stored as day offsets and computed from `DateTime.Today`. Sample records in the staff area (orders, bookings, messages) use real dates around the build day ([initialize.md](initialize.md)).
 - Records with a deadline (a seat held for payment at the desk, an offer to pay within 24 hours) are checked on every load: expired ones are closed and the place goes to the next person in line. Sample records of that kind store their deadline as an offset from now, or they have expired before anyone sees them.
 - Actions that matter (messages, newsletter sign-ups, orders, bookings, accounts) are validated and saved on the server in their own file, for example `data/messages.json`, under one lock, through a temp file and `File.Move`. Only per-visitor conveniences that need no server (a cart before checkout, favourites) live in `localStorage`.
-- Files the site writes at run time (`data/messages.json`, `data/staff.json`, orders) are not part of the project: keep them out of git, and download the live `data/` folder before you publish so the live files are not overwritten.
+- The sample files in `data/` (messages, staff, orders) ship with the project and stay in git: they are the Demo. Once a site is live, those files hold real records: download the live `data/` folder before you publish, so the live files are not overwritten. The starter's `.gitignore` keeps out only build output and run-time files (`temp/admin/`, `logs/`, `initial-admin.txt`, `initialized.txt`, `images/uploads/`).
 
 ## Publishing to IIS
 

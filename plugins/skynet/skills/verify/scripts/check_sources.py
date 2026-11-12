@@ -105,6 +105,18 @@ for path in files("codes", ".cs"):
         for k in sorted(keys & query):
             warnings.append(f"{cls}: request key '{k}' is also a query-string name; rename it if this request is sent from the {cls} page")
 
+for path in files("styles", ".css"):
+    if bundled(path, read(path)):
+        continue
+    text = read(path)
+    for m in re.finditer(r"(?m)^\s*\.([a-z0-9]{2,4})-site\s+a\s*\{[^}]*\bcolor\s*:", text):
+        problems.append(f"{rel(path)}: '.{m.group(1)}-site a {{ color }}' outranks card and button link colours; write ':where(.{m.group(1)}-site) a'")
+    if re.search(r"fonts\.googleapis|fonts\.gstatic|use\.typekit|fonts\.bunny", text):
+        problems.append(f"{rel(path)}: loads fonts from a CDN; serve the woff2 files from styles/fonts/ (design.md, Fonts)")
+for path in files("htmls", ".html"):
+    if re.search(r"fonts\.googleapis|fonts\.gstatic", read(path)):
+        problems.append(f"{rel(path)}: links a font CDN; serve the woff2 files from styles/fonts/ (design.md, Fonts)")
+
 pages = {}
 types = {}
 for path in files("codes", ".cs"):
