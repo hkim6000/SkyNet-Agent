@@ -39,7 +39,7 @@ namespace MySite.Core
             new PartSpec { Key = "text", Name = "Text", Desc = "A title and paragraphs.", Fields = "kicker,title,text" },
             new PartSpec { Key = "split", Name = "Picture and text", Desc = "A picture or video beside the text.", Fields = "kicker,title,text,media,button,flip" },
             new PartSpec { Key = "cards", Name = "Cards", Desc = "A row of cards with an icon, title, text and link.", Fields = "kicker,title,text,items", ItemFields = "icon,title,text,link" },
-            new PartSpec { Key = "steps", Name = "Steps", Desc = "Numbered steps, for how ordering works.", Fields = "kicker,title,text,items", ItemFields = "title,text" },
+            new PartSpec { Key = "steps", Name = "Steps", Desc = "Numbered steps, for how something works.", Fields = "kicker,title,text,items", ItemFields = "title,text" },
             new PartSpec { Key = "stats", Name = "Numbers", Desc = "A row of big numbers with a label under each.", Fields = "kicker,title,items", ItemFields = "title,text" },
             new PartSpec { Key = "boxes", Name = "Checklists", Desc = "Boxes with a title and one tick per line.", Fields = "kicker,title,items", ItemFields = "title,lines" },
             new PartSpec { Key = "people", Name = "People", Desc = "Portraits with a name and a role, for the team.", Fields = "kicker,title,text,items", ItemFields = "media,title,text" },
@@ -258,7 +258,7 @@ namespace MySite.Core
                     b.Link = SafeLink(r.Link);
                     if (b.Label != string.Empty && b.Link == string.Empty)
                     {
-                        return (null, "Check the link of the button “" + b.Label + "”. Use a page name like Shop, Contact or a full https:// address.");
+                        return (null, "Check the link of the button “" + b.Label + "”. Use a page name like Contact, or a full https:// address.");
                     }
                     if (Has(spec, "buttons"))
                     {
@@ -343,7 +343,7 @@ namespace MySite.Core
             List<Block> list = new List<Block>();
             if (page.Key == "home")
             {
-                list.Add(new Block { Id = NewId(), Type = "hero", Title = "{name}", Text = "<p>Change this text on the Pages page.</p>", Label = page.Data.Length > 0 ? "See more" : string.Empty, Link = string.Empty });
+                list.Add(new Block { Id = NewId(), Type = "hero", Title = "{name}", Text = "<p>Change this text on the Pages page.</p>", Label = string.Empty, Link = string.Empty });
             }
             foreach (string k in page.Data)
             {

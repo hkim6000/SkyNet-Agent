@@ -15,7 +15,7 @@ namespace MySite.Core
 
         public static string Js(string? v)
         {
-            return (v ?? string.Empty).Replace("\\", "\\\\").Replace("'", "\\'").Replace("\"", "\\\"").Replace("<", "\\u003c").Replace(">", "\\u003e").Replace("\r", string.Empty).Replace("\n", "\\n");
+            return (v ?? string.Empty).Replace("\\", "\\\\").Replace("'", "\\u0027").Replace("\"", "\\u0022").Replace("&", "\\u0026").Replace("<", "\\u003c").Replace(">", "\\u003e").Replace("\r", string.Empty).Replace("\n", "\\n");
         }
 
         public static string Clip(string? v, int max)

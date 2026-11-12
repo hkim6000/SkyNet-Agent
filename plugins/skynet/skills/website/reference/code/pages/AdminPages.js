@@ -303,7 +303,7 @@ var AdminPagesJs = (function () {
                 return;
             }
             var target = richAt;
-            ask({ title: 'Add a link', text: 'A page name like Shop or Contact, or a full address starting with https://', value: 'https://', ok: 'Add link', check: function (v) {
+            ask({ title: 'Add a link', text: 'A page name like Contact, or a full address starting with https://', value: 'https://', ok: 'Add link', check: function (v) {
                 return /^(https?:\/\/\S+|mailto:\S+|tel:[0-9+() .-]+|#[A-Za-z0-9_-]+|[A-Za-z][A-Za-z0-9_-]*(\?[A-Za-z0-9=&%._+-]*)?(#[A-Za-z0-9_-]+)?)$/.test(v) ? '' : 'Use a page name or a full https:// address.';
             } }, function (v) {
                 target.focus();

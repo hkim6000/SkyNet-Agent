@@ -160,6 +160,23 @@ namespace MySite.Core
             return ConfigValue("app.app.runmode") == "0";
         }
 
+        public static string NameOf(List<Staff> staff, string id)
+        {
+            if (id == "u-demo")
+            {
+                return DemoManager().Name;
+            }
+            if (id == "system")
+            {
+                return "System";
+            }
+            if (id == "unknown")
+            {
+                return "Unknown user name";
+            }
+            return staff.FirstOrDefault(s => s.Id == id)?.Name ?? "Former staff member";
+        }
+
         public static Staff DemoManager()
         {
             return new Staff { Id = "u-demo", Login = "demo", Name = "Demo manager", Title = "Manager", Admin = true, Active = true };

@@ -343,11 +343,13 @@ def house_scene(spec):
     if spec.get("pool"):
         px0, px1, py0, py1 = spec["pool"]
         g = P.vgrad(40, 40, "#8CC7D2", "#3E8DA3", 1)
-        c.rect(W * px0 - 8, H * py0 - 8, W * px1 + 8, H * py1 + 8, "#D9D2C4")
-        c.paste_tex(g, [(W * px0, H * py0), (W * px1, H * py0), (W * px1, H * py1), (W * px0, H * py1)])
+        qx0 = cx + (W * px0 - W * 0.5) * sc
+        qx1 = cx + (W * px1 - W * 0.5) * sc
+        c.rect(qx0 - 8, H * py0 - 8, qx1 + 8, H * py1 + 8, "#D9D2C4")
+        c.paste_tex(g, [(qx0, H * py0), (qx1, H * py0), (qx1, H * py1), (qx0, H * py1)])
         for k in range(14):
             yy = H * py0 + (H * (py1 - py0)) * r.random()
-            xx = W * px0 + (W * (px1 - px0)) * r.random()
+            xx = qx0 + (qx1 - qx0) * r.random()
             c.line([(xx, yy), (xx + 30 + r.random() * 40, yy)], "#CFEFF4", 1.4)
     path = spec.get("path")
     if path:

@@ -63,7 +63,7 @@ def portrait(p, size=480, seed=1):
             d.ellipse([x - 60, y - 55, x + 60, y + 55], fill=hair)
         d.ellipse([cx - 120, 230, cx + 120, 340], fill=hair)
     if p.get("beard"):
-        d.chord([cx - 140, 380, cx + 140, 650], 10, 170, fill=rgb(p["beard"]))
+        d.chord([cx - 140, 380, cx + 140, 650], 10, 170, fill=rgb(p["beard"]) if isinstance(p["beard"], str) else hair)
         d.ellipse([cx - 40, 540, cx + 40, 575], fill=rgb(p["skin"]))
     if p.get("glasses"):
         for x in (cx - 68, cx + 68):

@@ -44,7 +44,7 @@ Copy the matching entry from `example.py` and change colours and numbers.
 
 | Style | Looks like | Main parameters |
 |---|---|---|
-| `colorfield` | soft stacked colour rectangles | `ground`, `rects` [((x0, y0, x1, y1), colour)], `glow`, `feather`, `axis` |
+| `colorfield` | soft stacked colour rectangles | `ground`, `rects` [((x0, y0, x1, y1), colour)], `glow`, `feather`, `axis` (brush direction: 1 or "x" across, 0 or "y" down) |
 | `landscape` | layered misty hills, optional lake, sun, rain | `sky0`, `sky1`, `layers` (far to near), `horizon`, `top`, `water`, `sun` (x, y, r, colour), `haze`, `mist`, `mistamt`, `rain` |
 | `linosea` | linocut sea with pier and lighthouse | `light`, `mid`, `dark`, `lamp` |
 | `linowave` | linocut rolling wave | `light`, `mid`, `dark` |
@@ -64,7 +64,7 @@ face = scenes.portrait(dict(bg="#D6E2CC", skin="#D9A985", hair="#2E2420", style=
 ```
 
 - `room_banner` hangs two or three images on a gallery wall with light pools, a bench and visitor silhouettes (1600×760). `True` frames a work with a mat (for paper works). Keep the left third empty for headline text.
-- `portrait` draws a faceless editorial portrait. `style`: long, bob, short, bun, crop, fade, curly; optional `beard`, `glasses`, `stripes`, `dots`.
+- `portrait` draws a faceless editorial portrait. `style`: long, bob, short, bun, crop, fade, curly; optional `beard` (a colour, or `True` for the hair colour), `glasses`, `stripes`, `dots`.
 
 ## Houses and rooms
 
@@ -78,7 +78,7 @@ spec = S.linden("day"); spec["masses"][1]["col"] = "#E8E2D6"
 living = rooms.room("living", dict(seed=12, wall="#EEEAE2", floor="#B88E64", view="valley", sofa="#ECE6DA", accent="#6E7F6A"))
 ```
 
-- A house is a list of `masses` (blocks) placed around the centre: `x0`, `x1`, `h`, `roof` (gable, hip, flat), `rh`, `mat` (board, cedar, stucco, shingle, stone), `col`, `rcol`, `win` [(x0, y0, x1, y1, columns, rows) as fractions of the block], `door`, `garage`, `lift` (second storey), `back` (draw behind). Start from a spec in `house_specs.py` and change it; a new style of house is a new spec, not new drawing code.
+- A house is a list of `masses` (blocks) placed around the centre: `x0`, `x1`, `h`, `roof` (gable, hip, flat), `rh`, `mat` (board, cedar, stucco, shingle, stone), `col`, `rcol`, `win` [(x0, y0, x1, y1, columns, rows) as fractions of the block], `door`, `garage`, `lift` (second storey), `back` (draw behind). `cx` (0 to 1, default 0.5) moves the whole house across the picture and `scale` (default 1) makes it larger or smaller; the pool, path and plinth move with it. Start from a spec in `house_specs.py` and change it; a new style of house is a new spec, not new drawing code.
 - A room takes `wall`, `floor`, `view` (valley, forest, coast, dusk) and the colours of its furniture (`sofa`, `accent`, `island`, `cab`, `head`, `throw`, `table`, `tub`, `vanity`, `frame`). Give each house one palette and paint all its rooms with it, so a model's rooms belong together.
 - Run `buildings_example.py` first to see the whole range.
 

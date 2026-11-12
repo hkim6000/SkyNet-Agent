@@ -167,7 +167,7 @@ def colorfield(spec, r, W, H, P):
         scum = smooth(0.55, 0.85, vnoise(H, W, 18, r, 3)) * (1 - smooth(0.6, 0.98, m)) * 0.55
         img = img * (1 - m[..., None]) + body * m[..., None]
         img = over(img, P["ground"], scum * m)
-    img = brushify(img, r, amp=2.5, cell=30, length=35, axis=P.get("axis", 1), strength=0.07)
+    img = brushify(img, r, amp=2.5, cell=30, length=35, axis=0 if str(P.get("axis", 1)).lower() in ("0", "y", "v", "vertical") else 1, strength=0.07)
     return img * canvas_tex(H, W, r, 0.045)
 
 

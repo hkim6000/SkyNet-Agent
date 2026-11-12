@@ -4,7 +4,9 @@ namespace MySite.Core
 {
     public static class Init
     {
-        private static readonly string[] Records = { "quotes", "jobs", "invoices", "reviews", "messages", "activity", "staff" };
+        private static readonly string[] Records = { "messages", "activity", "staff" };
+
+        private static readonly string[] Uploads = { };
 
         public static string Marker => Path.Combine(Store.DataDir, "initialized.txt");
 
@@ -42,10 +44,13 @@ namespace MySite.Core
                 {
                     File.Delete(Store.InitialFile);
                 }
-                string uploads = Path.Combine(Store.Root, "files");
-                if (Directory.Exists(uploads))
+                foreach (string folder in Uploads)
                 {
-                    Directory.Delete(uploads, true);
+                    string uploads = Path.Combine(Store.Root, folder);
+                    if (Directory.Exists(uploads))
+                    {
+                        Directory.Delete(uploads, true);
+                    }
                 }
                 Directory.CreateDirectory(Store.DataDir);
                 if (mark)
@@ -53,7 +58,7 @@ namespace MySite.Core
                     await File.WriteAllTextAsync(Marker, DateTime.UtcNow.ToString("u") + " " + why + " " + removed + " records" + Environment.NewLine);
                 }
             }
-            await Store.Log("system", "initialize data", why + " · " + removed + " records removed", true);
+            await Store.Log("system", "initialize data", why + " · " + Ui.Count(removed, "record", "records") + " removed", true);
             return removed;
         }
 

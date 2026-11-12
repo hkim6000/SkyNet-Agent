@@ -10,13 +10,13 @@ Read this when a site has a staff area: bookings, orders, articles, a schedule, 
 | Shell | `Admin` (prefix `db-`; never `ad-`, see pitfalls): top bar, left menu, right content panel. Loads once |
 | Dashboard | `AdminHome` (prefix `hd-`), the first panel |
 | One page per area | `AdminBookings`, `AdminRooms`, ... Each is a **panel page**: it holds only its content and opens inside the shell |
-| Always | `AdminSettings` (with Initialize data), `AdminAccount`; `AdminMessages` when there is a contact form; with several staff also `AdminUsers` and `AdminActivity` (not shipped: write them from the rules below, as panel pages) |
+| Always | `AdminSettings` (with Initialize data), `AdminAccount`; `AdminMessages` when there is a contact form; with several staff also `AdminUsers` and `AdminActivity` |
 | Shared C# | `codes/Core/Store.cs`, `Access.cs`, `Auth.cs`, `Local.cs`, `Ui.cs`; `Media.cs` when there is a media library ([media.md](media.md)); `Blocks.cs` when pages are block-edited ([pages.md](pages.md)); `Init.cs` ([initialize.md](initialize.md)) |
 | Usual areas | Orders or bookings, the catalogue, **Pages** (page text and pictures, [pages.md](pages.md)), **Media library** ([media.md](media.md)), **Messages** (the contact form inbox), Activity log, Settings, Users |
 | Data | `data/site.json`, `data/staff.json`, `data/activity.json` |
 | Run-time files | `temp/admin/sessions.json`; `appConfig/initial-admin.txt` until the first sign-in |
 
-**Copy the working code, do not rewrite it.** [code/core/](code/core/) holds `Store.cs`, `Access.cs`, `Auth.cs`, `Ui.cs`, `Local.cs`, the classes to add to the model file (`Models.core.txt`) and the full `Program.cs` for a site with a staff area (`Program.cs.txt`). [code/shell/](code/shell/) holds the four files of `Admin` (shell), `AdminHome` (dashboard), `AdminLogin`, `AdminAccount`, `AdminSettings` and `AdminMessages`. All of them are tested together on the real framework. Rename the namespace `MySite`, the cookie name `ms_tok` (in `Admin.js` and `AdminLogin.js`), the colours, the fonts and the logo; change `Access.Areas` to the site's areas, and drop the Media part of Settings when there is no media library.
+**Copy the working code, do not rewrite it.** [code/core/](code/core/) holds `Store.cs`, `Access.cs`, `Auth.cs`, `Ui.cs`, `Local.cs`, the classes to add to the model file (`Models.core.txt`) and the full `Program.cs` for a site with a staff area (`Program.cs.txt`). [code/shell/](code/shell/) holds the four files each of `Admin` (shell), `AdminHome` (dashboard), `AdminLogin`, `AdminAccount`, `AdminSettings`, `AdminMessages`, `AdminUsers` and `AdminActivity`. All of them are tested together on the real framework. Rename the namespace `MySite`, the cookie name `ms_tok` (in `Admin.js` and `AdminLogin.js`), the colours, the fonts and the logo; change `Access.Areas` to the site's areas, and drop the Media part of Settings when there is no media library.
 
 **The admin style kit.** Every panel's CSS starts from the same set of rules: `AdminMedia.css` ([code/media/](code/media/)) is the kit (buttons, panels, fields of every input type, tables that become cards below 600px through `data-l` labels, pills, chips, modal, confirm box, toast). Copy it under the new page's prefix and add the page's own rules. All admin stylesheets use the shell's colours and fonts (the `--xx-*` variables at the top of each file): change them together.
 
@@ -76,22 +76,24 @@ public sealed class Area
     public string Key { get; init; } = string.Empty;
     public string Name { get; init; } = string.Empty;
     public string Page { get; init; } = string.Empty;
+    public string Group { get; init; } = string.Empty;
     public string Extra { get; init; } = string.Empty;
     public bool AdminOnly { get; init; }
     public bool NoEdit { get; init; }
+    public bool StaffOnly { get; init; }
 }
 
 public static readonly Area[] Areas =
 {
-    new Area { Key = "bookings", Name = "Bookings", Page = "AdminBookings", Extra = "Cancel" },
-    new Area { Key = "rooms", Name = "Rooms", Page = "AdminRooms" },
-    new Area { Key = "activity", Name = "Activity log", Page = "AdminActivity", NoEdit = true },
-    new Area { Key = "settings", Name = "Settings", Page = "AdminSettings", AdminOnly = true },
-    new Area { Key = "users", Name = "Users", Page = "AdminUsers", AdminOnly = true }
+    new Area { Key = "bookings", Name = "Bookings", Page = "AdminBookings", Group = "Customers", Extra = "Cancel" },
+    new Area { Key = "rooms", Name = "Rooms", Page = "AdminRooms", Group = "Hotel" },
+    new Area { Key = "activity", Name = "Activity log", Page = "AdminActivity", Group = "Account", NoEdit = true, StaffOnly = true },
+    new Area { Key = "settings", Name = "Settings", Page = "AdminSettings", Group = "Account", AdminOnly = true },
+    new Area { Key = "users", Name = "Users", Page = "AdminUsers", Group = "Account", AdminOnly = true, StaffOnly = true }
 };
 ```
 
-`Access.cs` in [code/core/](code/core/) holds these classes; the snippet above shows the shape.
+`Access.cs` in [code/core/](code/core/) holds these classes; the snippet above shows the shape. `Group` is the menu heading; `StaffOnly` areas (Users, Activity log) disappear in one-admin mode.
 
 - A person's right in an area is a string of letters: `V` view, `E` edit, `X` the area's extra right (cancel, publish, time off). `X` needs `E`; `NoEdit` areas stop at `V`; `AdminOnly` areas are for managers only. A manager (`Staff.Admin`) has `VEX` everywhere.
 - `Access.Level(user, area)` returns the letters; `Access.Can(user, area, 'E')` answers yes or no. Clean the posted grid with the same rules before saving it.
@@ -134,6 +136,8 @@ public class Staff
 - The browser keeps the token in a cookie (`ms_tok`, renamed per site, `path=` the site's base folder, `samesite=lax`). `AdminJs.tok()` reads it; every panel request sends it as the key `tok`, and an expired session sends the browser back to `AdminLogin` (`AdminJs.expired()`).
 - Changing someone's password, or switching them off, closes all their sessions. Changing your own password in My account closes your other sessions and keeps this one.
 - A user with `MustChange` (the first manager, or anyone whose password a manager reset) gets no session until they choose their own password on the sign-in page.
+- **Users** (managers only, [code/shell/AdminUsers.cs](code/shell/AdminUsers.cs)): add a person (name, user name, job title, Manager, Active, a right per area); the new person gets a one-time password, shown once to the manager, and chooses their own at first sign-in. **New password** does the same for someone who forgot theirs and signs them out everywhere. Untick **Active** to stop someone signing in without losing their account; **Remove** deletes it (their log entries stay, shown as *Former staff member*). Nobody can pause, demote or remove themselves, and the last active manager cannot be paused, demoted or removed.
+- **Activity log** ([code/shell/AdminActivity.cs](code/shell/AdminActivity.cs)): with the activity right, everyone's entries with a person filter, Done/Refused chips and search, 25 per page; without it, the same page as **My activity** with only the person's own entries. `Store.NameOf` shows names (*Demo manager*, *System*, *Unknown user name* for a failed sign-in with a wrong user name).
 - **Staff sign-in is reachable from the public site.** Every public page's footer links to **Staff sign in** (`/AdminLogin`). When the site also has customer accounts, the header's **Sign in** opens a gateway page with a customer card and a staff card ([accounts.md](accounts.md)); without customer accounts the header needs no sign-in button and the footer link is enough.
 
 ```js
@@ -299,7 +303,7 @@ function askBuild() {
     askBox = document.createElement('div');
     askBox.className = 'xx-ask';
     askBox.innerHTML = '<div class="xx-askbox" role="alertdialog" aria-modal="true"><h2></h2><p></p><input type="text" maxlength="300" autocomplete="off"><em class="xx-err" role="alert"></em><div class="xx-askacts"><button type="button" class="xx-btn xx-btn-ghost"></button><button type="button" class="xx-btn"></button></div></div>';
-    document.getElementById('xx-site').appendChild(askBox);
+    document.getElementById('xx-site-root').appendChild(askBox);
     var x = askParts();
     x.b[0].addEventListener('click', function () { askClose(false); });
     x.b[1].addEventListener('click', askOk);

@@ -54,7 +54,7 @@ The [starter](../starter/) folder contains all of these, ready to copy.
 </Project>
 ```
 
-Use the latest `TheSkyLite.SkyNet` version from NuGet (`dotnet add package TheSkyLite.SkyNet` updates it). The `data` and `temp` rules are split on purpose: the Web SDK already includes `*.json` as content, and including it twice fails with NETSDK1022. `temp` needs it too, because the staff sign-in writes `temp/admin/sessions.json`, so the error only appears after the first sign-in. Keep the one package line as it is: `TheSkyLite.SkyNet` at the version in the starter. Do not pin `System.Security.Cryptography.Pkcs`: SkyNet 1.0.10 brings the patched 10.0.13 itself, and a direct pin only adds a warning in Visual Studio. Add no `System.*` packages to silence an audit warning.
+The `data` and `temp` rules are split on purpose: the Web SDK already includes `*.json` as content, and including it twice fails with NETSDK1022. `temp` needs it too, because the staff sign-in writes `temp/admin/sessions.json`, so the error only appears after the first sign-in. Keep the one package line as it is: `TheSkyLite.SkyNet` at the version in the starter, which the agent was tested with. Moving to a newer version is the developer's choice (`dotnet add package TheSkyLite.SkyNet`); say so in the README rather than changing it unasked. Do not pin `System.Security.Cryptography.Pkcs`: SkyNet 1.0.10 brings the patched 10.0.13 itself, and a direct pin only adds a warning in Visual Studio. Add no `System.*` packages to silence an audit warning.
 
 ## Program.cs
 
@@ -141,7 +141,7 @@ Give each project its own ports and turn hot reload off:
 
 - One JSON file holds all content: brand facts, lists of items, people, FAQs, plans.
 - One model file (`codes/Models/MySiteModel.cs`) mirrors it with plain classes; property names match the JSON keys (case-insensitive deserialization).
-- Every public page has its own `LoadSite()` that reads and deserializes the file; staff pages use `Store.LoadSite()` in `Core`.
+- On a site without a staff area every public page has its own `LoadSite()` that reads and deserializes the file. Once there is a `Core` folder (a staff area), every page, public ones included, uses `Store.LoadSite()` (block pages need its `Blocks.Ensure`) and writes inside `using (await Store.Hold())`, so the contact form and the Messages panel never write the same file at once.
 - A number that several pages show (a price from options, a total, a fee) is computed in one place, `Core/<Name>.cs`, so the pages can never disagree.
 - Public content that must always look current (an event calendar, class times, "new" badges) is stored as day offsets and computed from `DateTime.Today`. Sample records in the staff area (orders, bookings, messages) use real dates around the build day ([initialize.md](initialize.md)).
 - Records with a deadline (a seat held for payment at the desk, an offer to pay within 24 hours) are checked on every load: expired ones are closed and the place goes to the next person in line. Sample records of that kind store their deadline as an offset from now, or they have expired before anyone sees them.
@@ -150,7 +150,7 @@ Give each project its own ports and turn hot reload off:
 
 ## Publishing to IIS
 
-Put a `web.config` next to the `.csproj` (it is published with the site). Change `MySite.dll` to the project's assembly name. Keep it this plain: it is tested on a live IIS server, and extra headers or `removeServerHeader` can stop the site from starting on some IIS versions. A published site has no `codes/` folder (the C# is compiled into the `.dll`):
+Put a `web.config` next to the `.csproj` (it is published with the site). Change `MySite.dll` to the project's assembly name. Keep it this plain (the one change: with a media library, raise `maxAllowedContentLength` to `115343360`, 110 MB, to match `Program.cs`): it is tested on a live IIS server, and extra headers or `removeServerHeader` can stop the site from starting on some IIS versions. A published site has no `codes/` folder (the C# is compiled into the `.dll`):
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>

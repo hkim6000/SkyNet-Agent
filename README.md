@@ -130,7 +130,7 @@ You should see:
 Installed plugins:
 
   > skynet@skynet-agent
-    Version: 1.0.13
+    Version: 1.0.14
     Scope: user
     Status: √ enabled
 ```
@@ -263,6 +263,17 @@ Every command shows a plan first and waits for **go**.
 | `/skynet` shows nothing | Run `claude plugin list` in PowerShell; if `skynet` is missing, repeat Part 1 step 4 |
 | Lost the first admin password before using it | Delete `appConfig\initial-admin.txt` and open the sign-in page again; a new one is made |
 | Locked out of every manager account | Remove the managers from `data\staff.json` and open the sign-in page; a new first password is made |
+
+## What's new in 1.0.14
+
+From the second HomeBuilder build:
+
+- **Users and Activity log pages ship:** add people with a right per area, one-time passwords, new password, pause, remove; the last manager is protected. The log has person, Done/Refused and search filters, and shows **My activity** to staff without the log right.
+- **Fixed:** a new home hero no longer gets an empty button that blocks saving; the shell no longer sends two requests at once; uploading from Pages needs the media right; Versions shows names, not ids; deleting a used media file says where it is used; first-password sign-ins are logged; `Init.cs` no longer lists records from another kind of site.
+- **Safer:** `Ui.Js` now also escapes `&` and quotes as `\u0026`, `\u0022`, `\u0027`, so names with markup cannot run script inside `onclick`.
+- **Ordered photo picker** ships as working code (`code/media/picker.txt`), with a limit per list.
+- **Docs:** one NuGet rule; `web.config` 110 MB with a media library; newsletter only when asked; paging only for long lists; the right `Head()` call, confirm-dialog id and `Area` fields; reserved block class names; header button `display` pitfall; every page uses `Store` once a site has a staff area.
+- **Art:** portrait `beard=True`, colour field `axis` in words, and house `cx` and `scale` (the pool follows).
 
 ## What's new in 1.0.13
 

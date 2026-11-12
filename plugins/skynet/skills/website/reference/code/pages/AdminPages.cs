@@ -85,7 +85,7 @@ namespace MySite.codes
         private static string BtnEd(string n, string label, string link, string title, bool ro)
         {
             string r = ro ? " readonly" : string.Empty;
-            return "<div class=\"pg-ebtn\"><span>" + title + "</span><input type=\"text\" data-f=\"label" + n + "\" maxlength=\"40\" value=\"" + Ui.Esc(label) + "\" placeholder=\"Button text\"" + r + "><input type=\"text\" data-f=\"link" + n + "\" maxlength=\"300\" value=\"" + Ui.Esc(link) + "\" placeholder=\"Link: Shop, Contact or https://\"" + r + "></div>";
+            return "<div class=\"pg-ebtn\"><span>" + title + "</span><input type=\"text\" data-f=\"label" + n + "\" maxlength=\"40\" value=\"" + Ui.Esc(label) + "\" placeholder=\"Button text\"" + r + "><input type=\"text\" data-f=\"link" + n + "\" maxlength=\"300\" value=\"" + Ui.Esc(link) + "\" placeholder=\"Link: a page name like Contact, or https://\"" + r + "></div>";
         }
 
         private static string ItemEd(List<MediaItem> media, Block b, PartSpec spec, BlockItem it, bool ro)
@@ -115,7 +115,7 @@ namespace MySite.codes
             sb.Append(CI("title", it.Title, tp, ro, false) + CI("text", it.Text, xp, ro, true));
             if (link)
             {
-                sb.Append("<div class=\"pg-elink\"><input type=\"text\" data-i=\"label\" maxlength=\"40\" value=\"" + Ui.Esc(it.Label) + "\" placeholder=\"Link text\"" + (ro ? " readonly" : string.Empty) + "><input type=\"text\" data-i=\"link\" maxlength=\"300\" value=\"" + Ui.Esc(it.Link) + "\" placeholder=\"Link: Shop or https://\"" + (ro ? " readonly" : string.Empty) + "></div>");
+                sb.Append("<div class=\"pg-elink\"><input type=\"text\" data-i=\"label\" maxlength=\"40\" value=\"" + Ui.Esc(it.Label) + "\" placeholder=\"Link text\"" + (ro ? " readonly" : string.Empty) + "><input type=\"text\" data-i=\"link\" maxlength=\"300\" value=\"" + Ui.Esc(it.Link) + "\" placeholder=\"Link: a page name or https://\"" + (ro ? " readonly" : string.Empty) + "></div>");
             }
             if (!ro)
             {
@@ -198,7 +198,7 @@ namespace MySite.codes
         private static string MainHtml(Ctx c)
         {
             bool canE = Access.Can(c.U, AreaKey, 'E');
-            return "<div class=\"pg-ph\"><div><h1>Pages</h1><p>" + (canE ? "Click any text to change it. Drag a block by its handle, or use the arrows, to move it. Use {name} to show the shop name from Settings. Changes go live when you save." : "You can look at the pages but not change them.") + "</p></div></div><div class=\"pg-ptools\"><div class=\"pg-ptabs\" id=\"pg-ptabs\">" + Tabs("home") + "</div><div class=\"pg-pacts\"><span class=\"pg-dirty\" id=\"pg-dirty\"></span><button type=\"button\" class=\"pg-btn pg-btn-sm pg-btn-ghost\" onclick=\"AdminPagesJs.versions()\">Versions</button><button type=\"button\" class=\"pg-btn pg-btn-sm pg-btn-ghost\" id=\"pg-viewlink\" data-href=\"Home\" onclick=\"AdminPagesJs.view()\">View page</button>" + (canE ? "<button type=\"button\" class=\"pg-btn pg-btn-sm\" id=\"pg-savebtn\" onclick=\"AdminPagesJs.save()\">Save page</button>" : string.Empty) + "</div></div><div class=\"pg-canvas\" id=\"pg-canvas\"></div><div id=\"pg-holder\" hidden></div><div class=\"pg-rt\" id=\"pg-rt\" role=\"toolbar\" aria-label=\"Text style\"><button type=\"button\" onmousedown=\"event.preventDefault()\" onclick=\"AdminPagesJs.fmt('bold')\" title=\"Bold\"><b>B</b></button><button type=\"button\" onmousedown=\"event.preventDefault()\" onclick=\"AdminPagesJs.fmt('italic')\" title=\"Italic\"><i>I</i></button><button type=\"button\" onmousedown=\"event.preventDefault()\" onclick=\"AdminPagesJs.fmt('link')\" title=\"Link\">Link</button><button type=\"button\" onmousedown=\"event.preventDefault()\" onclick=\"AdminPagesJs.fmt('insertUnorderedList')\" title=\"List\">&bull; List</button><button type=\"button\" onmousedown=\"event.preventDefault()\" onclick=\"AdminPagesJs.fmt('clear')\" title=\"Clear formatting\">Clear</button></div>";
+            return "<div class=\"pg-ph\"><div><h1>Pages</h1><p>" + (canE ? "Click any text to change it. Drag a block by its handle, or use the arrows, to move it. Use {name} to show the business name from Settings. Changes go live when you save." : "You can look at the pages but not change them.") + "</p></div></div><div class=\"pg-ptools\"><div class=\"pg-ptabs\" id=\"pg-ptabs\">" + Tabs("home") + "</div><div class=\"pg-pacts\"><span class=\"pg-dirty\" id=\"pg-dirty\"></span><button type=\"button\" class=\"pg-btn pg-btn-sm pg-btn-ghost\" onclick=\"AdminPagesJs.versions()\">Versions</button><button type=\"button\" class=\"pg-btn pg-btn-sm pg-btn-ghost\" id=\"pg-viewlink\" data-href=\"Home\" onclick=\"AdminPagesJs.view()\">View page</button>" + (canE ? "<button type=\"button\" class=\"pg-btn pg-btn-sm\" id=\"pg-savebtn\" onclick=\"AdminPagesJs.save()\">Save page</button>" : string.Empty) + "</div></div><div class=\"pg-canvas\" id=\"pg-canvas\"></div><div id=\"pg-holder\" hidden></div><div class=\"pg-rt\" id=\"pg-rt\" role=\"toolbar\" aria-label=\"Text style\"><button type=\"button\" onmousedown=\"event.preventDefault()\" onclick=\"AdminPagesJs.fmt('bold')\" title=\"Bold\"><b>B</b></button><button type=\"button\" onmousedown=\"event.preventDefault()\" onclick=\"AdminPagesJs.fmt('italic')\" title=\"Italic\"><i>I</i></button><button type=\"button\" onmousedown=\"event.preventDefault()\" onclick=\"AdminPagesJs.fmt('link')\" title=\"Link\">Link</button><button type=\"button\" onmousedown=\"event.preventDefault()\" onclick=\"AdminPagesJs.fmt('insertUnorderedList')\" title=\"List\">&bull; List</button><button type=\"button\" onmousedown=\"event.preventDefault()\" onclick=\"AdminPagesJs.fmt('clear')\" title=\"Clear formatting\">Clear</button></div>";
         }
 
         private static string Canvas(SiteData site, List<MediaItem> media, PageSpec p, bool canE)
@@ -210,7 +210,7 @@ namespace MySite.codes
             }
             if (canE)
             {
-                sb.Append("<div class=\"pg-addp\" id=\"pg-addp\"><b>Add a block</b><div class=\"pg-addl\">" + string.Concat(Blocks.Types.Select(t => "<button type=\"button\" onclick=\"AdminPagesJs.addBlock('" + t.Key + "')\"><b>" + Ui.Esc(t.Name) + "</b><small>" + Ui.Esc(t.Desc) + "</small></button>")) + "</div><p class=\"pg-hint2\">Blocks marked From your data (item lists, forms) cannot be removed, but you can move them, change their titles or hide them.</p></div>");
+                sb.Append("<div class=\"pg-addp\" id=\"pg-addp\"><b>Add a block</b><div class=\"pg-addl\">" + string.Concat(Blocks.Types.Select(t => "<button type=\"button\" onclick=\"AdminPagesJs.addBlock('" + t.Key + "')\"><b>" + Ui.Esc(t.Name) + "</b><small>" + Ui.Esc(t.Desc) + "</small></button>")) + "</div><p class=\"pg-hint2\">Blocks marked From your data (lists and forms filled from the site's own records) cannot be removed, but you can move them, change their titles or hide them.</p></div>");
             }
             return sb.ToString();
         }
@@ -341,7 +341,7 @@ namespace MySite.codes
             SiteData site = await Store.LoadSite();
             PageDoc doc = site.Pages[p.Key];
             List<Staff> staff = await Store.LoadStaff();
-            string Who(string id) => staff.FirstOrDefault(s => s.Id == id)?.Name ?? id;
+            string Who(string id) => Store.NameOf(staff, id);
             bool canE = Access.Can(c.U, AreaKey, 'E');
             StringBuilder sb = new StringBuilder("<p class=\"pg-hint\">The last five saved versions are kept. Restoring one makes it live right away.</p><div class=\"pg-vlist\"><div class=\"pg-vrow\"><div><b>Live now</b><small>" + (doc.Saved != default ? "Saved " + Ui.Esc(Ui.When(doc.Saved)) + (doc.By != string.Empty ? " by " + Ui.Esc(Who(doc.By)) : string.Empty) : "Sample content") + " &middot; " + Ui.Count(doc.Blocks.Count, "block", "blocks") + "</small></div></div>");
             if (doc.Versions.Count == 0)
@@ -455,9 +455,9 @@ namespace MySite.codes
             {
                 return response;
             }
-            if (!Access.Can(c.U, AreaKey, 'E'))
+            if (!Access.Can(c.U, AreaKey, 'E') || !Access.Can(c.U, "media", 'E'))
             {
-                response.ExecuteScript("AdminPagesJs.pkUploaded(false,'You can look but not upload.');");
+                response.ExecuteScript("AdminPagesJs.pkUploaded(false,'You need the right to change the media library to upload.');");
                 return response;
             }
             SiteData site = await Store.LoadSite();

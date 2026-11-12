@@ -278,7 +278,8 @@ namespace MySite.codes
             sb.Append("<div class=\"am-grid\">");
             foreach (MediaItem m in rows.Take(240))
             {
-                int used = Media.UsedBy(site, m.Path).Count;
+                List<string> places = Media.UsedBy(site, m.Path);
+                int used = places.Count;
                 string id = Ui.Js(m.Id);
                 sb.Append("<article class=\"am-md\"><button type=\"button\" class=\"am-md-pv\" onclick=\"AdminMediaJs.edit('" + id + "')\" aria-label=\"Open " + Ui.Esc(m.Name) + "\">");
                 sb.Append(m.Kind == "video" ? "<video src=\"" + Ui.Esc(m.Path) + "#t=0.1\" muted preload=\"metadata\" playsinline></video><i class=\"am-md-play\" aria-hidden=\"true\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"currentColor\"><path d=\"M8 5v14l11-7z\"/></svg></i>" : "<img src=\"" + Ui.Esc(m.Thumb.Length > 0 ? m.Thumb : m.Path) + "\" alt=\"\" loading=\"lazy\">");
@@ -286,7 +287,7 @@ namespace MySite.codes
                 sb.Append("<button type=\"button\" class=\"am-btn am-btn-ghost am-btn-sm\" onclick=\"AdminMediaJs.edit('" + id + "')\">" + (edit ? "Edit" : "View") + "</button>");
                 if (extra)
                 {
-                    sb.Append("<button type=\"button\" class=\"am-btn am-btn-danger am-btn-sm\" onclick=\"AdminMediaJs.drop('" + id + "','" + Ui.Js(m.Name) + "'," + used + ")\">Delete</button>");
+                    sb.Append("<button type=\"button\" class=\"am-btn am-btn-danger am-btn-sm\" onclick=\"AdminMediaJs.drop('" + id + "','" + Ui.Js(m.Name) + "','" + Ui.Js(Where(places)) + "')\">Delete</button>");
                 }
                 sb.Append("</div></article>");
             }
@@ -296,6 +297,11 @@ namespace MySite.codes
                 sb.Append("<p class=\"am-hint\">Showing the newest 240. Search to find older files.</p>");
             }
             return sb.ToString();
+        }
+
+        private static string Where(List<string> used)
+        {
+            return used.Count == 0 ? string.Empty : string.Join(", ", used.Take(3)) + (used.Count > 3 ? " and more" : string.Empty);
         }
 
         private static string FormHtml(SiteData site, MediaItem m, bool edit, bool extra)
@@ -311,7 +317,7 @@ namespace MySite.codes
             sb.Append("<div class=\"am-acts\">" + (edit ? "<button type=\"submit\" class=\"am-btn\">Save</button>" : string.Empty) + "<button type=\"button\" class=\"am-btn am-btn-ghost\" onclick=\"AdminMediaJs.closeModal()\">" + (edit ? "Cancel" : "Close") + "</button>");
             if (extra)
             {
-                sb.Append("<button type=\"button\" class=\"am-btn am-btn-danger am-push\" onclick=\"AdminMediaJs.drop('" + Ui.Js(m.Id) + "','" + Ui.Js(m.Name) + "'," + used.Count + ")\">Delete file</button>");
+                sb.Append("<button type=\"button\" class=\"am-btn am-btn-danger am-push\" onclick=\"AdminMediaJs.drop('" + Ui.Js(m.Id) + "','" + Ui.Js(m.Name) + "','" + Ui.Js(Where(used)) + "')\">Delete file</button>");
             }
             sb.Append("</div></form>");
             return sb.ToString();

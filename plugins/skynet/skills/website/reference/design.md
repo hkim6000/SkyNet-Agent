@@ -18,7 +18,7 @@ Agree on these before writing code:
 - Admin "View site" links open in a new tab (`target="_blank" rel="noopener"`), so staff keep their place.
 - Sections spaced 44 to 56px apart; one clear heading per section with a "See all" link where it helps.
 - Cards: image, small eyebrow label, title, one or two lines of detail, actions.
-- Footer: brand line, newsletter field, three link columns, a copyright line.
+- Footer: brand line, three link columns, a copyright line. A newsletter field only when the brief asks for one: it needs somewhere to keep the addresses (a `subscribers` file, a staff panel to read and export them, a line in `Init.cs` `Records`). The starter's footer has one as a sample: remove it unless the brief asks for it.
 - A toast element for short confirmations.
 
 ## Fonts
@@ -62,7 +62,7 @@ On phones, put the most important action near the top (for example the booking b
 - **Frame classes stay on the frame.** `xx-head`, `xx-nav`, `xx-foot` and `xx-site` belong to the page header, menu, footer and wrapper only. A card's own top or bottom is `xx-chead` or `xx-cfoot`; C# and JavaScript that write content never emit a frame class, or the content takes the frame's dark band and spacing. `check_sources.py` fails this.
 - **Nothing clips.** Names in charts, bars, chips and cards wrap or shrink their box; never `Clip()` or `text-overflow: ellipsis` a name the reader needs. Chart label columns use `minmax(0, 40%)`, not a fixed width.
 - **Admin lists on phones:** below 600px a table with more than three columns becomes a stack of cards (one record per card, label and value per line) instead of a side-scrolling table; nothing is cut off and nothing scrolls sideways.
-- **Admin lists:** the server searches, filters and pages (`const int Size = 10` to `25`) and returns the rows plus a pager (*Page 1 of 11 · 273 appointments*). Search waits 250ms after typing; changing a filter goes back to page 1; saving an edit reloads the current page, not page 1; an empty result says *No services match.* Request keys must not equal query-string names (`term`, not `q`).
+- **Admin lists:** a list that can grow past 25 rows (orders, messages, the log) is searched, filtered and paged on the server (`const int Size = 10` to `25`); a short list that stays short (a few models, staff, options) shows every row with no pager. and returns the rows plus a pager (*Page 1 of 11 · 273 appointments*). Search waits 250ms after typing; changing a filter goes back to page 1; saving an edit reloads the current page, not page 1; an empty result says *No services match.* Request keys must not equal query-string names (`term`, not `q`).
 
 ## Accessibility
 

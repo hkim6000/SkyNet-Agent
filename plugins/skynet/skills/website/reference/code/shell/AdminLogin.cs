@@ -118,9 +118,12 @@ namespace MySite.codes
             }
             if (err != string.Empty)
             {
+                await Store.Log("unknown", "choose password", login, false);
                 response.SetElementContents("lg-err", err);
                 return response;
             }
+            await Store.Log(tok, "choose password", login, true);
+            await Store.Log(tok, "sign in", login, true);
             string session = await Auth.Open(tok);
             response.ExecuteScript("AdminLoginJs.signedIn('" + session + "');");
             return response;

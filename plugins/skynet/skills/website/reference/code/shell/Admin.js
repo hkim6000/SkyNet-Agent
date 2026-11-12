@@ -64,7 +64,6 @@ var AdminJs = (function () {
             if (js && js.shown) {
                 js.shown();
             }
-            api('Menu', [{ key: 'pg', vlu: p }]);
             window.scrollTo(0, 0);
             return;
         }

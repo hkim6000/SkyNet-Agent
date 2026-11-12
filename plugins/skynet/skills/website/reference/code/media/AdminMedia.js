@@ -234,8 +234,8 @@ var AdminMediaJs = (function () {
     }
 
     function drop(id, name, used) {
-        if (used > 0) {
-            toast(name + ' is used on the website. Replace it there before deleting it.');
+        if (used) {
+            toast(name + ' is still used: ' + used + '. Replace it there first.');
             return;
         }
         ask({ title: 'Delete ' + name + '?', text: 'The file is removed from the library and the server for good.', ok: 'Delete file', no: 'Keep it', danger: true }, function () {

@@ -18,7 +18,7 @@ Read this when staff need to upload photos or videos and pick them for products,
 - **Check by contents, not by name.** Read the first 16 bytes: JPG `FF D8 FF`, PNG `89 50 4E 47 0D 0A 1A 0A`, GIF `GIF87a/89a`, WebP `RIFF....WEBP`, MP4 `....ftyp` (not `qt`). The extension must match the sniffed type. Photos up to 8 MB, MP4 up to `MaxVideoMb`.
 - **Receive multipart.** SkyNet posts every `<input type="file">` on the page with the request. Read them in C# with `Local.Accessor.HttpContext.Request.ReadFormAsync()` (`Media.Received()`), up to 20 files per request. Copy to a `.part` file and move into place; stop and delete the part file if the length lies. Raise the limits in `Program.cs` as in [code/core/Program.cs.txt](code/core/Program.cs.txt) (`FormOptions.MultipartBodyLengthLimit`, and `IHttpMaxRequestBodySizeFeature.MaxRequestBodySize` per request, 110 MB; this works on Kestrel and IIS alike) and in `web.config` (`maxAllowedContentLength`), and the README tells the owner to create `images/uploads/` and grant Modify.
 - **Clear the file input after every upload** (`input.value = ''`), or the next request re-uploads it (pitfalls).
-- **Deleting asks first, and refuses a file still in use.** `Media.UsedBy(site, path)` lists every place: pages (`Blocks.Uses`), the site's own data (`AlsoUsedBy`: products, people), fixed files such as `images/hero.webp` or the About pictures. The delete button shows the toast *X is still used: ... Replace it there first.*
+- **Deleting asks first, and refuses a file still in use.** `Media.UsedBy(site, path)` lists every place: pages (`Blocks.Uses`), the site's own data (`AlsoUsedBy`: products, people), fixed files such as `images/hero.webp` or the About pictures. The delete button shows the toast *X is still used: Home page, Item: Oak table. Replace it there first.* (`AdminMedia` passes the first three places to the button).
 - **Thumbnails:** `Media.Thumb(path)` returns `name-thumb.webp` when it exists next to the file, otherwise the file itself. Cards and lists use it; a product page uses the full file.
 - **Video previews** in admin grids use `<video src="file.mp4#t=0.1" muted preload="metadata" playsinline>` so a first frame shows; a play badge sits on top.
 - **Alt text** is edited in the library and used wherever the file appears; a video gets `aria-label` instead.
@@ -28,8 +28,8 @@ Read this when staff need to upload photos or videos and pick them for products,
 Each admin page that needs a file has its own picker dialog (`xx-pick`), filled by a `Pick` method on that page that lists the library (photos only, videos only, or both), with search and an **Upload new** button that calls the page's own `Upload` and refreshes the grid.
 
 - **Single choice** (a hero picture, an occasion photo, a person's portrait): clicking a tile sets a hidden input (`data-k`) and a preview, then closes.
-- **Ordered multi-choice** (product photos and videos): tiles toggle and show their order number; **Use these** copies the list into a strip of thumbnails with ◀ ▶ ✕ buttons; the first item must be a photo because cards and the cart use it. The server checks every path against the library and the first item's kind.
-- Keep one limit (6 items) and say it in the hint.
+- **Ordered multi-choice** (product photos, model galleries): tiles toggle and show their order number; **Use these** copies the list into a strip of thumbnails with ◀ ▶ ✕ buttons. The server checks every path against the library. Working code: [code/media/picker.txt](code/media/picker.txt) (HTML, C#, JS and CSS, prefix `xx-`).
+- Set one limit per list (`Max`: 6 for a product, 12 for a gallery) and say it in the hint.
 
 ## Server-side check on save
 
